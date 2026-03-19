@@ -1,0 +1,73 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+
+<div class="col-md-6 d-flex align-items-center py-5">
+    <div class="container my-auto py-4 shadow-lg bg-white">
+        <div class="row">
+            <div class="col-11 col-lg-10 mx-auto">
+                <h3 class="text-9 fw-600 text-center my-3">Sign In</h3>
+                <div class="text-center text-gray-600 mt-4">
+                    New to time4wellbeing&nbsp;?  <a asp-action="Signup" asp-controller="Home" class="text-green-700 font-bold">Create an Account</a>
+                </div>
+            
+                <form id="auth-form" method="post" asp-action="Login">
+                    <div asp-validation-summary="All" class="text-danger text-center mb-3"></div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label class="form-label text-dark fw-600" for="email">Email Address</label>
+                        <input type="email" class="form-control rounded-0" id="email" name="email" required placeholder="Enter your email">
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label class="form-label text-dark fw-600" for="password">Password</label>
+                        <input type="password" class="form-control rounded-0" id="password" name="password" required placeholder="Enter password">
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" id="rememberPasswordCheck" name="rememberMe">
+                        <label class="form-check-label text-dark" for="rememberPasswordCheck">Remember password</label>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid my-4">
+                        <button class="btn btn-success rounded-0" type="submit">Login</button>
+                    </div>
+
+                    <!-- Forgot Password -->
+                    <div class="text-center mb-3">
+                        <a asp-action="RequestPasswordReset" asp-controller="Home" class="text-dark text-decoration-underline">Forgot Password?</a>
+                    </div>
+
+                    <!-- Terms Notice -->
+                    <p class="text-center text-muted text-2 mb-0">
+                        By logging in, you agree to Time4Wellbeing’s <a href="https://www.time4sportuk.com/terms">Terms</a> and <a href="https://www.time4sportuk.com/terms">Privacy</a>.
+                    </p>
+                </form>
+
+                <div class="d-flex align-items-center my-4">
+                    <hr class="flex-grow-1">
+                    <span class="mx-2 text-2 text-muted">Stay fit & healthy</span>
+                    <hr class="flex-grow-1">
+                </div>
+         @*        <div class="row g-3 mb-4">
+                    <div class="col-sm-4 d-grid">
+                        <button type="button" class="btn btn-outline-facebook btn-sm border-2 rounded-0 shadow-none"><span class="me-2"><i class="fab fa-facebook-f"></i></span>Facebook</button>
+                    </div>
+                    <div class="col-sm-4 d-grid">
+                        <button type="button" class="btn btn-outline-google btn-sm border-2 rounded-0 shadow-none"><span class="me-2"><i class="fab fa-google"></i></span>Google</button>
+                    </div>
+                    <div class="col-sm-4 d-grid">
+                        <button type="button" class="btn btn-outline-twitter btn-sm border-2 rounded-0 shadow-none"><span class="me-2"><i class="fab fa-twitter"></i></span>twitter</button>
+                    </div>
+                </div>
+                <p class="text-center">Need to find <a href="forgot-password-5.html"><u>your username</u></a> or <a href="forgot-Password-5.html"><u>your password</u></a>?</p>
+            *@ </div>
+        </div>
+    </div>
+</div>

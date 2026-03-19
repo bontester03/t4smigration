@@ -1,0 +1,604 @@
+﻿@using WebApit4s.Models
+@model IList<ReferralType>
+
+@{
+    ViewData["Title"] = "Manage Referral Types";
+    ViewData["ActivePage"] = "ManageReferralTypes";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var categories = Enum.GetValues(typeof(ReferralCategory))
+                         .Cast<ReferralCategory>()
+                         .Select(c => new SelectListItem { Value = ((int)c).ToString(), Text = c.ToString() })
+                         .ToList();
+}
+
+<style>
+    .referral-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+    }
+    .referral-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    .referral-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .referral-table thead th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 1rem;
+    }
+    .referral-table tbody tr {
+        transition: background-color 0.2s, transform 0.2s;
+    }
+    .referral-table tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: scale(1.01);
+    }
+    .referral-row-number {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+    .action-btn {
+        transition: all 0.3s;
+    }
+    .action-btn:hover {
+        transform: scale(1.05);
+    }
+    .stats-box {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s;
+    }
+    .stats-box:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    .add-referral-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Hero Section -->
+    <div class="referral-hero">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="fw-bold mb-3">
+                    <i data-feather="share-2" class="me-3"></i>Manage Referral Types
+                </h1>
+                <p class="lead mb-0">
+                    Configure and organize referral types for registration pathways
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div style="font-size: 5rem; opacity: 0.2;">
+                    <i data-feather="git-branch"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i data-feather="alert-triangle" class="me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i data-feather="check-circle" class="me-2"></i>
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Quick Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <i data-feather="share-2"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count ?? 0)</h3>
+                <p class="text-muted mb-0">Total Types</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%); color: white;">
+                    <i data-feather="check-circle"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count(r => r.IsActive) ?? 0)</h3>
+                <p class="text-muted mb-0">Active</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); color: white;">
+                    <i data-feather="home"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count(r => r.RequiresSchoolSelection) ?? 0)</h3>
+                <p class="text-muted mb-0">Require School</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: white;">
+                    <i data-feather="users"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Sum(r => r.UsageCount) ?? 0)</h3>
+                <p class="text-muted mb-0">Total Usage</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New Referral Type Section -->
+    <div class="add-referral-section">
+        <h5 class="fw-bold mb-3">
+            <i data-feather="plus-circle" class="me-2"></i>Add New Referral Type
+        </h5>
+        <form asp-action="AddReferralType" method="post">
+            @Html.AntiForgeryToken()
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Type Name</label>
+                    <input type="text" 
+                           name="Name" 
+                           class="form-control form-control-lg" 
+                           placeholder="e.g., Self-Referral, GP Referral" 
+                           required />
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Category</label>
+                    <select name="Category" class="form-select form-select-lg" required>
+                        <option value="">-- Select Category --</option>
+                        @foreach (var c in categories)
+                        {
+                            <option value="@c.Value">@c.Text</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold d-block">Options</label>
+                    <div class="form-check form-check-inline">
+                        <input type="hidden" name="RequiresSchoolSelection" value="false" />
+                        <input type="checkbox" 
+                               name="RequiresSchoolSelection" 
+                               value="true" 
+                               class="form-check-input" 
+                               id="chkReqSchool" />
+                        <label class="form-check-label" for="chkReqSchool">
+                            <i data-feather="home" style="width: 14px; height: 14px;"></i>
+                            School
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input type="hidden" name="IsActive" value="false" />
+                        <input type="checkbox" 
+                               name="IsActive" 
+                               value="true" 
+                               class="form-check-input" 
+                               id="chkActive" 
+                               checked />
+                        <label class="form-check-label" for="chkActive">
+                            <i data-feather="check" style="width: 14px; height: 14px;"></i>
+                            Active
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-success btn-lg w-100">
+                        <i data-feather="plus-circle" class="me-2"></i>Add Type
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Referral Types Table -->
+    @if (Model?.Any() == true)
+    {
+        <!-- Desktop / Tablet (≥ md) -->
+        <div class="d-none d-md-block">
+            <div class="card referral-card mb-4">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table referral-table mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width: 80px;">
+                                        <i data-feather="hash" style="width: 16px; height: 16px;"></i>
+                                    </th>
+                                    <th>
+                                        <i data-feather="share-2" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        Type Name
+                                    </th>
+                                    <th style="width: 160px;">
+                                        <i data-feather="tag" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        Category
+                                    </th>
+                                    <th style="width: 140px;">
+                                        <i data-feather="home" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        School Req.
+                                    </th>
+                                    <th style="width: 120px;">
+                                        <i data-feather="activity" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        Status
+                                    </th>
+                                    <th style="width: 100px;">
+                                        <i data-feather="users" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        Usage
+                                    </th>
+                                    <th style="width: 120px;">
+                                        <i data-feather="settings" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var idx = 1;
+                                }
+                                @foreach (var r in Model.OrderBy(x => x.Id))
+                                {
+                                    var isProtectedSelfReferral = r.Category == ReferralCategory.SelfReferral;
+                                    <tr>
+                                        <td class="text-center">
+                                            <div class="referral-row-number">
+                                                @idx
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <form asp-action="EditReferralType" method="post" class="d-flex align-items-center gap-2">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="Id" value="@r.Id" />
+                                                <input type="hidden" name="Category" value="@((int)r.Category)" />
+                                                <input type="hidden" name="RequiresSchoolSelection" value="@r.RequiresSchoolSelection.ToString().ToLower()" />
+                                                <input type="hidden" name="IsActive" value="@r.IsActive.ToString().ToLower()" />
+                                                <div class="flex-grow-1">
+                                                    <input name="Name" 
+                                                           class="form-control" 
+                                                           value="@r.Name"
+                                                           readonly="@isProtectedSelfReferral"
+                                                           placeholder="Enter type name" />
+                                                </div>
+                                                <button class="btn btn-primary btn-sm action-btn" 
+                                                        type="submit" 
+                                                        disabled="@isProtectedSelfReferral"
+                                                        title="Save changes">
+                                                    <i data-feather="save" style="width: 14px; height: 14px;"></i>
+                                                    <span class="ms-1">@(isProtectedSelfReferral ? "Locked" : "Save")</span>
+                                                </button>
+                                            </form>
+                                        </td>
+
+                                        <td>
+                                            <span class="badge bg-info text-dark px-3 py-2">
+                                                <i data-feather="tag" style="width: 14px; height: 14px;"></i>
+                                                <span class="ms-1">@r.Category</span>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <form asp-action="ToggleSchoolFlag" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@r.Id" />
+                                                <button class="btn btn-sm @(r.RequiresSchoolSelection ? "btn-success" : "btn-outline-secondary") action-btn"
+                                                        disabled="@isProtectedSelfReferral"
+                                                        title="Toggle school requirement">
+                                                    <i data-feather="@(r.RequiresSchoolSelection ? "check" : "x")" style="width: 14px; height: 14px;"></i>
+                                                    <span class="ms-1">@(isProtectedSelfReferral ? "Fixed" : (r.RequiresSchoolSelection ? "Yes" : "No"))</span>
+                                                </button>
+                                            </form>
+                                        </td>
+
+                                        <td>
+                                            <form asp-action="ToggleActive" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@r.Id" />
+                                                <button class="btn btn-sm @(r.IsActive ? "btn-success" : "btn-warning") action-btn"
+                                                        disabled="@isProtectedSelfReferral"
+                                                        title="Toggle active status">
+                                                    <i data-feather="@(r.IsActive ? "check-circle" : "x-circle")" style="width: 14px; height: 14px;"></i>
+                                                    <span class="ms-1">@(isProtectedSelfReferral ? "Always Active" : (r.IsActive ? "Active" : "Inactive"))</span>
+                                                </button>
+                                            </form>
+                                        </td>
+
+                                        <td>
+                                            <span class="badge bg-primary px-3 py-2">
+                                                @r.UsageCount
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <button type="button"
+                                                    class="btn btn-sm btn-danger action-btn w-100"
+                                                    disabled="@isProtectedSelfReferral"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteConfirmModal"
+                                                    data-id="@r.Id"
+                                                    data-name="@r.Name"
+                                                    title="Delete this type">
+                                                <i data-feather="trash-2" style="width: 14px; height: 14px;"></i>
+                                                <span class="ms-1">@(isProtectedSelfReferral ? "Protected" : "Delete")</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    idx++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile cards (< md) -->
+        <div class="d-md-none">
+            @{
+                var mIdx = 1;
+            }
+            @foreach (var r in Model.OrderBy(x => x.Id))
+            {
+                var isProtectedSelfReferral = r.Category == ReferralCategory.SelfReferral;
+                <div class="card referral-card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <div class="small text-muted mb-1">
+                                    <i data-feather="hash" style="width: 14px; height: 14px;"></i>
+                                    #@mIdx
+                                </div>
+                                <h6 class="fw-bold mb-0">@r.Name</h6>
+                                <div class="mt-1">
+                                    <span class="badge bg-info text-dark">@r.Category</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="mb-1">
+                                    <span class="badge @(r.RequiresSchoolSelection ? "bg-success" : "bg-secondary")">
+                                        School: @(r.RequiresSchoolSelection ? "Yes" : "No")
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="badge @(r.IsActive ? "bg-success" : "bg-warning text-dark")">
+                                        @(r.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="small text-muted mb-3">
+                            <i data-feather="users" style="width: 14px; height: 14px;"></i>
+                            Usage: <strong>@r.UsageCount</strong>
+                        </div>
+
+                        <div class="mb-3">
+                            <form asp-action="EditReferralType" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="Id" value="@r.Id" />
+                                <input type="hidden" name="Category" value="@((int)r.Category)" />
+                                <input type="hidden" name="RequiresSchoolSelection" value="@r.RequiresSchoolSelection.ToString().ToLower()" />
+                                <input type="hidden" name="IsActive" value="@r.IsActive.ToString().ToLower()" />
+                                <label class="form-label small fw-bold text-muted">
+                                    <i data-feather="edit-2" style="width: 14px; height: 14px;"></i>
+                                    Edit Type Name
+                                </label>
+                                <div class="input-group">
+                                    <input name="Name" class="form-control" value="@r.Name" readonly="@isProtectedSelfReferral" />
+                                    <button class="btn btn-primary" type="submit" disabled="@isProtectedSelfReferral">
+                                        <i data-feather="save" style="width: 14px; height: 14px;"></i>
+                                        <span class="ms-1">@(isProtectedSelfReferral ? "Locked" : "Save")</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <form asp-action="ToggleSchoolFlag" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <button class="btn btn-sm @(r.RequiresSchoolSelection ? "btn-success" : "btn-outline-secondary")" disabled="@isProtectedSelfReferral">
+                                    <i data-feather="home" style="width: 14px; height: 14px;"></i>
+                                    <span class="ms-1">School: @(isProtectedSelfReferral ? "Fixed" : (r.RequiresSchoolSelection ? "Yes" : "No"))</span>
+                                </button>
+                            </form>
+
+                            <form asp-action="ToggleActive" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <button class="btn btn-sm @(r.IsActive ? "btn-success" : "btn-warning")" disabled="@isProtectedSelfReferral">
+                                    <i data-feather="@(r.IsActive ? "check-circle" : "x-circle")" style="width: 14px; height: 14px;"></i>
+                                    <span class="ms-1">@(isProtectedSelfReferral ? "Always Active" : (r.IsActive ? "Active" : "Inactive"))</span>
+                                </button>
+                            </form>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-danger"
+                                    disabled="@isProtectedSelfReferral"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteConfirmModal"
+                                    data-id="@r.Id"
+                                    data-name="@r.Name">
+                                <i data-feather="trash-2" style="width: 14px; height: 14px;"></i>
+                                <span class="ms-1">@(isProtectedSelfReferral ? "Protected" : "Delete Type")</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                mIdx++;
+            }
+        </div>
+
+        <!-- Information Card -->
+        <div class="card referral-card">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 1.5rem;">
+                <h5 class="mb-0">
+                    <i data-feather="info" class="me-2"></i>Managing Referral Types
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-primary mb-3">
+                            <i data-feather="edit" class="me-2"></i>Configuration Options
+                        </h6>
+                        <ul class="ps-3">
+                            <li class="mb-2"><strong>Category</strong>: Classifies the referral type (Self, School, Clinical)</li>
+                            <li class="mb-2"><strong>School Required</strong>: Whether users must select a school</li>
+                            <li class="mb-2"><strong>Active</strong>: Controls visibility in registration forms</li>
+                            <li class="mb-2"><strong>Usage</strong>: Shows how many times this type has been used</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-success mb-3">
+                            <i data-feather="help-circle" class="me-2"></i>Best Practices
+                        </h6>
+                        <ul class="ps-3">
+                            <li class="mb-2">Keep type names clear and descriptive</li>
+                            <li class="mb-2">Deactivate rather than delete types with usage history</li>
+                            <li class="mb-2">Use "School Required" for school-based referrals</li>
+                            <li class="mb-2">Monitor usage to identify popular referral paths</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card referral-card">
+            <div class="card-body text-center p-5">
+                <div class="mb-3" style="font-size: 5rem; color: #dee2e6;">
+                    <i data-feather="share-2"></i>
+                </div>
+                <h5 class="fw-bold mb-2">No Referral Types Found</h5>
+                <p class="text-muted mb-4">
+                    You haven't created any referral types yet. Use the form above to add your first type.
+                </p>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%); color: white;">
+                <h5 class="modal-title" id="deleteConfirmLabel">
+                    <i data-feather="alert-triangle" class="me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center">
+                    <div class="mb-3" style="font-size: 3rem; color: #dc3545;">
+                        <i data-feather="trash-2"></i>
+                    </div>
+                    <h6 class="fw-bold mb-2">Delete Referral Type</h6>
+                    <p class="mb-3">
+                        Are you sure you want to delete <strong id="deleteItemName">this referral type</strong>?
+                    </p>
+                    <div class="alert alert-warning text-start">
+                        <i data-feather="alert-circle" class="me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone. Users who registered with this type will still retain their data.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" method="post" asp-action="DeleteReferralType" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteId" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i data-feather="x" class="me-1"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i data-feather="trash-2" class="me-1"></i>Yes, Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize Feather Icons
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+
+        // Delete modal wiring
+        const deleteModal = document.getElementById('deleteConfirmModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                const btn = event.relatedTarget;
+                const id = btn?.getAttribute('data-id');
+                const name = btn?.getAttribute('data-name') || 'this referral type';
+                document.getElementById('deleteId').value = id;
+                document.getElementById('deleteItemName').textContent = name;
+                
+                // Re-initialize feather icons in modal
+                setTimeout(() => {
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                }, 100);
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+}

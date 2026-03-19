@@ -1,0 +1,71 @@
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<WebApit4s.Models.AdminRegistrationReminderViewModel>
+
+@{
+    ViewData["Title"] = "Reminder Email Logs";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex align-items-center">
+            <i data-feather="mail" class="me-2"></i>
+            <h5 class="mb-0">Reminder Emails Sent</h5>
+        </div>
+        <div class="card-body">
+            <!-- Search/filter can be added here if needed -->
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>User Email</th>
+                            <th>Sent At (UTC)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            var index = ((int)Model.PageNumber - 1) * Model.PageSize + 1;
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@index</td>
+                                    <td>@item.UserEmail</td>
+                                    <td>@item.SentAt.ToString("dd MMM yyyy, hh:mm tt")</td>
+                                </tr>
+                                index++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No reminder emails have been sent.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-3">
+                @Html.PagedListPager(Model, page => Url.Action("ViewRegistrationReminders", new { page }),
+                         new PagedListRenderOptions
+                {
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" },
+                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                    DisplayLinkToNextPage = PagedListDisplayMode.Always
+                })
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        feather.replace();
+    </script>
+}

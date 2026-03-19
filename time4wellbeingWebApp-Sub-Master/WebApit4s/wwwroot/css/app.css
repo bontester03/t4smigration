@@ -1,0 +1,31 @@
+@import url("../lib/bootstrap/dist/css/bootstrap.min.css");
+@import url("./styles.css");
+@import url("./site.css");
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+.dropdown-user-img,
+.img-fluid {
+    object-fit: cover;
+}
+
+@media (max-width: 991px) {
+    #layoutSidenav {
+        flex-direction: column;
+    }
+
+    #layoutSidenav_nav {
+        height: auto;
+    }
+
+    #layoutSidenav_content {
+        margin-left: 0;
+    }
+}

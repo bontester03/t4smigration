@@ -1,0 +1,56 @@
+<app-registration-shell
+  title="Create Account"
+  subtitle="Start by choosing your email, password, and referral type."
+  stepLabel="Step 1 of 6"
+>
+  @if (isLoading) {
+    <div class="registration-loading">
+      <div class="spinner-border text-success" role="status"></div>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="registration-form">
+      @if (errorMessage) {
+        <div class="alert alert-danger registration-alert" role="alert">{{ errorMessage }}</div>
+      }
+
+      <div class="registration-field">
+        <label class="registration-label required" for="email">Email Address</label>
+        <div class="registration-input-wrap">
+          <i class="fa-solid fa-envelope registration-input-icon"></i>
+          <input id="email" formControlName="email" type="email" class="form-control registration-control" placeholder="you@example.com" />
+        </div>
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <span class="registration-error">Please enter a valid email address.</span>
+        }
+      </div>
+
+      <div class="registration-field">
+        <label class="registration-label required" for="password">Password</label>
+        <div class="registration-input-wrap">
+          <i class="fa-solid fa-lock registration-input-icon"></i>
+          <input id="password" formControlName="password" type="password" class="form-control registration-control" placeholder="Create a secure password" />
+        </div>
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <span class="registration-error">Password must be at least 6 characters.</span>
+        }
+      </div>
+
+      <div class="registration-field">
+        <label class="registration-label required" for="referralTypeId">How did you hear about us?</label>
+        <select id="referralTypeId" formControlName="referralTypeId" class="form-select registration-control">
+          <option [ngValue]="null">-- Select Referral Type --</option>
+          @for (referralType of options()?.referralTypes ?? []; track referralType.id) {
+            <option [ngValue]="referralType.id">{{ referralType.name }} ({{ referralType.category }})</option>
+          }
+        </select>
+        @if (form.controls.referralTypeId.touched && form.controls.referralTypeId.invalid) {
+          <span class="registration-error">Please select a referral type.</span>
+        }
+      </div>
+
+      <div class="registration-actions registration-actions--stack">
+        <button type="submit" class="btn registration-button registration-button--primary">Save and Continue</button>
+      </div>
+    </form>
+  }
+</app-registration-shell>

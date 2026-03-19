@@ -1,0 +1,163 @@
+/* =================================== */
+/*  4. Elements
+/* =================================== */
+  
+/*=== 4.1 Hero Background ===*/
+
+.oxyy-login-register {
+.hero-wrap {
+  position: relative;
+  overflow: hidden;
+  .hero-mask, .hero-bg, .hero-bg-slideshow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+  .hero-mask {
+    z-index: 1;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+  .hero-particles {
+	position:absolute;
+	width:100%;
+	height:100%;
+	z-index:3;
+  }
+  .hero-bg-slideshow {
+    z-index: 0;
+  }
+  .hero-bg {
+    z-index: 0;
+    background-attachment: fixed;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    transition: background-image 300ms ease-in 200ms;
+	&.hero-bg-scroll{
+		background-attachment: scroll;
+	}
+  }
+  .hero-bg-slideshow {
+    .hero-bg {
+      background-attachment: inherit;
+    }
+    &.owl-carousel {
+      .owl-stage-outer, .owl-stage, .owl-item {
+        height: 100%;
+      }
+    }
+  }
+}
+}
+
+@media (max-width: 991.98px) {
+  .oxyy-login-register {
+	.hero-wrap .hero-bg{
+		background-attachment: initial!important;
+		background-position: center center !important;
+		}
+	}
+}
+
+/* 4.2 Nav */
+
+.oxyy-login-register {
+.nav .nav-item .nav-link{color: $light-text-emphasis;}
+
+.nav:not(.nav-pills) .nav-item .nav-link.active, .nav:not(.nav-pills) .nav-item .nav-link:hover{
+	color: var(--#{$prefix}themecolor);
+}
+
+.nav.nav-separator .nav-item .nav-link{position:relative;}
+.nav.nav-separator .nav-item + .nav-item .nav-link:after{
+		height: 14px;
+        width: 1px;
+        content: ' ';
+        background-color: rgba(0,0,0,0.2);
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 0;
+		@include translateY(-7px);
+}
+html[dir="rtl"] .nav.nav-separator .nav-item + .nav-item .nav-link:after{
+	right: 0;
+	left:auto;
+}
+.nav.nav-separator.nav-separator-light .nav-item + .nav-item .nav-link:after{
+background-color: rgba(250,250,250,0.2);
+}
+
+.nav.nav-sm .nav-item .nav-link{font-size:14px;}
+
+.nav-pills .nav-link:not(.active):hover{color: var(--#{$prefix}themecolor);}
+.nav-pills .nav-link.active,.nav-pills.nav-light .nav-link.active, .nav-pills .show > .nav-link{color:#fff;}
+
+.nav-pills .nav-link{color: #7b8084;}
+.nav-pills .nav-link:not(.active):hover{color: var(--#{$prefix}themecolor);}
+
+.nav-pills{
+	--#{$prefix}nav-pills-link-active-bg: var(--#{$prefix}themecolor);
+}
+
+[data-bs-theme="dark"] {
+	.nav .nav-item .nav-link:not(.active){
+		color: $dark-text-emphasis-dark;
+	}
+	.nav:not(.nav-pills) .nav-item .nav-link.active, .nav .nav-item .nav-link:not(.active):hover{
+		color: var(--#{$prefix}themecolor);
+	}
+	.nav.nav-separator .nav-item + .nav-item .nav-link:after{
+        background-color: rgba(250,250,250,0.2);
+	}
+}
+
+}
+
+
+/*=== 4.3 Tabs ===*/
+
+.oxyy-login-register {
+	.nav-underline {
+		--bs-nav-underline-gap: 0rem;
+		.nav-link{
+		padding-left:var(--bs-nav-link-padding-x);
+		padding-right:var(--bs-nav-link-padding-x);
+			&:not(.active):hover{
+				border-bottom:0px;
+				border-bottom-color: transparent;
+			}
+			&.active{
+				font-weight: 500;
+			}
+		}
+	}
+}
+
+
+/* 4.4 Video Play button */
+
+.oxyy-login-register {
+.btn-video-play {
+  width: 66px;
+  height: 66px;
+  line-height: 66px;
+  text-align: center;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 50%;
+  background: #fff;
+  @include box-shadow(0px 0px 50px -35px rgba(0, 0, 0, 0.4));
+  @include transition(all 0.8s ease-in-out);
+  &:hover {
+	@include box-shadow(0px 0px 0px 8px rgba(250, 250, 250, 0.2));
+  }
+}
+}

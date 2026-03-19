@@ -1,0 +1,344 @@
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<WebApit4s.Models.WeeklyMeasurementViewModel>
+
+@{
+    ViewData["Title"] = "Weekly Measurements - Admin";
+    ViewData["ActivePage"] = "WeeklyMeasurements";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    
+    // Calculate analytics
+    var totalMeasurements = Model.TotalItemCount;
+    var healthyCount = Model.Count(m => m.HealthRange == "Healthy Weight");
+    var underweightCount = Model.Count(m => m.HealthRange == "Underweight");
+    var overweightCount = Model.Count(m => m.HealthRange == "Overweight");
+    var obeseCount = Model.Count(m => m.HealthRange == "Obese");
+    var avgCentile = Model.Any() ? Model.Average(m => m.CentileScore) : 0;
+}
+
+<style>
+    .stat-card {
+        border-left: 4px solid;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .filter-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        color: white;
+    }
+    .filter-section .form-label {
+        color: white;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+    .measurement-row {
+        transition: all 0.2s;
+    }
+    .measurement-row:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+        transform: scale(1.01);
+    }
+    .measurement-card {
+        border-left: 3px solid #007bff;
+        transition: all 0.3s;
+    }
+    .measurement-card:hover {
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transform: translateX(5px);
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-dark fw-bold mb-1">
+                <i class="fas fa-chart-line text-warning me-2"></i> Weekly Measurements
+            </h2>
+            <p class="text-muted mb-0">Track and monitor child height, weight, and health metrics</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Analytics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #007bff !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Total Measurements</div>
+                            <div class="h3 mb-0 fw-bold text-primary">@totalMeasurements</div>
+                        </div>
+                        <div class="text-primary" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #28a745 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Healthy Weight</div>
+                            <div class="h3 mb-0 fw-bold text-success">@healthyCount</div>
+                            <small class="text-muted">@(totalMeasurements > 0 ? ((healthyCount / (double)totalMeasurements) * 100).ToString("F1") : "0")%</small>
+                        </div>
+                        <div class="text-success" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #ffc107 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Need Attention</div>
+                            <div class="h3 mb-0 fw-bold text-warning">@(underweightCount + overweightCount + obeseCount)</div>
+                            <small class="text-muted">Under/Over/Obese</small>
+                        </div>
+                        <div class="text-warning" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #17a2b8 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Avg Centile Score</div>
+                            <div class="h3 mb-0 fw-bold text-info">@avgCentile.ToString("F1")</div>
+                            <small class="text-muted">Out of 100</small>
+                        </div>
+                        <div class="text-info" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section shadow-sm">
+        <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Search Measurements</h5>
+        <form method="get" class="row g-3">
+            <div class="col-md-5">
+                <label class="form-label"><i class="fas fa-child me-1"></i>Child Name</label>
+                <input type="text" class="form-control bg-white" name="searchChildName" 
+                       value="@ViewBag.SearchChildName" placeholder="Enter child name" />
+            </div>
+
+            <div class="col-md-1 d-flex align-items-center justify-content-center">
+                <strong class="text-white">OR</strong>
+            </div>
+
+            <div class="col-md-6">
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <label class="form-label"><i class="fas fa-user me-1"></i>User Name</label>
+                        <input type="text" class="form-control bg-white" name="searchUserName" 
+                               value="@ViewBag.SearchUserName" placeholder="Enter user name" />
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-light flex-fill">
+                            <i class="fas fa-search me-1"></i> Search
+                        </button>
+                        <a href="@Url.Action("WeeklyMeasurementsAdmin")" class="btn btn-outline-light flex-fill">
+                            <i class="fas fa-redo me-1"></i> Clear
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <!-- Desktop Table View -->
+        <div class="card shadow-sm border-0 mb-4 d-none d-md-block">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0 text-dark">
+                    <i class="fas fa-list me-2"></i>Measurement Records
+                    <span class="badge bg-primary ms-2">@Model.TotalItemCount</span>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-3">Child Info</th>
+                                <th>User</th>
+                                <th class="text-center">Age</th>
+                                <th class="text-center">Height (cm)</th>
+                                <th class="text-center">Weight (kg)</th>
+                                <th class="text-center">Centile</th>
+                                <th class="text-center">Health Range</th>
+                                <th class="text-center">Date Recorded</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="measurement-row">
+                                    <td class="px-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-info text-white me-2" 
+                                                 style="width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                                @item.ChildName.Substring(0, 1).ToUpper()
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold">@item.ChildName</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">@item.UserName</small>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-secondary">@item.Age yrs</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>@item.Height</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <strong>@item.Weight</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info">@item.CentileScore</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-@GetHealthRangeColor(item.HealthRange)">
+                                            @item.HealthRange
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <small class="text-muted">
+                                            <i class="far fa-calendar me-1"></i>
+                                            @item.DateRecorded.ToString("dd MMM yyyy")
+                                        </small>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="d-md-none">
+            @foreach (var item in Model)
+            {
+                <div class="card measurement-card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle bg-info text-white me-2" 
+                                     style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">
+                                    @item.ChildName.Substring(0, 1).ToUpper()
+                                </div>
+                                <div>
+                                    <div class="fw-bold">@item.ChildName</div>
+                                    <small class="text-muted">@item.UserName</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-@GetHealthRangeColor(item.HealthRange)">
+                                @item.HealthRange
+                            </span>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-4">
+                                <small class="text-muted d-block">Age</small>
+                                <strong>@item.Age yrs</strong>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted d-block">Height</small>
+                                <strong>@item.Height cm</strong>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted d-block">Weight</small>
+                                <strong>@item.Weight kg</strong>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Centile Score</small>
+                                <span class="badge bg-info">@item.CentileScore</span>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Recorded</small>
+                                <small><i class="far fa-calendar me-1"></i>@item.DateRecorded.ToString("dd MMM yyyy")</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            @Html.PagedListPager(
+                Model, 
+                page => Url.Action("WeeklyMeasurementsAdmin", new {
+                    searchChildName = ViewBag.SearchChildName,
+                    searchUserName = ViewBag.SearchUserName,
+                    page
+                }),
+                new PagedListRenderOptions
+                {
+                    UlElementClasses = new[] { "pagination" },
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" },
+                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                    LinkToFirstPageFormat = "First",
+                    LinkToLastPageFormat = "Last"
+                }
+            )
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">No measurement records found</h5>
+                <p class="text-muted mb-0">Try adjusting your search criteria or check back later.</p>
+            </div>
+        </div>
+    }
+</div>
+
+@functions {
+    private string GetHealthRangeColor(string range)
+    {
+        return range switch
+        {
+            "Underweight" => "purple",
+            "Healthy Weight" => "success",
+            "Overweight" => "warning",
+            "Obese" => "danger",
+            _ => "secondary"
+        };
+    }
+}
+

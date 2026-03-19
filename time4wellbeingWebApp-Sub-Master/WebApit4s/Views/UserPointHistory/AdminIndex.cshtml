@@ -1,0 +1,40 @@
+﻿@model IEnumerable<WebApit4s.Models.UserPointHistory>
+
+@{
+    ViewData["Title"] = "User Point History (Admin)";
+      Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<h2>User Point History (Admin)</h2>
+
+<table class="table table-striped table-bordered table-hover shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>User</th>
+            <th>Child</th>
+            <th>Delta</th>
+            <th>Balance After</th>
+            <th>Reason</th>
+            <th>Source</th>
+            <th>Notes</th>
+            <th>Created (UTC)</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.User?.UserName</td>
+            <td>@item.Child?.ChildName</td>
+            <td class="@(item.Delta >= 0 ? "text-success" : "text-danger")">
+                @item.Delta
+            </td>
+            <td>@item.BalanceAfter</td>
+            <td>@item.Reason</td>
+            <td>@item.SourceType (@item.SourceId)</td>
+            <td>@item.Notes</td>
+            <td>@item.CreatedUtc.ToString("yyyy-MM-dd HH:mm")</td>
+        </tr>
+    }
+    </tbody>
+</table>

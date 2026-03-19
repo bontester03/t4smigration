@@ -1,0 +1,1058 @@
+@model WebApit4s.Models.AdminChildFullDetailsViewModel
+
+@{
+    ViewData["Title"] = "Child Details";
+    ViewData["ActivePage"] = "ViewChildDetails";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var genderEnumList = Enum.GetNames(typeof(Gender));
+}
+
+<style>
+    .stat-card {
+        border-left: 4px solid;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .nav-pills .nav-link {
+        color: #6c757d;
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+        margin: 0 0.25rem;
+        transition: all 0.3s;
+    }
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .section-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+    }
+    .section-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 10px 10px 0 0;
+        font-weight: 600;
+    }
+    .avatar-large {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        font-weight: bold;
+        margin: 0 auto 1rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    .info-badge {
+        background: #f8f9fa;
+        border-left: 3px solid #667eea;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        border-radius: 5px;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-dark fw-bold mb-1">
+                <i class="fas fa-user-circle text-primary me-2"></i> @Model.ChildName's Profile
+            </h2>
+            <p class="text-muted mb-0">Complete child profile with health tracking and parent information</p>
+        </div>
+        <a asp-action="RegisteredChildren" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to List
+        </a>
+    </div>
+
+    <!-- Profile Summary Card -->
+    <div class="card section-card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-2 text-center">
+                    <div class="avatar-large position-relative">
+                        @Model.ChildName.Substring(0, 1).ToUpper()
+                        @if (Model.ConsentAnswers.Any())
+                        {
+                            <span class="position-absolute top-0 end-0 translate-middle badge rounded-pill bg-success" 
+                                  style="font-size: 1rem; padding: 0.5rem;"
+                                  title="Consent Given">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        }
+                    </div>
+                    <span class="badge bg-@(Model.Gender.Equals("Male", StringComparison.OrdinalIgnoreCase) ? "info" : "danger") mb-2">
+                        <i class="fas fa-@(Model.Gender.Equals("Male", StringComparison.OrdinalIgnoreCase) ? "mars" : "venus") me-1"></i>
+                        @Model.Gender
+                    </span>
+                </div>
+                <div class="col-md-10">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="info-badge">
+                                <small class="text-muted d-block">Child Name</small>
+                                <strong>@Model.ChildName</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-badge">
+                                <small class="text-muted d-block">Email</small>
+                                <strong>@Model.Email</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-badge">
+                                <small class="text-muted d-block">Date of Birth</small>
+                                <strong>@Model.DateOfBirth.ToString("dd MMM yyyy")</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-badge">
+                                <small class="text-muted d-block">Consent Status</small>
+                                @if (Model.ConsentAnswers.Any())
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check-circle me-1"></i>Consent Given
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">
+                                        <i class="fas fa-times-circle me-1"></i>No Consent
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="info-badge">
+                                <small class="text-muted d-block">Total Points</small>
+                                <strong class="text-success">@Model.TotalPoints <i class="fas fa-coins"></i></strong>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-badge">
+                                <small class="text-muted d-block">Engagement Status</small>
+                                <span class="badge bg-@(Model.EngagementStatus.ToString() == "Engaged" ? "success" : "warning")">
+                                    @Model.EngagementStatus
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-badge">
+                                <small class="text-muted d-block">Email</small>
+                                <strong>@Model.Email</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #007bff !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Health Scores</div>
+                            <div class="h3 mb-0 fw-bold text-primary">@Model.HealthScores.Count</div>
+                        </div>
+                        <div class="text-primary" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #28a745 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Measurements</div>
+                            <div class="h3 mb-0 fw-bold text-success">@Model.Measurements.Count</div>
+                        </div>
+                        <div class="text-success" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #ffc107 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Admin Notes</div>
+                            <div class="h3 mb-0 fw-bold text-warning">@Model.AdminNotes.Count</div>
+                        </div>
+                        <div class="text-warning" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-sticky-note"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #dc3545 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Notifications</div>
+                            <div class="h3 mb-0 fw-bold text-danger">@Model.Notifications.Count</div>
+                        </div>
+                        <div class="text-danger" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-pills mb-4 justify-content-center" id="childDetailsTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="user-tab" data-bs-toggle="pill" data-bs-target="#user" type="button">
+                <i class="fas fa-user me-2"></i>User Info
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="child-tab" data-bs-toggle="pill" data-bs-target="#child" type="button">
+                <i class="fas fa-child me-2"></i>Child Info
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="parent-tab" data-bs-toggle="pill" data-bs-target="#parent" type="button">
+                <i class="fas fa-users me-2"></i>Parent Info
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="health-tab" data-bs-toggle="pill" data-bs-target="#health" type="button">
+                <i class="fas fa-heartbeat me-2"></i>Health Data
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="notes-tab" data-bs-toggle="pill" data-bs-target="#notes" type="button">
+                <i class="fas fa-sticky-note me-2"></i>Notes
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="notify-tab" data-bs-toggle="pill" data-bs-target="#notify" type="button">
+                <i class="fas fa-bell me-2"></i>Notifications
+            </button>
+        </li>
+        @if (Model.ConsentAnswers.Any())
+        {
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="consent-tab" data-bs-toggle="pill" data-bs-target="#consent" type="button">
+                    <i class="fas fa-file-signature me-2"></i>Consent
+                </button>
+            </li>
+        }
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="childDetailsTabContent">
+        <!-- USER INFO TAB -->
+        <div class="tab-pane fade show active" id="user" role="tabpanel">
+            <div class="card section-card">
+                <div class="section-header">
+                    <i class="fas fa-user me-2"></i>User Information
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateUserInfo" asp-controller="AdminDashboard" method="post">
+                        <input type="hidden" name="UserId" value="@Model.UserId" />
+                        <input type="hidden" name="ChildId" value="@Model.ChildId" />
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Email</label>
+                                <input name="Email" class="form-control" value="@Model.Email" readonly />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Referral Type</label>
+                                <select name="ReferralTypeId" class="form-select">
+                                    @foreach (var item in ViewBag.ReferralTypes as List<SelectListItem>)
+                                    {
+                                        <option value="@item.Value" selected="@(item.Value == Model.ReferralTypeId.ToString())">@item.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Registration Date</label>
+                                <input class="form-control" value="@Model.RegistrationDate.ToString("dd MMM yyyy HH:mm")" readonly />
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Update User Info
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHILD INFO TAB -->
+        <div class="tab-pane fade" id="child" role="tabpanel">
+            <div class="card section-card">
+                <div class="section-header">
+                    <i class="fas fa-child me-2"></i>Child Information
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateChildInfo" method="post">
+                        <input type="hidden" name="userId" value="@Model.UserId" />
+                        <input type="hidden" name="childId" value="@Model.ChildId" />
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Child Name</label>
+                                <input name="childName" class="form-control" value="@Model.ChildName" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Date of Birth</label>
+                                <input name="dateOfBirth" type="date" class="form-control" value="@Model.DateOfBirth.ToString("yyyy-MM-dd")" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Gender</label>
+                                <select name="gender" class="form-select">
+                                    @foreach (var g in ViewBag.GenderList as List<SelectListItem>)
+                                    {
+                                        <option value="@g.Value" selected="@(g.Value == Model.Gender ? "selected" : null)">@g.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">School</label>
+                                @if (!Model.RequiresSchoolSelection)
+                                {
+                                    <input name="school" class="form-control text-uppercase" value="@Model.School?.ToUpper()" />
+                                }
+                                else
+                                {
+                                    <select name="school" class="form-select">
+                                        <option value="">-- Select School --</option>
+                                        @foreach (var item in ViewBag.SchoolList as List<SelectListItem>)
+                                        {
+                                            var isSelected = string.Equals(item.Value?.Trim(), Model.School?.Trim(), StringComparison.OrdinalIgnoreCase);
+                                            <option value="@item.Value" selected="@(isSelected ? "selected" : null)">@item.Text</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Class</label>
+                                @if (!Model.RequiresSchoolSelection)
+                                {
+                                    <input name="className" class="form-control text-uppercase" value="@Model.Class?.ToUpper()" />
+                                }
+                                else
+                                {
+                                    <select name="className" class="form-select">
+                                        <option value="">-- Select Class --</option>
+                                        @foreach (var item in ViewBag.ClassList as List<SelectListItem>)
+                                        {
+                                            var isSelected = string.Equals(item.Value?.Trim(), Model.Class?.Trim(), StringComparison.OrdinalIgnoreCase);
+                                            <option value="@item.Value" selected="@(isSelected ? "selected" : null)">@item.Text</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Engagement Status</label>
+                                <select name="engagementStatus" class="form-select">
+                                    @foreach (var status in Enum.GetValues(typeof(WebApit4s.Models.EngagementStatus)))
+                                    {
+                                        <option value="@status" selected="@(status.ToString() == Model.EngagementStatus.ToString() ? "selected" : null)">
+                                            @status
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Total Points</label>
+                                <input name="totalPoints" type="number" class="form-control" value="@Model.TotalPoints" readonly />
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <button class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>Save Child Info
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHILD INFO TAB -->
+        <div class="tab-pane fade" id="child" role="tabpanel">
+            <div class="card section-card">
+                <div class="section-header">
+                    <i class="fas fa-child me-2"></i>Child Information
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateChildInfo" method="post">
+                        <input type="hidden" name="userId" value="@Model.UserId" />
+                        <input type="hidden" name="childId" value="@Model.ChildId" />
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Child Name</label>
+                                <input name="childName" class="form-control" value="@Model.ChildName" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Date of Birth</label>
+                                <input name="dateOfBirth" type="date" class="form-control" value="@Model.DateOfBirth.ToString("yyyy-MM-dd")" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Gender</label>
+                                <select name="gender" class="form-select">
+                                    @foreach (var g in ViewBag.GenderList as List<SelectListItem>)
+                                    {
+                                        <option value="@g.Value" selected="@(g.Value == Model.Gender ? "selected" : null)">@g.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">School</label>
+                                @if (!Model.RequiresSchoolSelection)
+                                {
+                                    <input name="school" class="form-control text-uppercase" value="@Model.School?.ToUpper()" />
+                                }
+                                else
+                                {
+                                    <select name="school" class="form-select">
+                                        <option value="">-- Select School --</option>
+                                        @foreach (var item in ViewBag.SchoolList as List<SelectListItem>)
+                                        {
+                                            var isSelected = string.Equals(item.Value?.Trim(), Model.School?.Trim(), StringComparison.OrdinalIgnoreCase);
+                                            <option value="@item.Value" selected="@(isSelected ? "selected" : null)">@item.Text</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Class</label>
+                                @if (!Model.RequiresSchoolSelection)
+                                {
+                                    <input name="className" class="form-control text-uppercase" value="@Model.Class?.ToUpper()" />
+                                }
+                                else
+                                {
+                                    <select name="className" class="form-select">
+                                        <option value="">-- Select Class --</option>
+                                        @foreach (var item in ViewBag.ClassList as List<SelectListItem>)
+                                        {
+                                            var isSelected = string.Equals(item.Value?.Trim(), Model.Class?.Trim(), StringComparison.OrdinalIgnoreCase);
+                                            <option value="@item.Value" selected="@(isSelected ? "selected" : null)">@item.Text</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Engagement Status</label>
+                                <select name="engagementStatus" class="form-select">
+                                    @foreach (var status in Enum.GetValues(typeof(WebApit4s.Models.EngagementStatus)))
+                                    {
+                                        <option value="@status" selected="@(status.ToString() == Model.EngagementStatus.ToString() ? "selected" : null)">
+                                            @status
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Total Points</label>
+                                <input name="totalPoints" type="number" class="form-control" value="@Model.TotalPoints" readonly />
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <button class="btn btn-success">
+                                <i class="fas fa-save me-2"></i>Save Child Info
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- PARENT INFO TAB -->
+        <div class="tab-pane fade" id="parent" role="tabpanel">
+            <div class="card section-card">
+                <div class="section-header">
+                    <i class="fas fa-users me-2"></i>Parent/Guardian Information
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateParentInfo" method="post">
+                        <input type="hidden" name="UserId" value="@Model.UserId" />
+                        <input type="hidden" asp-for="ChildId" />
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Parent/Guardian Name</label>
+                                <input name="ParentGuardianName" class="form-control" value="@Model.ParentGuardianName" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Relationship to Child</label>
+                                <select name="RelationshipToChild" class="form-select">
+                                    <option value="">-- Select Relationship --</option>
+                                    @foreach (var item in ViewBag.RelationshipList as List<SelectListItem>)
+                                    {
+                                        <option value="@item.Value" selected="@(item.Value == Model.RelationshipToChild)">
+                                            @item.Text
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Telephone</label>
+                                <input name="TeleNumber" class="form-control" value="@Model.TeleNumber" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Email</label>
+                                <input name="ParentEmail" class="form-control" value="@Model.ParentEmail" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Postcode</label>
+                                <input name="Postcode" class="form-control" value="@Model.Postcode" />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Parent School (Read-only)</label>
+                                <input class="form-control text-uppercase" value="@Model.ParentSchool?.ToUpper()" disabled />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Parent Class (Read-only)</label>
+                                <input class="form-control text-uppercase" value="@Model.ParentClass?.ToUpper()" disabled />
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <button class="btn btn-info text-white">
+                                <i class="fas fa-save me-2"></i>Save Parent Info
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- HEALTH DATA TAB -->
+        <div class="tab-pane fade" id="health" role="tabpanel">
+            <!-- Add Measurement Section -->
+            @if (Model.ReferralTypeCategory != ReferralCategory.SelfReferral)
+            {
+                <div class="card section-card mb-3">
+                    <div class="section-header">
+                        <i class="fas fa-plus-circle me-2"></i>Add New Measurement
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="LogMeasurement" asp-controller="AdminDashboard" method="post">
+                            <input type="hidden" name="UserId" value="@Model.UserId" />
+                            <input type="hidden" name="ChildId" value="@Model.ChildId" />
+
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Age</label>
+                                    <input name="Age" type="number" class="form-control" required min="1" max="18" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Height (cm)</label>
+                                    <input name="Height" type="number" class="form-control" required min="10" max="200" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Weight (kg)</label>
+                                    <input name="Weight" type="number" class="form-control" required min="1" max="200" />
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label fw-bold">Centile Score</label>
+                                    <input name="CentileScore" type="number" class="form-control" required min="0" max="100" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Date Recorded</label>
+                                    <input name="DateRecorded" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Save Measurement
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+
+            <!-- Measurements History -->
+            <div class="card section-card mb-3">
+                <div class="section-header">
+                    <i class="fas fa-weight me-2"></i>Measurement History
+                </div>
+                <div class="card-body">
+                    @if (Model.Measurements.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Age</th>
+                                        <th>Height (cm)</th>
+                                        <th>Weight (kg)</th>
+                                        <th>Centile Score</th>
+                                        <th>Health Range</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var m in Model.Measurements)
+                                    {
+                                        <tr>
+                                            <td>@m.DateRecorded.ToString("dd MMM yyyy")</td>
+                                            <td>@m.Age</td>
+                                            <td>@m.Height</td>
+                                            <td>@m.Weight</td>
+                                            <td><span class="badge bg-info">@m.CentileScore</span></td>
+                                            <td><span class="badge bg-@(m.HealthRange == "Healthy Weight" ? "success" : "warning")">@m.HealthRange</span></td>
+                                            <td>
+                                                <form asp-action="DeleteMeasurement" asp-controller="AdminDashboard" method="post" 
+                                                      onsubmit="return confirm('Delete this measurement?');" class="d-inline">
+                                                    <input type="hidden" name="id" value="@m.Id" />
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-3">
+                            <i class="fas fa-info-circle me-2"></i>No measurement records found.
+                        </p>
+                    }
+                </div>
+            </div>
+
+            <!-- Health Scores -->
+            <div class="card section-card mb-3">
+                <div class="section-header">
+                    <i class="fas fa-heartbeat me-2"></i>Health Scores History
+                </div>
+                <div class="card-body">
+                    @if (Model.HealthScores.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Activity</th>
+                                        <th>Breakfast</th>
+                                        <th>Fruits/Veg</th>
+                                        <th>Sweets</th>
+                                        <th>Fats</th>
+                                        <th>Total</th>
+                                        <th>Classification</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var h in Model.HealthScores)
+                                    {
+                                        <tr>
+                                            <td>@h.DateRecorded.ToString("dd MMM yyyy")</td>
+                                            <td><small>@GetPhysicalActivityOption(h.PhysicalActivityScore)</small></td>
+                                            <td><small>@GetBreakfastOption(h.BreakfastScore)</small></td>
+                                            <td><small>@GetFruitVegOption(h.FruitVegScore)</small></td>
+                                            <td><small>@GetSweetSnacksOption(h.SweetSnacksScore)</small></td>
+                                            <td><small>@GetFattyFoodsOption(h.FattyFoodsScore)</small></td>
+                                            <td><strong>@h.TotalScore</strong></td>
+                                            <td>
+                                                <span class="badge bg-@(h.HealthClassification == "Healthy" ? "success" : h.HealthClassification == "Moderate" ? "warning" : "danger")">
+                                                    @h.HealthClassification
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <form asp-action="DeleteHealthScore" asp-controller="AdminDashboard" method="post" 
+                                                      onsubmit="return confirm('Delete this health score?');" class="d-inline">
+                                                    <input type="hidden" name="id" value="@h.Id" />
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-3">
+                            <i class="fas fa-info-circle me-2"></i>No health score records found.
+                        </p>
+                    }
+                </div>
+            </div>
+
+            <!-- Add Health Score Form -->
+            <div class="card section-card">
+                <div class="section-header">
+                    <i class="fas fa-plus-circle me-2"></i>Add Health Score
+                </div>
+                <div class="card-body">
+                    <form asp-action="AddOrUpdateHealthScore" asp-controller="AdminDashboard" method="post">
+                        <input type="hidden" name="userId" value="@Model.UserId" />
+                        <input type="hidden" name="childId" value="@Model.ChildId" />
+                        <input type="hidden" name="Id" value="0" />
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Date Recorded</label>
+                                <input name="DateRecorded" class="form-control" type="datetime-local" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Physical Activity (Weekly)</label>
+                                <select id="PhysicalActivityScore" name="PhysicalActivityScore" class="form-select" onchange="calculateScore()">
+                                    <option value="0">Less than 60 mins</option>
+                                    <option value="1">60-120 mins</option>
+                                    <option value="2">180-240 mins</option>
+                                    <option value="3">300-360 mins</option>
+                                    <option value="4">420+ mins</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Breakfast (Days/Week)</label>
+                                <select id="BreakfastScore" name="BreakfastScore" class="form-select" onchange="calculateScore()">
+                                    <option value="0">0 days</option>
+                                    <option value="1">1-2 days</option>
+                                    <option value="2">3-4 days</option>
+                                    <option value="3">5-6 days</option>
+                                    <option value="4">7 days</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Fruit & Veg (Portions/Day)</label>
+                                <select id="FruitVegScore" name="FruitVegScore" class="form-select" onchange="calculateScore()">
+                                    <option value="0">0 portions</option>
+                                    <option value="1">1-2 portions</option>
+                                    <option value="2">3 portions</option>
+                                    <option value="3">4 portions</option>
+                                    <option value="4">5+ portions</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Sweet Snacks (Times/Week)</label>
+                                <select id="SweetSnacksScore" name="SweetSnacksScore" class="form-select" onchange="calculateScore()">
+                                    <option value="0">6+ times</option>
+                                    <option value="1">3-5 times</option>
+                                    <option value="2">1-2 times</option>
+                                    <option value="3">Less than 1/week</option>
+                                    <option value="4">Never</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Fatty Foods (Times/Week)</label>
+                                <select id="FattyFoodsScore" name="FattyFoodsScore" class="form-select" onchange="calculateScore()">
+                                    <option value="0">6+ times</option>
+                                    <option value="1">3-5 times</option>
+                                    <option value="2">1-2 times</option>
+                                    <option value="3">Less than 1/week</option>
+                                    <option value="4">Never</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <input id="TotalScore" name="TotalScore" type="hidden" />
+                        <input id="HealthClassification" name="HealthClassification" type="hidden" />
+
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Health Score
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN NOTES TAB -->
+        <div class="tab-pane fade" id="notes" role="tabpanel">
+            <div class="card section-card mb-3">
+                <div class="section-header">
+                    <i class="fas fa-plus-circle me-2"></i>Add New Note
+                </div>
+                <div class="card-body">
+                    <form asp-action="AddAdminNote" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="UserId" value="@Model.UserId" />
+                        <input type="hidden" name="ChildId" value="@Model.ChildId" />
+
+                        <div class="mb-3">
+                            <label for="NewNoteText" class="form-label fw-bold">Note Content</label>
+                            <textarea asp-for="NewNoteText" class="form-control" rows="4" placeholder="Enter your note here..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-2"></i>Save Note
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card section-card">
+                <div class="section-header">
+                    <i class="fas fa-history me-2"></i>Previous Notes
+                </div>
+                <div class="card-body">
+                    @if (Model.AdminNotes != null && Model.AdminNotes.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var note in Model.AdminNotes)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <small class="text-muted">
+                                            <i class="far fa-clock me-1"></i>
+                                            @note.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                                        </small>
+                                    </div>
+                                    <p class="mb-0 mt-2">@note.NoteText</p>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-3">
+                            <i class="fas fa-info-circle me-2"></i>No notes available.
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTIFICATIONS TAB -->
+        <div class="tab-pane fade" id="notify" role="tabpanel">
+            <div class="card section-card mb-3">
+                <div class="section-header">
+                    <i class="fas fa-bell me-2"></i>Send Notification
+                </div>
+                <div class="card-body">
+                    <form asp-action="SendNotificationFromChildView" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="UserId" value="@Model.UserId" />
+                        <input type="hidden" name="ChildId" value="@Model.ChildId" />
+
+                        <div class="mb-3">
+                            <label for="NotificationMessage" class="form-label fw-bold">Message</label>
+                            <textarea name="NotificationMessage" class="form-control" rows="4" placeholder="Type notification message..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-paper-plane me-2"></i>Send Notification
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card section-card">
+                <div class="section-header">
+                    <i class="fas fa-history me-2"></i>Notification History
+                </div>
+                <div class="card-body">
+                    @if (Model.Notifications.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Message</th>
+                                        <th>Status</th>
+                                        <th>Date Sent</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var notification in Model.Notifications)
+                                    {
+                                        <tr>
+                                            <td>@notification.Message</td>
+                                            <td>
+                                                <span class="badge @(notification.IsRead == "Read" ? "bg-success" : "bg-warning")">
+                                                    @notification.IsRead
+                                                </span>
+                                            </td>
+                                            <td>@notification.CreatedAt.ToString("dd MMM yyyy HH:mm")</td>
+                                            <td>
+                                                @if (notification.IsRead == "Unread")
+                                                {
+                                                    <form asp-controller="AdminDashboard" asp-action="MarkNotificationAsRead" method="post" class="d-inline">
+                                                        <input type="hidden" name="id" value="@notification.Id" />
+                                                        <button type="submit" class="btn btn-sm btn-success">Mark Read</button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted"><i class="fa fa-check-circle"></i> Read</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-3">
+                            <i class="fas fa-info-circle me-2"></i>No notifications sent yet.
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- CONSENT TAB -->
+        @if (Model.ConsentAnswers.Any())
+        {
+            <div class="tab-pane fade" id="consent" role="tabpanel">
+                <div class="card section-card">
+                    <div class="section-header">
+                        <i class="fas fa-file-signature me-2"></i>Consent Responses
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Question</th>
+                                        <th>Answer</th>
+                                        <th>Submitted At</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.ConsentAnswers.Count; i++)
+                                    {
+                                        <tr>
+                                            <td><strong>@(i + 1)</strong></td>
+                                            <td>@Model.ConsentAnswers[i].Question</td>
+                                            <td><span class="badge bg-info">@Model.ConsentAnswers[i].Answer</span></td>
+                                            <td>@Model.ConsentAnswers[i].SubmittedAt.ToString("dd MMM yyyy HH:mm")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function calculateScore() {
+            const parse = id => parseInt(document.getElementById(id)?.value) || 0;
+
+            const activity = parse("PhysicalActivityScore");
+            const breakfast = parse("BreakfastScore");
+            const fruitVeg = parse("FruitVegScore");
+            const sweets = parse("SweetSnacksScore");
+            const fats = parse("FattyFoodsScore");
+
+            const total = activity + breakfast + fruitVeg + sweets + fats;
+            const classification = total >= 15 ? "Healthy" : total >= 10 ? "Moderate" : "Unhealthy";
+
+            document.getElementById("TotalScore").value = total;
+            document.getElementById("HealthClassification").value = classification;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            ["PhysicalActivityScore", "BreakfastScore", "FruitVegScore", "SweetSnacksScore", "FattyFoodsScore"]
+                .forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.addEventListener("change", calculateScore);
+                });
+            calculateScore();
+        });
+    </script>
+}
+
+@functions {
+    private string GetPhysicalActivityOption(int score) => score switch
+    {
+        0 => "Less than 60 mins",
+        1 => "60-120 mins",
+        2 => "180-240 mins",
+        3 => "300-360 mins",
+        4 => "420+ mins",
+        _ => "Unknown"
+    };
+
+    private string GetBreakfastOption(int score) => score switch
+    {
+        0 => "0 days",
+        1 => "1-2 days",
+        2 => "3-4 days",
+        3 => "5-6 days",
+        4 => "7 days",
+        _ => "Unknown"
+    };
+
+    private string GetFruitVegOption(int score) => score switch
+    {
+        0 => "0 portions",
+        1 => "1-2 portions",
+        2 => "3 portions",
+        3 => "4 portions",
+        4 => "5+ portions",
+        _ => "Unknown"
+    };
+
+    private string GetSweetSnacksOption(int score) => score switch
+    {
+        0 => "6+ times/week",
+        1 => "3-5 times/week",
+        2 => "1-2 times/week",
+        3 => "Less than 1/week",
+        4 => "Never",
+        _ => "Unknown"
+    };
+
+    private string GetFattyFoodsOption(int score) => score switch
+    {
+        0 => "6+ times/week",
+        1 => "3-5 times/week",
+        2 => "1-2 times/week",
+        3 => "Less than 1/week",
+        4 => "Never",
+        _ => "Unknown"
+    };
+}

@@ -1,0 +1,53 @@
+﻿@model IEnumerable<WebApit4s.Models.ParentRewardRedemption>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info mb-0">
+        <i class="fas fa-info-circle me-1"></i> No approved items awaiting fulfilment.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Child</th>
+                    <th>Reward</th>
+                    <th style="width:120px;">Cost</th>
+                    <th style="width:140px;">Status</th>
+                    <th style="width:180px;">Approved</th>
+                    <th style="width:240px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model.OrderBy(x => x.ApprovedUtc))
+                {
+                    <tr>
+                        <td class="fw-semibold"><i class="fas fa-child me-1 text-primary"></i>@r.Child?.ChildName</td>
+                        <td><div class="fw-semibold">@r.ParentReward?.Title</div></td>
+                        <td><span class="badge bg-info"><i class="fas fa-coins me-1"></i>@r.CoinCostAtPurchase</span></td>
+                        <td><span class="badge bg-primary">Approved</span></td>
+                        <td>@(r.ApprovedUtc?.ToLocalTime().ToString("dd MMM yyyy, HH:mm") ?? "-")</td>
+                        <td class="text-nowrap">
+                            <form asp-action="MarkRedeemed" asp-controller="Parent" method="post" class="d-inline" id="redeemForm-@r.Id">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <button type="button" class="btn btn-primary btn-sm action-trigger" data-form="redeemForm-@r.Id" data-action="redeem">
+                                    <i class="fas fa-check-double me-1"></i> Mark Redeemed
+                                </button>
+                            </form>
+                         @*    <form asp-action="RejectRedemption" asp-controller="Parent" method="post" class="d-inline" id="rejectFormA-@r.Id">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <button type="button" class="btn btn-outline-danger btn-sm action-trigger" data-form="rejectFormA-@r.Id" data-action="reject">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                            </form> *@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

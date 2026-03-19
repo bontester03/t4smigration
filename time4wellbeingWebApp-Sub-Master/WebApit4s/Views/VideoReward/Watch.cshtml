@@ -1,0 +1,289 @@
+﻿@model WebApit4s.Models.VideoReward
+@{
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+    ViewData["Title"] = "Watch & Earn";
+    @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+}
+
+<style>
+    .watch-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    .watch-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+    }
+    .watch-card {
+        border: none;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s;
+    }
+    .watch-card:hover {
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    }
+    .video-player-container {
+        background: #000;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .coin-badge {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+    }
+    .info-box {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-left: 4px solid #667eea;
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        margin-top: 1rem;
+    }
+    .result-success {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        border-left: 4px solid #10b981;
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        animation: slideIn 0.5s ease;
+    }
+    .result-info {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        border-left: 4px solid #3b82f6;
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        animation: slideIn 0.5s ease;
+    }
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .back-btn {
+        border-radius: 10px;
+        padding: 0.6rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .back-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Hero Section -->
+    <div class="watch-hero">
+        <div class="row align-items-center position-relative">
+            <div class="col-md-8">
+                <h1 class="h2 fw-bold mb-2">
+                    <i data-feather="play-circle" class="me-2"></i>
+                    @Model.Title
+                </h1>
+                <p class="mb-0 opacity-90">Watch this video to earn coins and improve your wellness knowledge</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="coin-badge">
+                    <i data-feather="award" style="width: 20px; height: 20px;"></i>
+                    <span>@Model.CoinValue Coins</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-9">
+            <!-- Video Player Card -->
+            <div class="watch-card mb-4">
+                <div class="card-header" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 1rem;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i data-feather="video" class="me-2" style="width: 20px; height: 20px;"></i>
+                            Video Player
+                        </h5>
+                        <a asp-controller="Dashboard" asp-action="Suggestions" class="btn btn-light btn-sm back-btn">
+                            <i data-feather="arrow-left" class="me-1" style="width: 14px; height: 14px;"></i>
+                            Back to Videos
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="video-player-container">
+                        <div class="ratio ratio-16x9">
+                            <div id="player"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <div class="d-flex align-items-start">
+                            <i data-feather="info" class="me-3" style="width: 24px; height: 24px; color: #667eea; flex-shrink: 0;"></i>
+                            <div>
+                                <strong>How to Earn Coins:</strong>
+                                <p class="mb-0 mt-1">Watch at least <strong class="text-primary">@Model.MinWatchPercent%</strong> of this video to earn <strong class="text-warning">@Model.CoinValue coins</strong>. Your progress is automatically tracked!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Message -->
+            <div id="resultMsg"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        // Extract YouTube video id from URL
+        function getYouTubeId(url) {
+            const m = url.match(/[?&]v=([^&#]+)/) || url.match(/youtu\.be\/([^?&#]+)/);
+            return m ? m[1] : null;
+        }
+
+        let player, sessionId = null, lastTime = 0, lastPing = Date.now();
+
+        // Anti-forgery
+        const token = '@Antiforgery.GetAndStoreTokens(Context).RequestToken';
+
+        async function startSession() {
+            const form = new FormData();
+            form.append('videoId', '@Model.Id');
+            const res = await fetch('@Url.Action("Start", "VideoReward")', {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': token },
+                body: form
+            });
+            if (!res.ok) throw new Error(await res.text());
+            const data = await res.json();
+            sessionId = data.sessionId;
+        }
+
+        async function pingProgress() {
+            if (!sessionId || !player) return;
+            const now = Date.now();
+            const currentTime = player.getCurrentTime ? player.getCurrentTime() : 0;
+            const duration = player.getDuration ? player.getDuration() : 0;
+            const deltaPlayed = Math.max(0, currentTime - lastTime);
+            lastTime = currentTime;
+            lastPing = now;
+
+            const form = new FormData();
+            form.append('sessionId', sessionId);
+            form.append('currentTime', currentTime);
+            form.append('duration', duration);
+            form.append('deltaPlayed', deltaPlayed);
+
+            await fetch('@Url.Action("Progress", "VideoReward")', {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': token },
+                body: form
+            });
+        }
+
+        async function completeSession() {
+            if (!sessionId) return;
+            const form = new FormData();
+            form.append('sessionId', sessionId);
+
+            const res = await fetch('@Url.Action("Complete", "VideoReward")', {
+                method: 'POST',
+                headers: { 'RequestVerificationToken': token },
+                body: form
+            });
+            if (res.ok) {
+                const data = await res.json();
+                const el = document.getElementById('resultMsg');
+                el.innerHTML = data.awarded
+                  ? `<div class="result-success">
+                       <div class="d-flex align-items-center">
+                         <i data-feather="check-circle" class="me-3" style="width: 32px; height: 32px; color: #10b981;"></i>
+                         <div>
+                           <h5 class="mb-1" style="color: #065f46;">Congratulations! 🎉</h5>
+                           <p class="mb-0">You earned <strong>${data.coins} coins</strong> by watching ${data.percent}% of the video!</p>
+                         </div>
+                       </div>
+                     </div>`
+                  : `<div class="result-info">
+                       <div class="d-flex align-items-center">
+                         <i data-feather="clock" class="me-3" style="width: 32px; height: 32px; color: #3b82f6;"></i>
+                         <div>
+                           <h5 class="mb-1" style="color: #1e40af;">Keep Watching!</h5>
+                           <p class="mb-0">You've watched ${data.percent}% — watch at least @Model.MinWatchPercent% to earn coins.</p>
+                         </div>
+                       </div>
+                     </div>`;
+                
+                // Replace feather icons in the dynamically added content
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+            }
+        }
+
+        // YouTube API
+        function onYouTubeIframeAPIReady() {
+            const vid = getYouTubeId('@Model.YouTubeUrl');
+            if (!vid) return;
+
+            player = new YT.Player('player', {
+                videoId: vid,
+                playerVars: { modestbranding: 1, rel: 0, playsinline: 1 },
+                events: {
+                    'onReady': async (e) => {
+                        try {
+                            await startSession();
+                            // heartbeat every 5s while playing
+                            setInterval(() => {
+                                const state = player.getPlayerState ? player.getPlayerState() : -1;
+                                if (state === YT.PlayerState.PLAYING) pingProgress();
+                            }, 5000);
+                        } catch (err) {
+                            console.error(err);
+                        }
+                    },
+                    'onStateChange': (e) => {
+                        if (e.data === YT.PlayerState.ENDED) {
+                            completeSession();
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fallback: try to complete on unload
+        window.addEventListener('beforeunload', () => { completeSession(); });
+
+        // Replace feather icons on page load
+        document.addEventListener("DOMContentLoaded", function () {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+}

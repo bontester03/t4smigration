@@ -1,0 +1,26 @@
+<app-registration-shell
+  title="Health Score"
+  subtitle="Answer the quick health score questions to complete registration."
+  stepLabel="Step 5 of 6"
+>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="registration-form">
+    <div class="registration-score-grid">
+      @for (field of scoreFields; track field.controlName) {
+        <div class="registration-score-card">
+          <label class="registration-label">{{ field.label }}</label>
+          <select [formControlName]="field.controlName" class="form-select registration-control">
+            <option [ngValue]="null">-- Select score --</option>
+            @for (score of scoreOptions; track score) {
+              <option [ngValue]="score">{{ score }}</option>
+            }
+          </select>
+        </div>
+      }
+    </div>
+
+    <div class="registration-actions">
+      <button type="button" class="btn registration-button registration-button--secondary" (click)="back()">Back</button>
+      <button type="submit" class="btn registration-button registration-button--primary">Review Registration</button>
+    </div>
+  </form>
+</app-registration-shell>

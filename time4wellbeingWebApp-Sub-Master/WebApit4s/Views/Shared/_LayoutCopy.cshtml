@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Time4Wellbeing</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/WebApit4s.styles.css" asp-append-version="true" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="~/css/Homepage.css">
+</head>
+<body>
+    <div class="container flex flex-col items-center text-center">
+        <main role="main" class="pb-3">
+            <section class="hero">
+                <div class="hero-content">
+                    <img src="~/images/time4sport-logo.png" alt="Time4Wellbeing Logo" class="w-40 h-auto mb-4 drop-shadow-lg animate-bounce mx-auto block">
+                    <h2 class="text-xl font-bold text-white mb-6">Time4Wellbeing is a free health and wellbeing service for families with children aged 2-17*, who live in Staffordshire.</h2>
+                    <div id="layoutAuthentication_content">
+                        <main >
+                            <div class="container-xl px-4">
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-6">
+                                        @RenderBody()
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+
+
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/app.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+</html>

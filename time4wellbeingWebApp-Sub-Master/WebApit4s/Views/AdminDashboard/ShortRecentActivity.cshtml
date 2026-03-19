@@ -1,0 +1,26 @@
+﻿@model List<WebApit4s.Models.TimelineActivityViewModel>
+
+
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@if (Model != null && Model.Any())
+{
+    <div class="timeline timeline-xs">
+        @foreach (var activity in Model)
+        {
+            <div class="timeline-item">
+                <div class="timeline-item-marker">
+                    <div class="timeline-item-marker-text">@activity.Timestamp</div>
+                    <div class="timeline-item-marker-indicator @activity.Color"></div>
+                </div>
+                <div class="timeline-item-content">@activity.Activity</div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>No recent registrations found.</p>
+}
+

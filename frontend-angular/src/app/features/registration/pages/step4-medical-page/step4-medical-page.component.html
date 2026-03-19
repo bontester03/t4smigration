@@ -1,0 +1,44 @@
+<app-registration-shell
+  title="Medical Information"
+  subtitle="Add GP details and any relevant medical notes for the child."
+  stepLabel="Step 4 of 6"
+>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="registration-form">
+    <div class="registration-grid registration-grid--two">
+      <div class="registration-field">
+        <label class="registration-label required" for="gpPracticeName">GP Practice Name</label>
+        <input id="gpPracticeName" formControlName="gpPracticeName" class="form-control registration-control" />
+      </div>
+
+      <div class="registration-field">
+        <label class="registration-label required" for="gpContactNumber">GP Contact Number</label>
+        <input id="gpContactNumber" formControlName="gpContactNumber" class="form-control registration-control" />
+      </div>
+
+      <div class="registration-field registration-grid__span-2">
+        <label class="registration-label" for="medicalConditions">Medical Conditions</label>
+        <textarea id="medicalConditions" formControlName="medicalConditions" class="form-control registration-control registration-control--textarea" rows="3"></textarea>
+      </div>
+
+      <div class="registration-field">
+        <label class="registration-label" for="allergies">Allergies</label>
+        <textarea id="allergies" formControlName="allergies" class="form-control registration-control registration-control--textarea" rows="3"></textarea>
+      </div>
+
+      <div class="registration-field">
+        <label class="registration-label" for="medications">Medications</label>
+        <textarea id="medications" formControlName="medications" class="form-control registration-control registration-control--textarea" rows="3"></textarea>
+      </div>
+
+      <div class="registration-field registration-grid__span-2">
+        <label class="registration-label" for="additionalNotes">Additional Notes</label>
+        <textarea id="additionalNotes" formControlName="additionalNotes" class="form-control registration-control registration-control--textarea" rows="4"></textarea>
+      </div>
+    </div>
+
+    <div class="registration-actions">
+      <button type="button" class="btn registration-button registration-button--secondary" (click)="back()">Back</button>
+      <button type="submit" class="btn registration-button registration-button--primary">Save and Continue</button>
+    </div>
+  </form>
+</app-registration-shell>

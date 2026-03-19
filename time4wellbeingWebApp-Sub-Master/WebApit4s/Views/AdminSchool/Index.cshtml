@@ -1,0 +1,257 @@
+@{
+    ViewData["Title"] = "School Records";
+    ViewData["ActivePage"] = "SchoolRecords";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .school-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+    }
+    .school-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    .school-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .feature-card {
+        text-align: center;
+        padding: 2rem;
+        border-radius: 10px;
+        background: white;
+        transition: all 0.3s;
+    }
+    .feature-card:hover {
+        background: #f8f9fa;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Hero Section -->
+    <div class="school-hero">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="fw-bold mb-3">
+                    <i class="fas fa-school me-3"></i>School Records Management
+                </h1>
+                <p class="lead mb-0">
+                    Select a school to view comprehensive records including children, parents, health scores, and measurements
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div style="font-size: 5rem; opacity: 0.2;">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- School Selection Card -->
+    <div class="card school-card mb-4">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-2 text-center mb-3 mb-md-0">
+                    <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <h4 class="mb-3">
+                        <i class="fas fa-building me-2 text-primary"></i>Select School
+                    </h4>
+                    <form asp-action="ViewSchoolRecords" method="get" class="row g-3">
+                        <div class="col-md-9">
+                            <label for="schoolName" class="form-label fw-bold">Choose a school to view records</label>
+                            <select id="schoolName" name="schoolName" class="form-select form-select-lg" required>
+                                <option value="">-- Select a School --</option>
+                                @foreach (var item in ViewBag.Schools as SelectList)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-arrow-right me-2"></i>View Records
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Grid -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="feature-card">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <i class="fas fa-child"></i>
+                </div>
+                <h5 class="fw-bold">Children Records</h5>
+                <p class="text-muted mb-0">
+                    View all enrolled children with demographic information and engagement status
+                </p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="feature-card">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); color: white;">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h5 class="fw-bold">Parent Information</h5>
+                <p class="text-muted mb-0">
+                    Access parent/guardian contact details and relationships
+                </p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="feature-card">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%); color: white;">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <h5 class="fw-bold">Health Scores</h5>
+                <p class="text-muted mb-0">
+                    Track lifestyle and health questionnaire responses
+                </p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="feature-card">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: white;">
+                    <i class="fas fa-weight"></i>
+                </div>
+                <h5 class="fw-bold">Measurements</h5>
+                <p class="text-muted mb-0">
+                    Monitor height, weight, and BMI centile data
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Information Card -->
+    <div class="card school-card">
+        <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 1.5rem;">
+            <h5 class="mb-0">
+                <i class="fas fa-info-circle me-2"></i>How It Works
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-primary mb-3">
+                        <i class="fas fa-list-ol me-2"></i>Quick Steps
+                    </h6>
+                    <ol class="ps-3">
+                        <li class="mb-2">Select a school from the dropdown menu above</li>
+                        <li class="mb-2">Click "View Records" to access the school dashboard</li>
+                        <li class="mb-2">Browse through different data sections</li>
+                        <li class="mb-2">Edit child details or export reports as needed</li>
+                    </ol>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-success mb-3">
+                        <i class="fas fa-database me-2"></i>Available Data
+                    </h6>
+                    <ul class="ps-3">
+                        <li class="mb-2">
+                            <strong>Children:</strong> Demographics, engagement status, and points
+                        </li>
+                        <li class="mb-2">
+                            <strong>Parents:</strong> Contact information and relationships
+                        </li>
+                        <li class="mb-2">
+                            <strong>Health:</strong> Physical activity, diet, and lifestyle scores
+                        </li>
+                        <li class="mb-2">
+                            <strong>Measurements:</strong> Height, weight, and BMI tracking
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Features -->
+    <div class="row g-4 mt-3">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #667eea;">
+                        <i class="fas fa-file-word"></i>
+                    </div>
+                    <h5 class="fw-bold">Export to Word</h5>
+                    <p class="text-muted mb-0">
+                        Generate comprehensive Word documents with all school data by class or entire school
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #17a2b8;">
+                        <i class="fas fa-file-code"></i>
+                    </div>
+                    <h5 class="fw-bold">JSON Export</h5>
+                    <p class="text-muted mb-0">
+                        Download raw data in JSON format for advanced analysis and integration
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #28a745;">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h5 class="fw-bold">Edit Records</h5>
+                    <p class="text-muted mb-0">
+                        Update child information, add measurements, and manage health data
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

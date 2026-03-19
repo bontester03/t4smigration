@@ -1,0 +1,139 @@
+﻿@model WebApit4s.ViewModels.ParentRedemptionQueueVm
+@{
+    ViewData["Title"] = "Approve Rewards";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+    var childName = Model.ChildName;
+    var filtered = !string.IsNullOrWhiteSpace(childName);
+}
+
+<div class="container-fluid px-2 px-md-4">
+    <div class="row">
+        <div class="col-12">
+
+            <!-- Top actions -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <a asp-action="Dashboard" asp-controller="Parent" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Parent Dashboard
+                </a>
+                <div class="d-flex align-items-center gap-2">
+                    @if (filtered)
+                    {
+                        <span class="badge bg-dark">
+                            <i class="fas fa-child me-1"></i> @childName
+                        </span>
+                        <a asp-action="ApproveRedemptions" asp-controller="Parent" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-times me-1"></i> Clear Filter
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <!-- Alerts -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-1"></i> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-times-circle me-1"></i> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-clipboard-check me-1"></i> Reward Redemptions</span>
+                    <span class="small">
+                        Requested: @(Model?.Requested?.Count ?? 0) &nbsp;|&nbsp; Approved: @(Model?.Approved?.Count ?? 0)
+                    </span>
+                </div>
+
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-3" id="redTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="tab-req" data-bs-toggle="tab" data-bs-target="#pane-req" type="button" role="tab">
+                                <i class="fas fa-inbox me-1"></i> Requested
+                                <span class="badge bg-secondary ms-1">@((Model?.Requested?.Count ?? 0))</span>
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="tab-app" data-bs-toggle="tab" data-bs-target="#pane-app" type="button" role="tab">
+                                <i class="fas fa-check-square me-1"></i> Approved
+                                <span class="badge bg-secondary ms-1">@((Model?.Approved?.Count ?? 0))</span>
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <!-- Requested -->
+                        <div class="tab-pane fade show active" id="pane-req" role="tabpanel">
+                            @await Html.PartialAsync("_RedemptionListTable", Model.Requested)
+                        </div>
+
+                        <!-- Approved -->
+                        <div class="tab-pane fade" id="pane-app" role="tabpanel">
+                            @await Html.PartialAsync("_RedemptionApprovedTable", Model.Approved)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Reusable confirm modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="confirmModalLabel"><i class="fas fa-question-circle me-1"></i> Please confirm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="confirmModalBody">Are you sure?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmModalBtn" class="btn btn-primary">Yes, continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            let targetFormId = null;
+            const modalEl = document.getElementById("confirmModal");
+            const modal = new bootstrap.Modal(modalEl);
+            const confirmBtn = document.getElementById("confirmModalBtn");
+            const body = document.getElementById("confirmModalBody");
+
+            document.querySelectorAll(".action-trigger").forEach(btn => {
+                btn.addEventListener("click", function () {
+                    targetFormId = this.getAttribute("data-form");
+                    const action = this.getAttribute("data-action"); // approve | reject | redeem
+
+                    if (action === "approve") {
+                        body.textContent = "Approve this redemption? Coins will be deducted if not already.";
+                    } else if (action === "reject") {
+                        body.textContent = "Reject this redemption? Coins (if deducted) will be refunded.";
+                    } else if (action === "redeem") {
+                        body.textContent = "Mark this redemption as delivered? The child will see it as successful.";
+                    }
+
+                    modal.show();
+                });
+            });
+
+            confirmBtn.addEventListener("click", function () {
+                if (targetFormId) {
+                    document.getElementById(targetFormId).submit();
+                }
+            });
+        })();
+    </script>
+}

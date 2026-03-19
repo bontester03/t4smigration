@@ -1,0 +1,238 @@
+﻿@model IEnumerable<WebApit4s.Models.ParentReward>
+@{
+    ViewData["Title"] = "My Rewards";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+
+    // Optional child name lookup passed from controller:
+    var childLookup = ViewBag.ChildLookup as Dictionary<int, string> ?? new Dictionary<int, string>();
+}
+
+<div class="container-fluid px-2 px-md-4">
+    <div class="row">
+        <div class="col-12">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <a asp-action="Dashboard" asp-controller="Parent" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+
+                <div class="d-flex gap-2">
+                    <a asp-action="CreateReward" asp-controller="Parent" class="btn btn-success">
+                        <i class="fas fa-gift me-1"></i> Create Common Reward
+                    </a>
+                    <!-- If you want to create for a specific child, navigate from that child's page,
+                         or add a simple picker route like ?childId=### -->
+                </div>
+            </div>
+
+            <!-- Flash messages -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-1"></i> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-times-circle me-1"></i> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-list me-1"></i> My Rewards</span>
+                    <span class="small">
+                        @((Model?.Count() ?? 0)) total
+                    </span>
+                </div>
+
+                <div class="card-body table-responsive">
+                    @if (Model != null && Model.Any())
+                    {
+                        <table class="table table-bordered table-striped table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Reward</th>
+                                    <th style="width:100px;">Coins</th>
+                                    <th style="width:180px;">Visibility</th>
+                                    <th style="width:140px;">Approval</th>
+                                    <th style="width:220px;">Validity</th>
+                                    <th style="width:140px;">Cooldown</th>
+                                    <th style="width:150px;">Status</th>
+                                    <th style="width:210px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var r in Model.OrderByDescending(x => x.ValidFromUtc ?? DateTime.MinValue))
+                                {
+                                    var isActive = r.IsActive;
+                                    var isCommon = (bool)(r.GetType().GetProperty("IsCommon")?.GetValue(r) ?? false);
+                                    int? childId = (int?)(r.GetType().GetProperty("ChildId")?.GetValue(r));
+                                    string childName = "";
+                                    if (childId.HasValue && childLookup.TryGetValue(childId.Value, out var cName))
+                                    {
+                                        childName = cName;
+                                    }
+                                    else if (childId.HasValue)
+                                    {
+                                        childName = "Unknown Child"; // fallback if child deleted
+                                    }
+
+
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">@r.Title</div>
+                                            @if (!string.IsNullOrWhiteSpace(r.Description))
+                                            {
+                                                <div class="text-muted small">@r.Description</div>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">@r.CoinCost</span>
+                                        </td>
+                                        <td>
+                                            @if (isCommon)
+                                            {
+                                                <span class="badge bg-secondary"><i class="fas fa-users me-1"></i> Common</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-dark"><i class="fas fa-child me-1"></i> @childName</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (r.RequiresParentApproval)
+                                            {
+                                                <span class="badge bg-warning text-dark"><i class="fas fa-check-double me-1"></i> Required</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success"><i class="fas fa-bolt me-1"></i> Instant</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @{
+                                                var fromTxt = r.ValidFromUtc?.ToLocalTime().ToString("dd MMM yyyy");
+                                                var toTxt = r.ValidToUtc?.ToLocalTime().ToString("dd MMM yyyy");
+                                            }
+                                            @if (r.ValidFromUtc.HasValue || r.ValidToUtc.HasValue)
+                                            {
+                                                <span class="badge bg-light text-dark">
+                                                    @(fromTxt ?? "Any") – @(toTxt ?? "Any")
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">Any time</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (r.CooldownDaysPerChild.HasValue && r.CooldownDaysPerChild.Value > 0)
+                                            {
+                                                <span class="badge bg-light text-dark">@r.CooldownDaysPerChild d</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted small">None</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (isActive)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            }
+                                        </td>
+                                        <td class="text-nowrap">
+                                            <a asp-action="EditReward" asp-controller="Parent"
+                                               asp-route-id="@r.Id"
+                                               class="btn btn-sm btn-warning">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+
+                                            <form asp-action="ToggleRewardActive" asp-controller="Parent"
+                                                  method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@r.Id" />
+                                                <button type="submit" class="btn btn-sm @(isActive ? "btn-outline-secondary" : "btn-outline-success")">
+                                                    <i class="fas @(isActive ? "fa-pause" : "fa-play")"></i>
+                                                    @(isActive ? "Deactivate" : "Activate")
+                                                </button>
+                                            </form>
+
+                                            <!-- Delete (modal confirm) -->
+                                            <form asp-action="DeleteReward" asp-controller="Parent"
+                                                  method="post" class="d-inline" id="deleteForm-@r.Id">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@r.Id" />
+                                                <button type="button"
+                                                        class="btn btn-sm btn-danger delete-trigger"
+                                                        data-form="deleteForm-@r.Id">
+                                                    <i class="fas fa-trash-alt"></i> Delete
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">You haven’t created any rewards yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reusable Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Delete this reward? This cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        // Delete confirm modal reuse
+        document.addEventListener("DOMContentLoaded", function () {
+            let targetFormId = null;
+            const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
+            const confirmBtn = document.getElementById("confirmDeleteBtn");
+
+            document.querySelectorAll(".delete-trigger").forEach(btn => {
+                btn.addEventListener("click", function () {
+                    targetFormId = this.getAttribute("data-form");
+                    modal.show();
+                });
+            });
+
+            confirmBtn.addEventListener("click", function () {
+                if (targetFormId) {
+                    document.getElementById(targetFormId).submit();
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,156 @@
+<app-registration-shell
+  title="Review Registration"
+  subtitle="Check the details below before creating the account."
+  stepLabel="Step 6 of 6"
+  badgeText="Review Details"
+>
+  @if (errorMessage) {
+    <div class="alert alert-danger registration-alert" role="alert">{{ errorMessage }}</div>
+  }
+
+  <div class="registration-summary-grid">
+    @if (draft().account; as account) {
+      <section class="registration-summary-card">
+        <h3 class="registration-summary-card__title">Account</h3>
+        <dl class="registration-summary-list">
+          <div>
+            <dt>Email</dt>
+            <dd>{{ account.email }}</dd>
+          </div>
+          <div>
+            <dt>Referral Type</dt>
+            <dd>{{ referralTypeName(account.referralTypeId) }}</dd>
+          </div>
+        </dl>
+      </section>
+    }
+
+    @if (draft().parent; as parent) {
+      <section class="registration-summary-card">
+        <h3 class="registration-summary-card__title">Parent / Guardian</h3>
+        <dl class="registration-summary-list">
+          <div>
+            <dt>Name</dt>
+            <dd>{{ parent.parentGuardianName }}</dd>
+          </div>
+          <div>
+            <dt>Relationship</dt>
+            <dd>{{ parent.relationshipToChild }}</dd>
+          </div>
+          <div>
+            <dt>Contact</dt>
+            <dd>{{ parent.teleNumber }}</dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd>{{ parent.email }}</dd>
+          </div>
+          <div>
+            <dt>Postcode</dt>
+            <dd>{{ parent.postcode }}</dd>
+          </div>
+        </dl>
+      </section>
+    }
+
+    @if (draft().child; as child) {
+      <section class="registration-summary-card">
+        <h3 class="registration-summary-card__title">Child</h3>
+        <dl class="registration-summary-list">
+          <div>
+            <dt>Name</dt>
+            <dd>{{ child.childName }}</dd>
+          </div>
+          <div>
+            <dt>Gender</dt>
+            <dd>{{ child.gender }}</dd>
+          </div>
+          <div>
+            <dt>Date of Birth</dt>
+            <dd>{{ child.dateOfBirth }}</dd>
+          </div>
+          <div>
+            <dt>School</dt>
+            <dd>{{ child.school }}</dd>
+          </div>
+          <div>
+            <dt>Class</dt>
+            <dd>{{ child.class }}</dd>
+          </div>
+        </dl>
+        @if (child.avatarUrl) {
+          <div class="registration-summary-avatar">
+            <img [src]="child.avatarUrl" alt="Selected child avatar" class="registration-review-avatar" />
+          </div>
+        }
+      </section>
+    }
+
+    @if (draft().medical; as medical) {
+      <section class="registration-summary-card">
+        <h3 class="registration-summary-card__title">Medical</h3>
+        <dl class="registration-summary-list">
+          <div>
+            <dt>GP Practice</dt>
+            <dd>{{ medical.gpPracticeName }}</dd>
+          </div>
+          <div>
+            <dt>GP Contact</dt>
+            <dd>{{ medical.gpContactNumber }}</dd>
+          </div>
+          <div>
+            <dt>Medical Conditions</dt>
+            <dd>{{ medical.medicalConditions || 'None provided' }}</dd>
+          </div>
+          <div>
+            <dt>Allergies</dt>
+            <dd>{{ medical.allergies || 'None provided' }}</dd>
+          </div>
+          <div>
+            <dt>Medications</dt>
+            <dd>{{ medical.medications || 'None provided' }}</dd>
+          </div>
+          <div>
+            <dt>Additional Notes</dt>
+            <dd>{{ medical.additionalNotes || 'None provided' }}</dd>
+          </div>
+        </dl>
+      </section>
+    }
+
+    @if (draft().healthScore; as score) {
+      <section class="registration-summary-card">
+        <h3 class="registration-summary-card__title">Health Score</h3>
+        <dl class="registration-summary-list">
+          <div>
+            <dt>Physical Activity</dt>
+            <dd>{{ score.physicalActivityScore }}</dd>
+          </div>
+          <div>
+            <dt>Breakfast</dt>
+            <dd>{{ score.breakfastScore }}</dd>
+          </div>
+          <div>
+            <dt>Fruit / Veg</dt>
+            <dd>{{ score.fruitVegScore }}</dd>
+          </div>
+          <div>
+            <dt>Sweet Snacks</dt>
+            <dd>{{ score.sweetSnacksScore }}</dd>
+          </div>
+          <div>
+            <dt>Fatty Foods</dt>
+            <dd>{{ score.fattyFoodsScore }}</dd>
+          </div>
+        </dl>
+      </section>
+    }
+  </div>
+
+  <div class="registration-actions">
+    <button type="button" class="btn registration-button registration-button--secondary" (click)="back()">Back</button>
+    <button type="button" class="btn registration-button registration-button--primary" [disabled]="isSubmitting" (click)="submit()">
+      {{ isSubmitting ? 'Submitting...' : 'Submit Registration' }}
+    </button>
+  </div>
+</app-registration-shell>

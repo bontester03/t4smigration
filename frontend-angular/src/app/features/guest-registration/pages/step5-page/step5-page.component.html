@@ -1,0 +1,63 @@
+<app-guest-registration-shell
+  title="Consent"
+  subtitle="Please confirm the consent questions below before final submission."
+  stepLabel="Step 5 of 5"
+  [context]="context()"
+>
+  @if (children().length > 0) {
+    <div class="alert alert-secondary rounded-0">
+      {{ children().length }} {{ children().length === 1 ? 'child is' : 'children are' }} ready for submission.
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+    </div>
+  } @else {
+    <form [formGroup]="form" novalidate>
+      @if (errorMessage) {
+        <div class="alert alert-danger text-center mb-3">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <div formArrayName="consentAnswers">
+        @for (question of questions; track question.consentQuestionId; let i = $index) {
+          <fieldset class="mb-3">
+            <legend class="fw-semibold h6 mb-2">
+              {{ question.questionText }} <span class="text-danger">*</span>
+            </legend>
+
+            <div [formGroupName]="i">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" formControlName="answer" value="Yes" [id]="'q' + i + '_yes'" />
+                <label class="form-check-label" [for]="'q' + i + '_yes'">Yes</label>
+              </div>
+
+              <div class="form-check">
+                <input class="form-check-input" type="radio" formControlName="answer" value="No" [id]="'q' + i + '_no'" />
+                <label class="form-check-label" [for]="'q' + i + '_no'">No</label>
+              </div>
+
+              @if (consentAnswersArray.at(i).touched && consentAnswersArray.at(i).invalid) {
+                <span class="text-danger small">This field is required.</span>
+              }
+            </div>
+          </fieldset>
+        }
+      </div>
+
+      <fieldset class="mb-4">
+        <legend class="fw-semibold h6 mb-2">Final submission</legend>
+        <p class="text-muted mb-0">This registration link is tied to one school and class, so only one child can be submitted here.</p>
+      </fieldset>
+
+      <div class="d-grid my-4">
+        <button type="button" class="btn btn-success rounded-0 guest-btn-primary" [disabled]="isSubmitting" (click)="submit()">
+          Submit Registration
+        </button>
+      </div>
+    </form>
+  }
+</app-guest-registration-shell>

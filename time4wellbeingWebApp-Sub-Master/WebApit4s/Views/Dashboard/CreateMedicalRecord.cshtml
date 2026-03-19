@@ -1,0 +1,224 @@
+﻿@model WebApit4s.Models.MedicalRecord
+@{
+    ViewData["Title"] = "Create Medical Record";
+    ViewData["ActivePage"] = "MedicalHistory";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<style>
+    .medical-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    .medical-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+    }
+    .medical-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    .medical-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .form-modern {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-left: 4px solid #667eea;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .form-modern label {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e5e7eb;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    .submit-btn {
+        border-radius: 10px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .submit-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+    .sensitive-checkbox {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-left: 4px solid #f59e0b;
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .form-check-input:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+    .info-banner {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        border-left: 4px solid #3b82f6;
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Hero Section -->
+    <div class="medical-hero">
+        <div class="row align-items-center position-relative">
+            <div class="col-md-8">
+                <h1 class="h2 fw-bold mb-2">
+                    <i data-feather="clipboard" class="me-2"></i>
+                    Create Medical Record
+                </h1>
+                <p class="mb-0 opacity-90">Add medical information for @ViewBag.ChildName</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a asp-action="LandingPage" asp-controller="Dashboard" class="btn btn-light">
+                    <i data-feather="arrow-left" class="me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Banner -->
+    <div class="info-banner">
+        <div class="d-flex align-items-start">
+            <i data-feather="info" class="me-3" style="width: 24px; height: 24px; color: #3b82f6; flex-shrink: 0;"></i>
+            <div>
+                <strong>Privacy Notice:</strong>
+                <p class="mb-0 mt-1">All medical information is stored securely and will only be accessible by authorized personnel. You can mark sensitive information for additional privacy protection.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Medical Record Form -->
+    <div class="medical-card mb-5">
+        <div class="card-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1rem;">
+            <h5 class="mb-0">
+                <i data-feather="file-text" class="me-2" style="width: 20px; height: 20px;"></i>
+                Medical Information
+            </h5>
+        </div>
+
+        <div class="card-body p-4">
+            <form asp-action="CreateMedicalRecord" method="post">
+                <input type="hidden" asp-for="ChildId" />
+
+                <div class="form-modern">
+                    <label asp-for="GPPracticeName">
+                        <i data-feather="home" style="width: 16px; height: 16px;" class="me-1"></i>
+                        GP Practice Name
+                    </label>
+                    <input asp-for="GPPracticeName" class="form-control" placeholder="Enter GP practice name" />
+                    <span asp-validation-for="GPPracticeName" class="text-danger small"></span>
+                </div>
+
+                <div class="form-modern">
+                    <label asp-for="GPContactNumber">
+                        <i data-feather="phone" style="width: 16px; height: 16px;" class="me-1"></i>
+                        GP Contact Number
+                    </label>
+                    <input asp-for="GPContactNumber" class="form-control" placeholder="Enter GP contact number" />
+                    <span asp-validation-for="GPContactNumber" class="text-danger small"></span>
+                </div>
+
+                <div class="form-modern">
+                    <label asp-for="MedicalConditions">
+                        <i data-feather="heart" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Medical Conditions
+                    </label>
+                    <textarea asp-for="MedicalConditions" class="form-control" rows="3" placeholder="List any medical conditions (e.g., asthma, diabetes)"></textarea>
+                    <span asp-validation-for="MedicalConditions" class="text-danger small"></span>
+                </div>
+
+                <div class="form-modern">
+                    <label asp-for="Allergies">
+                        <i data-feather="alert-triangle" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Allergies
+                    </label>
+                    <textarea asp-for="Allergies" class="form-control" rows="3" placeholder="List any allergies (e.g., peanuts, penicillin)"></textarea>
+                    <span asp-validation-for="Allergies" class="text-danger small"></span>
+                </div>
+
+                <div class="form-modern">
+                    <label asp-for="Medications">
+                        <i data-feather="package" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Current Medications
+                    </label>
+                    <textarea asp-for="Medications" class="form-control" rows="3" placeholder="List current medications and dosages"></textarea>
+                    <span asp-validation-for="Medications" class="text-danger small"></span>
+                </div>
+
+                <div class="form-modern">
+                    <label asp-for="AdditionalNotes">
+                        <i data-feather="edit" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Additional Notes
+                    </label>
+                    <textarea asp-for="AdditionalNotes" class="form-control" rows="4" placeholder="Any additional medical information or special requirements"></textarea>
+                    <span asp-validation-for="AdditionalNotes" class="text-danger small"></span>
+                </div>
+
+                <div class="sensitive-checkbox">
+                    <div class="form-check">
+                        <input class="form-check-input" asp-for="IsSensitive" style="width: 1.25rem; height: 1.25rem;" />
+                        <label class="form-check-label fw-semibold ms-2" asp-for="IsSensitive" style="font-size: 1rem;">
+                            <i data-feather="lock" style="width: 16px; height: 16px;" class="me-1"></i>
+                            Mark as Sensitive Information
+                        </label>
+                        <p class="mb-0 mt-2 small text-muted ms-4">
+                            Check this box if this information requires additional privacy protection
+                        </p>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success submit-btn">
+                        <i data-feather="save" class="me-2" style="width: 18px; height: 18px;"></i>
+                        Save Medical Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+}

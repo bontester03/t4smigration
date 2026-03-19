@@ -1,0 +1,83 @@
+﻿@model WebApit4s.Models.MedicalRecord
+@{
+    ViewData["Title"] = "Medical Record";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<div class="col-md-6 d-flex align-items-center py-5">
+    <div class="container my-auto py-4 shadow-lg bg-white">
+        <div class="row">
+            <div class="col-11 col-lg-10 mx-auto">
+                <h3 class="text-9 fw-600 text-center my-3">Medical Record for @ViewBag.ChildName</h3>
+
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger text-center mb-3"></div>
+                    <input type="hidden" asp-for="ChildId" />
+
+                    <!-- GP Practice Name -->
+                    <div class="mb-3">
+                        <label asp-for="GPPracticeName" class="form-label text-dark fw-600"></label>
+                        <input asp-for="GPPracticeName" class="form-control rounded-0" placeholder="Enter GP practice name" />
+                        <span asp-validation-for="GPPracticeName" class="text-danger small"></span>
+                    </div>
+
+                    <!-- GP Contact Number -->
+                    <div class="mb-3">
+                        <label asp-for="GPContactNumber" class="form-label text-dark fw-600"></label>
+                        <input asp-for="GPContactNumber" class="form-control rounded-0" placeholder="Enter contact number" />
+                        <span asp-validation-for="GPContactNumber" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Medical Conditions -->
+                    <div class="mb-3">
+                        <label asp-for="MedicalConditions" class="form-label text-dark fw-600"></label>
+                        <textarea asp-for="MedicalConditions" class="form-control rounded-0" rows="2" placeholder="List any medical conditions..."></textarea>
+                        <span asp-validation-for="MedicalConditions" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Allergies -->
+                    <div class="mb-3">
+                        <label asp-for="Allergies" class="form-label text-dark fw-600"></label>
+                        <textarea asp-for="Allergies" class="form-control rounded-0" rows="2" placeholder="List any allergies..."></textarea>
+                        <span asp-validation-for="Allergies" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Medications -->
+                    <div class="mb-3">
+                        <label asp-for="Medications" class="form-label text-dark fw-600"></label>
+                        <textarea asp-for="Medications" class="form-control rounded-0" rows="2" placeholder="List any medications..."></textarea>
+                        <span asp-validation-for="Medications" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Additional Notes -->
+                    <div class="mb-3">
+                        <label asp-for="AdditionalNotes" class="form-label text-dark fw-600"></label>
+                        <textarea asp-for="AdditionalNotes" class="form-control rounded-0" rows="2" placeholder="Any other relevant notes..."></textarea>
+                        <span asp-validation-for="AdditionalNotes" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Is Sensitive -->
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" asp-for="IsSensitive" />
+                        <label class="form-check-label" asp-for="IsSensitive">Mark as sensitive (optional)</label>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="d-grid my-4">
+                        <button class="btn btn-success rounded-0" type="submit">Save and Continue</button>
+                    </div>
+                </form>
+
+                <div class="d-flex align-items-center my-4">
+                    <hr class="flex-grow-1" />
+                    <span class="mx-2 text-2 text-muted">Step 2 of 3</span>
+                    <hr class="flex-grow-1" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

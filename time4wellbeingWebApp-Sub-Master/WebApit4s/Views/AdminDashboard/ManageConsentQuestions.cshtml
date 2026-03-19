@@ -1,0 +1,481 @@
+﻿@model List<WebApit4s.Models.ConsentQuestion>
+@{
+    ViewData["Title"] = "Manage Consent Questions";
+    ViewData["ActivePage"] = "ManageConsentQuestions";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .consent-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+    }
+    .consent-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    .consent-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .consent-table thead th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 1rem;
+    }
+    .consent-table tbody tr {
+        transition: background-color 0.2s, transform 0.2s;
+    }
+    .consent-table tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: scale(1.01);
+    }
+    .consent-row-number {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+    .action-btn {
+        transition: all 0.3s;
+    }
+    .action-btn:hover {
+        transform: scale(1.05);
+    }
+    .stats-box {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s;
+    }
+    .stats-box:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    .add-consent-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Hero Section -->
+    <div class="consent-hero">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="fw-bold mb-3">
+                    <i data-feather="help-circle" class="me-3"></i>Manage Consent Questions
+                </h1>
+                <p class="lead mb-0">
+                    Configure consent questions for guest registration forms
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div style="font-size: 5rem; opacity: 0.2;">
+                    <i data-feather="check-square"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i data-feather="alert-triangle" class="me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i data-feather="check-circle" class="me-2"></i>
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Quick Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <i data-feather="help-circle"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count ?? 0)</h3>
+                <p class="text-muted mb-0">Total Questions</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%); color: white;">
+                    <i data-feather="alert-circle"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count(q => q.IsRequired) ?? 0)</h3>
+                <p class="text-muted mb-0">Required</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%); color: white;">
+                    <i data-feather="check"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count(q => !q.IsRequired) ?? 0)</h3>
+                <p class="text-muted mb-0">Optional</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New Consent Question Section -->
+    <div class="add-consent-section">
+        <h5 class="fw-bold mb-3">
+            <i data-feather="plus-circle" class="me-2"></i>Add New Consent Question
+        </h5>
+        <form asp-action="AddConsentQuestion" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <div class="col-md-9">
+                <label class="form-label fw-bold">Question Text</label>
+                <input type="text" 
+                       name="Text" 
+                       class="form-control form-control-lg" 
+                       placeholder="e.g., Do you consent to photographs being taken?" 
+                       required />
+            </div>
+            <div class="col-md-2">
+                <label class="form-label fw-bold">Type</label>
+                <select name="IsRequired" class="form-select form-select-lg" required>
+                    <option value="true">Required</option>
+                    <option value="false">Optional</option>
+                </select>
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button type="submit" class="btn btn-success btn-lg w-100">
+                    <i data-feather="plus" class="me-1"></i>Add
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Consent Questions Table -->
+    @if (Model != null && Model.Any())
+    {
+        <!-- Desktop / Tablet (≥ md) -->
+        <div class="d-none d-md-block">
+            <div class="card consent-card mb-4">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table consent-table mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width: 80px;">
+                                        <i data-feather="hash" style="width: 16px; height: 16px;"></i>
+                                    </th>
+                                    <th>
+                                        <i data-feather="help-circle" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        Question Text
+                                    </th>
+                                    <th style="width: 140px;">
+                                        <i data-feather="alert-circle" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        Required
+                                    </th>
+                                    <th style="width: 150px;">
+                                        <i data-feather="settings" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var index = 1;
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="text-center">
+                                            <div class="consent-row-number">
+                                                @index
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <form asp-action="EditConsentQuestion" method="post" class="d-flex align-items-center gap-2">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="Id" value="@item.Id" />
+                                                <div class="flex-grow-1">
+                                                    <input name="Text" 
+                                                           class="form-control" 
+                                                           value="@item.Text"
+                                                           placeholder="Enter question text" />
+                                                </div>
+                                                <select name="IsRequired" class="form-select" style="max-width:140px;">
+                                                    <option value="true" selected="@(item.IsRequired ? "selected" : null)">Required</option>
+                                                    <option value="false" selected="@(!item.IsRequired ? "selected" : null)">Optional</option>
+                                                </select>
+                                                <button class="btn btn-primary btn-sm action-btn" 
+                                                        type="submit"
+                                                        title="Save changes">
+                                                    <i data-feather="save" style="width: 14px; height: 14px;"></i>
+                                                    <span class="ms-1">Save</span>
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            @if (item.IsRequired)
+                                            {
+                                                <span class="badge bg-danger px-3 py-2">
+                                                    <i data-feather="alert-circle" style="width: 14px; height: 14px;"></i>
+                                                    <span class="ms-1">Required</span>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success px-3 py-2">
+                                                    <i data-feather="check" style="width: 14px; height: 14px;"></i>
+                                                    <span class="ms-1">Optional</span>
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <button type="button"
+                                                    class="btn btn-sm btn-danger action-btn w-100"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteConfirmModal"
+                                                    data-id="@item.Id"
+                                                    data-name="@item.Text"
+                                                    title="Delete this question">
+                                                <i data-feather="trash-2" style="width: 14px; height: 14px;"></i>
+                                                <span class="ms-1">Delete</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    index++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile cards (< md) -->
+        <div class="d-md-none">
+            @{
+                var mIndex = 1;
+            }
+            @foreach (var item in Model)
+            {
+                <div class="card consent-card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <div class="small text-muted mb-1">
+                                    <i data-feather="hash" style="width: 14px; height: 14px;"></i>
+                                    #@mIndex
+                                </div>
+                                <h6 class="fw-bold mb-0">@item.Text</h6>
+                            </div>
+                            <div>
+                                @if (item.IsRequired)
+                                {
+                                    <span class="badge bg-danger">Required</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">Optional</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <form asp-action="EditConsentQuestion" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="Id" value="@item.Id" />
+                                <label class="form-label small fw-bold text-muted">
+                                    <i data-feather="edit-2" style="width: 14px; height: 14px;"></i>
+                                    Edit Question
+                                </label>
+                                <textarea name="Text" class="form-control mb-2" rows="2">@item.Text</textarea>
+                                <select name="IsRequired" class="form-select mb-2">
+                                    <option value="true" selected="@(item.IsRequired ? "selected" : null)">Required</option>
+                                    <option value="false" selected="@(!item.IsRequired ? "selected" : null)">Optional</option>
+                                </select>
+                                <button class="btn btn-primary w-100" type="submit">
+                                    <i data-feather="save" style="width: 14px; height: 14px;"></i>
+                                    <span class="ms-1">Save Changes</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="button"
+                                    class="btn btn-sm btn-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteConfirmModal"
+                                    data-id="@item.Id"
+                                    data-name="@item.Text">
+                                <i data-feather="trash-2" style="width: 14px; height: 14px;"></i>
+                                <span class="ms-1">Delete Question</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                mIndex++;
+            }
+        </div>
+
+        <!-- Information Card -->
+        <div class="card consent-card">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 1.5rem;">
+                <h5 class="mb-0">
+                    <i data-feather="info" class="me-2"></i>Managing Consent Questions
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-primary mb-3">
+                            <i data-feather="list" class="me-2"></i>Question Types
+                        </h6>
+                        <ul class="ps-3">
+                            <li class="mb-2"><strong>Required</strong>: Users must answer to proceed with registration</li>
+                            <li class="mb-2"><strong>Optional</strong>: Users can skip this question</li>
+                            <li class="mb-2">Questions appear in guest registration forms (Step 5)</li>
+                            <li class="mb-2">Edit question text or type by updating inline</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-success mb-3">
+                            <i data-feather="help-circle" class="me-2"></i>Best Practices
+                        </h6>
+                        <ul class="ps-3">
+                            <li class="mb-2">Use clear, concise language for questions</li>
+                            <li class="mb-2">Make essential consents "Required"</li>
+                            <li class="mb-2">Avoid too many required questions</li>
+                            <li class="mb-2">Review questions regularly for compliance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card consent-card">
+            <div class="card-body text-center p-5">
+                <div class="mb-3" style="font-size: 5rem; color: #dee2e6;">
+                    <i data-feather="help-circle"></i>
+                </div>
+                <h5 class="fw-bold mb-2">No Consent Questions Found</h5>
+                <p class="text-muted mb-4">
+                    You haven't created any consent questions yet. Use the form above to add your first question.
+                </p>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%); color: white;">
+                <h5 class="modal-title" id="deleteConfirmLabel">
+                    <i data-feather="alert-triangle" class="me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center">
+                    <div class="mb-3" style="font-size: 3rem; color: #dc3545;">
+                        <i data-feather="trash-2"></i>
+                    </div>
+                    <h6 class="fw-bold mb-2">Delete Consent Question</h6>
+                    <p class="mb-3">
+                        Are you sure you want to delete <strong id="deleteItemName">this question</strong>?
+                    </p>
+                    <div class="alert alert-warning text-start">
+                        <i data-feather="alert-circle" class="me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone. Existing consent answers will remain in the database.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" method="post" asp-action="DeleteConsentQuestion" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteId" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i data-feather="x" class="me-1"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i data-feather="trash-2" class="me-1"></i>Yes, Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize Feather Icons
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+
+        // Delete modal wiring
+        const deleteModal = document.getElementById('deleteConfirmModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                const btn = event.relatedTarget;
+                const id = btn?.getAttribute('data-id');
+                const name = btn?.getAttribute('data-name') || 'this question';
+                document.getElementById('deleteId').value = id;
+                document.getElementById('deleteItemName').textContent = name;
+                
+                // Re-initialize feather icons in modal
+                setTimeout(() => {
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                }, 100);
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+}

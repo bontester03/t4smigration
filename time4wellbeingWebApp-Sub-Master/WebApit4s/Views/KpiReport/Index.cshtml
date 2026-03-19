@@ -1,0 +1,218 @@
+﻿@model WebApit4s.ViewModels.KpiReportViewModel
+@{
+    ViewData["Title"] = "KPI Performance Report";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .kpi-section {
+        margin-bottom: 3rem;
+    }
+    .kpi-table th {
+        background-color: #d3d3d3;
+        font-weight: bold;
+        text-align: center;
+        vertical-align: middle;
+        border: 1px solid #999;
+        padding: 10px;
+    }
+    .kpi-table td {
+        border: 1px solid #999;
+        padding: 8px;
+        vertical-align: top;
+    }
+    .section-title {
+        background-color: #f8f9fa;
+        padding: 10px;
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        border-left: 4px solid #0d6efd;
+    }
+    .report-title {
+        background-color: #d3d3d3;
+        padding: 15px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.3rem;
+        margin-bottom: 2rem;
+    }
+    .checkmark {
+        font-size: 1.2rem;
+        color: green;
+    }
+</style>
+
+<div class="container-fluid mt-4 px-4">
+    <!-- Header with Year Filter and Actions -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 text-primary fw-bold">
+            <i class="fas fa-chart-line me-2"></i> KPI Performance Report
+        </h1>
+        <div class="d-flex gap-2">
+            <form asp-action="Index" method="get" class="d-flex">
+                <select name="year" class="form-select me-2" onchange="this.form.submit()">
+                    @for (int y = DateTime.Now.Year; y >= 2020; y--)
+                    {
+                        <option value="@y" selected="@(y == Model.Year)">@y</option>
+                    }
+                </select>
+            </form>
+            <a asp-action="GenerateKpis" asp-route-year="@Model.Year" class="btn btn-primary">
+                <i class="fa fa-sync-alt me-1"></i> Generate Data
+            </a>
+            <a asp-action="Export" asp-route-year="@Model.Year" class="btn btn-success">
+                <i class="fa fa-file-excel me-1"></i> Export to Excel
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Report Title -->
+    <div class="report-title">
+        Family Weight Management Service KPI & Service Levels – Performance Report Year 3: @(Model.Year - 1)–@Model.Year
+    </div>
+
+    <!-- Section 1: Key Performance Indicators -->
+    <div class="kpi-section">
+        <div class="section-title">
+            <i class="fas fa-chart-bar me-2"></i>Key Performance Indicators
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered kpi-table">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">Contract Ref</th>
+                        <th style="width: 25%;">Measure</th>
+                        <th style="width: 8%;">Target</th>
+                        <th style="width: 30%;">Information Required</th>
+                        <th style="width: 8%;">Previous Year</th>
+                        <th style="width: 5%;">Q1</th>
+                        <th style="width: 5%;">Q2</th>
+                        <th style="width: 5%;">Q3</th>
+                        <th style="width: 5%;">Q4</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.KeyPerformanceIndicators.Any())
+                    {
+                        @foreach (var kpi in Model.KeyPerformanceIndicators)
+                        {
+                            <tr>
+                                <td class="text-center fw-bold">@kpi.ContractRef</td>
+                                <td>@kpi.Measure</td>
+                                <td class="text-center">@(kpi.Target ?? "N/A")</td>
+                                <td><small>@kpi.InformationRequired</small></td>
+                                <td class="text-center">@(kpi.PreviousYear?.ToString() ?? "-")</td>
+                                <td class="text-center">@(kpi.Q1?.ToString() ?? "-")</td>
+                                <td class="text-center">@(kpi.Q2?.ToString() ?? "-")</td>
+                                <td class="text-center">@(kpi.Q3?.ToString() ?? "-")</td>
+                                <td class="text-center">@(kpi.Q4?.ToString() ?? "-")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                <i class="fas fa-info-circle me-2"></i>No KPI data available. Click "Generate Data" to populate.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section 2: Service Levels -->
+    <div class="kpi-section">
+        <div class="section-title">
+            <i class="fas fa-users me-2"></i>Service Levels
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered kpi-table">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">Contract Ref</th>
+                        <th style="width: 25%;">Measure</th>
+                        <th style="width: 8%;">Target</th>
+                        <th style="width: 30%;">Information Required</th>
+                        <th style="width: 8%;">Previous Year</th>
+                        <th style="width: 5%;">Q1</th>
+                        <th style="width: 5%;">Q2</th>
+                        <th style="width: 5%;">Q3</th>
+                        <th style="width: 5%;">Q4</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center fw-bold">@Model.ServiceLevel.ContractRef</td>
+                        <td>@Model.ServiceLevel.Measure</td>
+                        <td class="text-center">@Model.ServiceLevel.Target</td>
+                        <td><small>@Model.ServiceLevel.InformationRequired</small></td>
+                        <td class="text-center">@Model.ServiceLevel.PreviousYear</td>
+                        <td class="text-center">@(Model.ServiceLevel.Q1 ? "√" : "-")</td>
+                        <td class="text-center">@(Model.ServiceLevel.Q2 ? "√" : "-")</td>
+                        <td class="text-center">@(Model.ServiceLevel.Q3 ? "√" : "-")</td>
+                        <td class="text-center">@(Model.ServiceLevel.Q4 ? "√" : "-")</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section 3: Checklist -->
+    <div class="kpi-section">
+        <div class="section-title">
+            <i class="fas fa-check-square me-2"></i>Checklist
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered kpi-table">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">Item</th>
+                        <th style="width: 50%;">Description</th>
+                        <th style="width: 8%;">Q1</th>
+                        <th style="width: 8%;">Q2</th>
+                        <th style="width: 8%;">Q3</th>
+                        <th style="width: 8%;">Q4</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Checklist.Count; i++)
+                    {
+                        var item = Model.Checklist[i];
+                        <tr>
+                            <td class="text-center fw-bold">@(i + 1)</td>
+                            <td>@item.Description</td>
+                            <td class="text-center checkmark">@(item.Q1 ? "√" : "-")</td>
+                            <td class="text-center checkmark">@(item.Q2 ? "√" : "-")</td>
+                            <td class="text-center checkmark">@(item.Q3 ? "√" : "-")</td>
+                            <td class="text-center checkmark">@(item.Q4 ? "√" : "-")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Footer Notes -->
+    <div class="alert alert-info mt-4">
+        <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Report Information</h6>
+        <hr>
+        <ul class="mb-0">
+            <li>√ = Completed/Achieved</li>
+            <li>- = Not Applicable or No Data</li>
+            <li>Q1: Apr-Jun | Q2: Jul-Sep | Q3: Oct-Dec | Q4: Jan-Mar</li>
+            <li>Previous Year column shows baseline data from @(Model.Year - 1)</li>
+        </ul>
+    </div>
+</div>
+

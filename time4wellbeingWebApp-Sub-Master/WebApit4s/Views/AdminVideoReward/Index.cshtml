@@ -1,0 +1,222 @@
+﻿@model X.PagedList.IPagedList<WebApit4s.Models.VideoReward>
+@using X.PagedList.Mvc.Core
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+
+@{
+    ViewData["Title"] = "Video Rewards";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var q = ViewBag.Search as string;
+
+    Func<WebApit4s.Models.VideoCategory, string> CategoryName = c =>
+    {
+        var mem = typeof(WebApit4s.Models.VideoCategory).GetMember(c.ToString()).FirstOrDefault();
+        var attr = mem?.GetCustomAttribute<DisplayAttribute>();
+        return attr?.GetName() ?? c.ToString();
+    };
+
+    // Stick to Bootstrap built-ins
+    Func<WebApit4s.Models.VideoCategory, string> CategoryBadgeClass = c => c switch
+    {
+        WebApit4s.Models.VideoCategory.PhysicalActivity => "bg-success",
+        WebApit4s.Models.VideoCategory.Breakfast => "bg-warning text-dark",
+        WebApit4s.Models.VideoCategory.FruitVeg => "bg-info text-dark",
+        WebApit4s.Models.VideoCategory.FattyFoods => "bg-danger",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="container-fluid px-2 px-md-4">
+    <div class="row">
+        <div class="col-12">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0"><i class="fas fa-video me-2"></i> Video Rewards</h4>
+                <a asp-action="Create" class="btn btn-success">
+                    <i class="fas fa-plus me-1"></i> Add New
+                </a>
+            </div>
+
+            <!-- Alerts -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show">
+                    <i class="fas fa-check-circle me-1"></i> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <!-- Search -->
+            <form method="get" class="row g-2 mb-3">
+                <div class="col-12 col-md-6">
+                    <input type="text" name="q" value="@q" class="form-control" placeholder="Search by title, URL, or category" />
+                </div>
+                <div class="col-12 col-md-6 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i> Search
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-1"></i> Clear
+                    </a>
+                </div>
+            </form>
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <span>All Videos</span>
+                    <span class="small">@Model.TotalItemCount total</span>
+                </div>
+
+                <div class="card-body">
+
+                    @if (Model == null || !Model.Any())
+                    {
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-1"></i> No video rewards yet. Click <strong>Add New</strong> to create one.
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- TABLE: md and up -->
+                        <div class="table-responsive d-none d-md-block">
+                            <table class="table table-bordered table-striped table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width:60px;">ID</th>
+                                        <th>Title</th>
+                                        <th>YouTube</th>
+                                        <th style="width:160px;">Category</th>
+                                        <th style="width:120px;">Coins</th>
+                                        <th style="width:110px;">Active</th>
+                                        <th style="width:260px;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var v in Model)
+                                    {
+                                        <tr>
+                                            <td>@v.Id</td>
+                                            <td class="fw-semibold">@v.Title</td>
+                                            <td class="text-truncate" style="max-width: 340px;">
+                                                <a href="@v.YouTubeUrl" target="_blank" rel="noopener">@v.YouTubeUrl</a>
+                                            </td>
+                                            <td>
+                                                <span class="badge @CategoryBadgeClass(v.Category)">@CategoryName(v.Category)</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">
+                                                    <i class="fas fa-coins me-1"></i>@v.CoinValue
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if (v.IsActive)
+                                                {
+                                                    <span class="badge bg-success">Active</span>
+                                                }
+                                                else
+                                                {
+
+                                                    <span class="badge bg-secondary">Inactive</span>
+                                                }
+                                            </td>
+                                            <td class="text-nowrap">
+                                                <a asp-action="Edit" asp-route-id="@v.Id" class="btn btn-sm btn-warning">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+
+                                                <form asp-action="ToggleActive" asp-route-id="@v.Id" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-toggle-on"></i> Toggle
+                                                    </button>
+                                                </form>
+
+                                                <form asp-action="Delete" asp-route-id="@v.Id" method="post" class="d-inline" onsubmit="return confirm('Delete this video reward?');">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="btn btn-sm btn-danger">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- CARDS: xs/sm (mobile) -->
+                        <div class="row g-3 d-md-none">
+                            @foreach (var v in Model)
+                            {
+                                <div class="col-12">
+                                    <div class="card h-100 shadow-sm border-0">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <h5 class="card-title mb-1">@v.Title</h5>
+                                                <span class="badge bg-info"><i class="fas fa-coins me-1"></i>@v.CoinValue</span>
+                                            </div>
+
+                                            <div class="mb-2">
+                                                <span class="badge @CategoryBadgeClass(v.Category)">
+                                                    @CategoryName(v.Category)
+                                                </span>
+                                                @if (v.IsActive)
+                                                {
+                                                    <span class="badge bg-success ms-1">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary ms-1">Inactive</span>
+                                                }
+                                            </div>
+
+                                            <div class="small text-muted mb-2 text-truncate">
+                                                <i class="fab fa-youtube me-1"></i>
+                                                <a href="@v.YouTubeUrl" target="_blank" rel="noopener">@v.YouTubeUrl</a>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-3">
+                                            <a asp-action="Edit" asp-route-id="@v.Id" class="btn btn-warning btn-sm me-1">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+
+                                            <form asp-action="ToggleActive" asp-route-id="@v.Id" method="post" class="d-inline me-1">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-toggle-on"></i> Toggle
+                                                </button>
+                                            </form>
+
+                                            <form asp-action="Delete" asp-route-id="@v.Id" method="post" class="d-inline"
+                                                  onsubmit="return confirm('Delete this video reward?');">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Pager -->
+                        <div class="d-flex justify-content-center mt-3">
+                            @Html.PagedListPager(
+                            Model,
+                                                page => Url.Action("Index", new { page, q = ViewBag.Search }),
+                                                new PagedListRenderOptions
+                                                {
+                                                    LiElementClasses = new[] { "page-item" },
+                                                    PageClasses = new[] { "page-link" }
+                                                })
+                    </div>
+                                        }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

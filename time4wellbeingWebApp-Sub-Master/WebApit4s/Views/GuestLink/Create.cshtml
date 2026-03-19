@@ -1,0 +1,322 @@
+﻿@model GuestLinkCreateViewModel
+
+@{
+    ViewBag.Title = "Create Guest Link";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-xl px-4 mt-4">
+    <!-- Page Header -->
+    <div class="page-header-content mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h1 class="page-header-title mb-0">
+                    <i data-feather="link" class="me-2"></i>
+                    Create Guest Registration Link
+                </h1>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i data-feather="list"></i>
+                    <span class="d-none d-sm-inline ms-1">All Guest Links</span>
+                </a>
+                <a asp-action="SchoolLinksIndex" class="btn btn-outline-primary">
+                    <i data-feather="home"></i>
+                    <span class="d-none d-sm-inline ms-1">School Pages</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Breadcrumb Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="AdminDashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Guest Links</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Create New Link</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-lg-10 col-xl-8 mx-auto">
+            <!-- Main Form Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-gradient-primary-to-secondary text-white">
+                    <div class="d-flex align-items-center">
+                        <i data-feather="edit-3" class="me-2"></i>
+                        <h5 class="mb-0 text-white">Link Configuration</h5>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Info Alert -->
+                    <div class="alert alert-info d-flex align-items-start mb-4" role="alert">
+                        <i data-feather="info" class="me-2 flex-shrink-0" style="width: 20px; height: 20px;"></i>
+                        <div>
+                            <strong>Guest Registration Links</strong> allow external users to register for your programs without creating an account. Configure the link settings below.
+                        </div>
+                    </div>
+
+                    <form asp-action="Create" method="post" id="createLinkForm" novalidate>
+                        @Html.AntiForgeryToken()
+
+                        <!-- Validation Summary -->
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 mb-3 d-none" role="alert"></div>
+
+                        <!-- School and Class Selection -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="SchoolId" class="form-label fw-bold">
+                                    <i data-feather="home" style="width: 16px; height: 16px;"></i>
+                                    School <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="SchoolId" asp-items="Model.Schools" class="form-select form-select-lg" required>
+                                    <option value="">-- Select a School --</option>
+                                </select>
+                                <span asp-validation-for="SchoolId" class="text-danger small d-block mt-1"></span>
+                                <div class="invalid-feedback">Please select a school.</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="ClassId" class="form-label fw-bold">
+                                    <i data-feather="book" style="width: 16px; height: 16px;"></i>
+                                    Class <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="ClassId" asp-items="Model.Classes" class="form-select form-select-lg" required>
+                                    <option value="">-- Select a Class --</option>
+                                </select>
+                                <span asp-validation-for="ClassId" class="text-danger small d-block mt-1"></span>
+                                <div class="invalid-feedback">Please select a class.</div>
+                            </div>
+                        </div>
+
+                        <!-- Divider -->
+                        <hr class="my-4">
+
+                        <!-- Link Settings -->
+                        <h6 class="text-muted mb-3">
+                            <i data-feather="settings" style="width: 16px; height: 16px;"></i>
+                            Link Settings
+                        </h6>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="ExpiryDate" class="form-label fw-bold">
+                                    <i data-feather="calendar" style="width: 16px; height: 16px;"></i>
+                                    Expiry Date
+                                </label>
+                                <input asp-for="ExpiryDate" type="date" class="form-control form-control-lg" />
+                                <span asp-validation-for="ExpiryDate" class="text-danger small"></span>
+                                <small class="form-text text-muted d-block mt-1">
+                                    <i data-feather="help-circle" style="width: 14px; height: 14px;"></i>
+                                    Leave blank for no expiration
+                                </small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="MaxUses" class="form-label fw-bold">
+                                    <i data-feather="users" style="width: 16px; height: 16px;"></i>
+                                    Maximum Uses
+                                </label>
+                                <input asp-for="MaxUses" type="number" min="1" class="form-control form-control-lg" placeholder="e.g., 50" />
+                                <span asp-validation-for="MaxUses" class="text-danger small"></span>
+                                <small class="form-text text-muted d-block mt-1">
+                                    <i data-feather="help-circle" style="width: 14px; height: 14px;"></i>
+                                    Leave blank for unlimited uses
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Divider -->
+                        <hr class="my-4">
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <a asp-action="Index" class="btn btn-light">
+                                <i data-feather="x"></i>
+                                <span class="ms-1">Cancel</span>
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg px-4">
+                                <i data-feather="check-circle"></i>
+                                <span class="ms-1">Generate Guest Link</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Help Card -->
+            <div class="card shadow-sm border-start border-primary border-4">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">
+                        <i data-feather="help-circle" class="me-2"></i>
+                        How it works
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li class="mb-2">Select a school and class to associate with this registration link</li>
+                        <li class="mb-2">Optionally set an expiry date to automatically disable the link after a certain date</li>
+                        <li class="mb-2">Optionally set a maximum number of uses to limit registrations</li>
+                        <li class="mb-0">Share the generated link with guests who need to register</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Validation Error Modal -->
+<div class="modal fade" id="validationErrorModal" tabindex="-1" aria-labelledby="validationErrorLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-warning">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title" id="validationErrorLabel">
+                    <i data-feather="alert-triangle" class="me-2"></i>
+                    Required Fields Missing
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">
+                    <strong>Please complete the following required fields:</strong>
+                </p>
+                <ul class="mt-2 mb-0">
+                    <li id="schoolError" class="d-none text-danger">School must be selected</li>
+                    <li id="classError" class="d-none text-danger">Class must be selected</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-warning" data-bs-dismiss="modal">
+                    <i data-feather="x"></i>
+                    <span class="ms-1">Close</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        // Initialize Feather Icons
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+
+        // Modern client-side validation with Bootstrap styling
+        (function() {
+            'use strict';
+
+            // Fetch the form element
+            const form = document.getElementById('createLinkForm');
+            const schoolSelect = document.getElementById('SchoolId');
+            const classSelect = document.getElementById('ClassId');
+
+            // Real-time validation on field change
+            if (schoolSelect) {
+                schoolSelect.addEventListener('change', function() {
+                    validateField(this);
+                });
+            }
+
+            if (classSelect) {
+                classSelect.addEventListener('change', function() {
+                    validateField(this);
+                });
+            }
+
+            // Validate individual field
+            function validateField(field) {
+                if (field.value && field.value !== '') {
+                    field.classList.remove('is-invalid');
+                    field.classList.add('is-valid');
+                } else {
+                    field.classList.remove('is-valid');
+                    field.classList.add('is-invalid');
+                }
+            }
+
+            // Form submission validation
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    const schoolId = schoolSelect.value;
+                    const classId = classSelect.value;
+
+                    // Remove previous validation states
+                    schoolSelect.classList.remove('is-invalid', 'is-valid');
+                    classSelect.classList.remove('is-invalid', 'is-valid');
+
+                    let isValid = true;
+
+                    // Validate School
+                    if (!schoolId || schoolId === '') {
+                        schoolSelect.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        schoolSelect.classList.add('is-valid');
+                    }
+
+                    // Validate Class
+                    if (!classId || classId === '') {
+                        classSelect.classList.add('is-invalid');
+                        isValid = false;
+                    } else {
+                        classSelect.classList.add('is-valid');
+                    }
+
+                    // If validation fails, prevent form submission and show modal
+                    if (!isValid) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        
+                        // Show validation modal with specific errors
+                        showValidationModal(schoolId, classId);
+                        
+                        // Scroll to first invalid field
+                        const firstInvalid = form.querySelector('.is-invalid');
+                        if (firstInvalid) {
+                            firstInvalid.focus();
+                            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+
+                        return false;
+                    }
+
+                    // If using jQuery validation, let it handle the rest
+                    // This allows both native HTML5 and jQuery validation to work together
+                }, false);
+            }
+
+            // Show validation error modal
+            function showValidationModal(schoolId, classId) {
+                // Show/hide specific error messages
+                const schoolError = document.getElementById('schoolError');
+                const classError = document.getElementById('classError');
+                
+                if (schoolError) {
+                    schoolError.classList.toggle('d-none', !!(schoolId && schoolId !== ''));
+                }
+                
+                if (classError) {
+                    classError.classList.toggle('d-none', !!(classId && classId !== ''));
+                }
+                
+                // Show validation modal
+                const validationModal = new bootstrap.Modal(document.getElementById('validationErrorModal'));
+                validationModal.show();
+                
+                // Re-initialize feather icons in modal
+                setTimeout(() => {
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                }, 100);
+            }
+
+            // Auto-focus on first select
+            if (schoolSelect && !schoolSelect.value) {
+                schoolSelect.focus();
+            }
+        })();
+    </script>
+}

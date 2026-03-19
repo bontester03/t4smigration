@@ -1,0 +1,77 @@
+﻿@model WebApit4s.ViewModels.CreateParentRewardViewModel
+@{
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+    ViewData["Title"] = "Edit Reward";
+}
+
+<h2 class="mb-4">Edit Reward</h2>
+
+<form asp-action="EditReward" asp-route-id="@ViewBag.RewardId" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CoinCost" class="form-label"></label>
+        <input asp-for="CoinCost" class="form-control" />
+        <span asp-validation-for="CoinCost" class="text-danger"></span>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="RequiresParentApproval" class="form-check-input" />
+        <label asp-for="RequiresParentApproval" class="form-check-label"></label>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ValidFromUtc" class="form-label"></label>
+        <input asp-for="ValidFromUtc" type="date" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ValidToUtc" class="form-label"></label>
+        <input asp-for="ValidToUtc" type="date" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CooldownDaysPerChild" class="form-label"></label>
+        <input asp-for="CooldownDaysPerChild" class="form-control" />
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="IsCommon" class="form-check-input" id="isCommonCheck" />
+        <label asp-for="IsCommon" class="form-check-label"></label>
+    </div>
+
+    <div class="mb-3" id="childSelectDiv">
+        <label asp-for="ChildId" class="form-label">Assign to Child</label>
+        <select asp-for="ChildId" asp-items="Model.Children" class="form-select">
+            <option value="">-- Select Child --</option>
+        </select>
+        <span asp-validation-for="ChildId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a asp-action="MyRewards" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function toggleChildSelect() {
+            document.getElementById('childSelectDiv').style.display =
+                document.getElementById('isCommonCheck').checked ? 'none' : 'block';
+        }
+        document.getElementById('isCommonCheck').addEventListener('change', toggleChildSelect);
+        toggleChildSelect();
+    </script>
+}

@@ -1,0 +1,547 @@
+﻿@model List<WebApit4s.Models.Schools>
+@{
+    ViewData["Title"] = "Manage Schools";
+    ViewData["ActivePage"] = "ManageSchools";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .schools-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+    }
+    .schools-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    .schools-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .schools-table thead th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 1rem;
+    }
+    .schools-table tbody tr {
+        transition: background-color 0.2s, transform 0.2s;
+    }
+    .schools-table tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: scale(1.01);
+    }
+    .school-row-number {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+    .action-btn {
+        transition: all 0.3s;
+    }
+    .action-btn:hover {
+        transform: scale(1.05);
+    }
+    .stats-box {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s;
+    }
+    .stats-box:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    .add-school-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Hero Section -->
+    <div class="schools-hero">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="fw-bold mb-3">
+                    <i data-feather="home" class="me-3"></i>Manage Schools
+                </h1>
+                <p class="lead mb-0">
+                    Create, edit, and organize schools in your system
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div style="font-size: 5rem; opacity: 0.2;">
+                    <i data-feather="flag"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i data-feather="alert-triangle" class="me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i data-feather="check-circle" class="me-2"></i>
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Quick Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <i data-feather="home"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count ?? 0)</h3>
+                <p class="text-muted mb-0">Total Schools</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%); color: white;">
+                    <i data-feather="check-circle"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count(s => s.IsActive) ?? 0)</h3>
+                <p class="text-muted mb-0">Active Schools</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: white;">
+                    <i data-feather="x-circle"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count(s => !s.IsActive) ?? 0)</h3>
+                <p class="text-muted mb-0">Inactive Schools</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New School Section -->
+    <div class="add-school-section">
+        <h5 class="fw-bold mb-3">
+            <i data-feather="plus-circle" class="me-2"></i>Add New School
+        </h5>
+        <form asp-action="AddSchool" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <div class="col-md-9">
+                <label class="form-label fw-bold">School Name</label>
+                <input type="text" 
+                       name="Name" 
+                       class="form-control form-control-lg" 
+                       placeholder="e.g., Riverside Primary School, Oak Academy" 
+                       required />
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-success btn-lg w-100">
+                    <i data-feather="plus-circle" class="me-2"></i>Add School
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Schools Table -->
+    @if (Model != null && Model.Any())
+    {
+        <!-- Desktop / Tablet (≥ md) -->
+        <div class="d-none d-md-block">
+            <div class="card schools-card mb-4">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table schools-table mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width: 80px;">
+                                        <i data-feather="hash" style="width: 16px; height: 16px;"></i>
+                                    </th>
+                                    <th>
+                                        <i data-feather="home" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        School Name
+                                    </th>
+                                    <th style="width: 120px;">
+                                        <i data-feather="activity" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        Status
+                                    </th>
+                                    <th style="width: 280px;">
+                                        <i data-feather="settings" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var index = 1;
+                                }
+                                @foreach (var school in Model)
+                                {
+                                    <tr>
+                                        <td class="text-center">
+                                            <div class="school-row-number">
+                                                @index
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <form asp-action="EditSchool" method="post" class="d-flex align-items-center gap-2">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="Id" value="@school.Id" />
+                                                <div class="flex-grow-1">
+                                                    <input name="Name" 
+                                                           class="form-control" 
+                                                           value="@school.Name"
+                                                           placeholder="Enter school name" />
+                                                </div>
+                                                <button class="btn btn-primary btn-sm action-btn" 
+                                                        type="submit"
+                                                        title="Save changes">
+                                                    <i data-feather="save" style="width: 14px; height: 14px;"></i>
+                                                    <span class="ms-1">Save</span>
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            @if (school.IsActive)
+                                            {
+                                                <span class="badge bg-success px-3 py-2">
+                                                    <i data-feather="check-circle" style="width: 14px; height: 14px;"></i>
+                                                    <span class="ms-1">Active</span>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark px-3 py-2">
+                                                    <i data-feather="x-circle" style="width: 14px; height: 14px;"></i>
+                                                    <span class="ms-1">Inactive</span>
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <form asp-action="ToggleSchoolStatus" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@school.Id" />
+                                                    <button class="btn btn-sm @(school.IsActive ? "btn-warning" : "btn-success") action-btn"
+                                                            title="@(school.IsActive ? "Deactivate" : "Activate") this school">
+                                                        <i data-feather="@(school.IsActive ? "slash" : "check-circle")" style="width: 14px; height: 14px;"></i>
+                                                        <span class="ms-1">@(school.IsActive ? "Deactivate" : "Activate")</span>
+                                                    </button>
+                                                </form>
+
+                                                @if (User.IsInRole("Admin"))
+                                                {
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-danger action-btn"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#deleteConfirmModal"
+                                                            data-id="@school.Id"
+                                                            data-name="@school.Name"
+                                                            title="Delete this school">
+                                                        <i data-feather="trash-2" style="width: 14px; height: 14px;"></i>
+                                                        <span class="ms-1">Delete</span>
+                                                    </button>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    index++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile cards (< md) -->
+        <div class="d-md-none">
+            @{
+                var mIndex = 1;
+            }
+            @foreach (var school in Model)
+            {
+                <div class="card schools-card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <div class="small text-muted mb-1">
+                                    <i data-feather="hash" style="width: 14px; height: 14px;"></i>
+                                    #@mIndex
+                                </div>
+                                <h6 class="fw-bold mb-0">@school.Name</h6>
+                            </div>
+                            <div>
+                                @if (school.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Inactive</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <form asp-action="EditSchool" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="Id" value="@school.Id" />
+                                <label class="form-label small fw-bold text-muted">
+                                    <i data-feather="edit-2" style="width: 14px; height: 14px;"></i>
+                                    Edit School Name
+                                </label>
+                                <div class="input-group">
+                                    <input name="Name" class="form-control" value="@school.Name" />
+                                    <button class="btn btn-primary" type="submit">
+                                        <i data-feather="save" style="width: 14px; height: 14px;"></i>
+                                        <span class="ms-1">Save</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <form asp-action="ToggleSchoolStatus" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@school.Id" />
+                                <button class="btn btn-sm @(school.IsActive ? "btn-warning" : "btn-success")">
+                                    <i data-feather="@(school.IsActive ? "slash" : "check-circle")" style="width: 14px; height: 14px;"></i>
+                                    <span class="ms-1">@(school.IsActive ? "Deactivate" : "Activate")</span>
+                                </button>
+                            </form>
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <button type="button"
+                                        class="btn btn-sm btn-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteConfirmModal"
+                                        data-id="@school.Id"
+                                        data-name="@school.Name">
+                                    <i data-feather="trash-2" style="width: 14px; height: 14px;"></i>
+                                    <span class="ms-1">Delete School</span>
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+                mIndex++;
+            }
+        </div>
+
+        <!-- Information Card -->
+        <div class="card schools-card">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 1.5rem;">
+                <h5 class="mb-0">
+                    <i data-feather="info" class="me-2"></i>Managing Schools
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-primary mb-3">
+                            <i data-feather="edit" class="me-2"></i>Quick Actions
+                        </h6>
+                        <ul class="ps-3">
+                            <li class="mb-2">Click <strong>Save</strong> to update a school name</li>
+                            <li class="mb-2">Use <strong>Activate/Deactivate</strong> to toggle school status</li>
+                            <li class="mb-2">Click <strong>Delete</strong> to remove a school permanently (Admin only)</li>
+                            <li class="mb-2">Add new schools using the form above</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-success mb-3">
+                            <i data-feather="help-circle" class="me-2"></i>Best Practices
+                        </h6>
+                        <ul class="ps-3">
+                            <li class="mb-2">Use official school names for clarity</li>
+                            <li class="mb-2">Deactivate rather than delete schools with existing data</li>
+                            <li class="mb-2">Keep school information up-to-date</li>
+                            <li class="mb-2">Coordinate with administrators before making changes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card schools-card">
+            <div class="card-body text-center p-5">
+                <div class="mb-3" style="font-size: 5rem; color: #dee2e6;">
+                    <i data-feather="home"></i>
+                </div>
+                <h5 class="fw-bold mb-2">No Schools Found</h5>
+                <p class="text-muted mb-4">
+                    You haven't created any schools yet. Use the form above to add your first school.
+                </p>
+            </div>
+        </div>
+    }
+
+    <!-- Quick Navigation -->
+    <div class="row g-4 mt-3">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #667eea;">
+                        <i data-feather="book"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Manage Classes</h5>
+                    <p class="text-muted mb-3">
+                        Add, edit, and organize classes in the system
+                    </p>
+                    <a asp-action="ManageClasses" class="btn btn-outline-primary">
+                        <i data-feather="settings" class="me-1"></i>Manage Classes
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #28a745;">
+                        <i data-feather="link"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Guest Links</h5>
+                    <p class="text-muted mb-3">
+                        Create registration links for schools and classes
+                    </p>
+                    <a asp-controller="GuestLink" asp-action="Create" class="btn btn-outline-success">
+                        <i data-feather="plus-circle" class="me-1"></i>Create Link
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #17a2b8;">
+                        <i data-feather="database"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">School Records</h5>
+                    <p class="text-muted mb-3">
+                        View detailed records for each school
+                    </p>
+                    <a asp-controller="AdminSchool" asp-action="Index" class="btn btn-outline-info">
+                        <i data-feather="bar-chart-2" class="me-1"></i>View Records
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%); color: white;">
+                <h5 class="modal-title" id="deleteConfirmLabel">
+                    <i data-feather="alert-triangle" class="me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center">
+                    <div class="mb-3" style="font-size: 3rem; color: #dc3545;">
+                        <i data-feather="trash-2"></i>
+                    </div>
+                    <h6 class="fw-bold mb-2">Delete School</h6>
+                    <p class="mb-3">
+                        Are you sure you want to delete <strong id="deleteItemName">this school</strong>?
+                    </p>
+                    <div class="alert alert-warning text-start">
+                        <i data-feather="alert-circle" class="me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone. This will also affect all associated classes, students, and records. Consider deactivating instead.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" method="post" asp-action="DeleteSchool" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteId" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i data-feather="x" class="me-1"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i data-feather="trash-2" class="me-1"></i>Yes, Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize Feather Icons
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+
+        // Delete modal wiring
+        const deleteModal = document.getElementById('deleteConfirmModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                const btn = event.relatedTarget;
+                const id = btn?.getAttribute('data-id');
+                const name = btn?.getAttribute('data-name') || 'this school';
+                document.getElementById('deleteId').value = id;
+                document.getElementById('deleteItemName').textContent = name;
+                
+                // Re-initialize feather icons in modal
+                setTimeout(() => {
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                }, 100);
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+}

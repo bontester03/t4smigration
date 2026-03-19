@@ -1,0 +1,123 @@
+﻿@model X.PagedList.IPagedList<WebApit4s.Models.AdminUserStatusViewModel>
+@using X.PagedList.Mvc.Core
+
+@{
+    ViewData["Title"] = "User Completion Report";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fa-solid fa-user-check text-primary"></i> User Completion Report</h2>
+
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <div><i class="fa-solid fa-list-check"></i> Completion Summary</div>
+            <a asp-controller="AdminDashboard" asp-action="Index" class="btn btn-light btn-sm text-primary">
+                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="card-body">
+            <!-- Filter Form -->
+            <form method="get" class="row g-3 align-items-end mb-4">
+                <div class="col-md-3">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="startDate" class="form-control" value="@ViewBag.StartDate" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">End Date</label>
+                    <input type="date" name="endDate" class="form-control" value="@ViewBag.EndDate" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Referral Type</label>
+                    <select name="referralTypeId" class="form-select">
+                        <option value="">All Referral Types</option>
+                        @foreach (var type in ViewBag.ReferralTypes as List<SelectListItem>)
+                        {
+                            <option value="@type.Value" selected="@(type.Value == ViewBag.SelectedReferralType ? "selected" : null)">
+                                @type.Text
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                    <a href="@Url.Action("UserCompletionReport", "AdminDashboard")" class="btn btn-secondary w-100">Reset</a>
+                </div>
+            </form>
+
+            <!-- Data Table -->
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Email</th>
+                            <th>Referral Type</th>
+                            <th>Registration Date</th>
+                            <th>Child Details</th>
+                            <th>Personal Details</th> @* ✅ New Column *@
+                            <th>Health Scores</th>
+                            <th>Measurements</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.Email</td>
+                                <td>@user.ReferralType</td>
+                                <td>@user.RegistrationDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <span class="badge bg-@(user.HasChildDetails ? "success" : "danger")">
+                                        @(user.HasChildDetails ? "Completed" : "Not Completed")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-@(user.HasPersonalDetails ? "success" : "danger")">
+                                        @(user.HasPersonalDetails ? "Completed" : "Not Completed")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-@(user.HasHealthScores ? "success" : "danger")">
+                                        @(user.HasHealthScores ? "Completed" : "Not Completed")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-@(user.HasMeasurements ? "success" : "danger")">
+                                        @(user.HasMeasurements ? "Completed" : "Not Completed")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">No records found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-3">
+                @Html.PagedListPager(Model, page => Url.Action("UserCompletionReport", new
+                    {
+                        page,
+                        startDate = ViewBag.StartDate,
+                        endDate = ViewBag.EndDate,
+                        referralTypeId = ViewBag.SelectedReferralType
+                    }),
+                         new PagedListRenderOptions
+                {
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" },
+                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                    DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                    DisplayLinkToNextPage = PagedListDisplayMode.Always
+                })
+            </div>
+        </div>
+    </div>
+</div>

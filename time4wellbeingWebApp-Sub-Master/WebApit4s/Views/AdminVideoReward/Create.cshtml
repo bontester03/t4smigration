@@ -1,0 +1,113 @@
+﻿@model WebApit4s.Models.VideoReward
+@{
+    ViewData["Title"] = "Create Video Reward";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid px-2 px-md-4">
+    <div class="row">
+        <div class="col-lg-8 col-xl-7">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0"><i class="fas fa-plus me-2"></i> Create Video Reward</h4>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to list
+                </a>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-body">
+                    <form asp-action="Create" method="post" novalidate>
+                        @Html.AntiForgeryToken()
+
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label"></label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <!-- YouTube URL -->
+                        <div class="mb-3">
+                            <label asp-for="YouTubeUrl" class="form-label"></label>
+                            <input asp-for="YouTubeUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=..." />
+                            <small class="text-muted">Paste a full YouTube watch URL or share link.</small>
+                            <span asp-validation-for="YouTubeUrl" class="text-danger"></span>
+                        </div>
+
+                        <!-- Category & Active -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Category" class="form-label"></label>
+                                <select asp-for="Category" class="form-select"
+                                        asp-items="Html.GetEnumSelectList<WebApit4s.Models.VideoCategory>()">
+                                </select>
+                                <span asp-validation-for="Category" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <div class="form-check">
+                                    <input asp-for="IsActive" class="form-check-input" />
+                                    <label asp-for="IsActive" class="form-check-label"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Coin Value -->
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-4">
+                                <label asp-for="CoinValue" class="form-label"></label>
+                                <input asp-for="CoinValue" class="form-control" type="number" min="0" step="1" />
+                                <small class="text-muted">Coins awarded when watch criteria are met.</small>
+                                <span asp-validation-for="CoinValue" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <!-- Award Rules -->
+                        <div class="border rounded p-3 mt-3">
+                            <h6 class="mb-3 text-primary"><i class="fas fa-clipboard-check me-2"></i>Award Rules</h6>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label asp-for="MinWatchPercent" class="form-label"></label>
+                                    <div class="input-group">
+                                        <input asp-for="MinWatchPercent" class="form-control" type="number" min="0" max="100" step="1" />
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    <small class="text-muted">Minimum percentage that must be watched (0–100).</small>
+                                    <span asp-validation-for="MinWatchPercent" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="CooldownHoursPerChild" class="form-label"></label>
+                                    <div class="input-group">
+                                        <input asp-for="CooldownHoursPerChild" class="form-control" type="number" min="0" step="1" />
+                                        <span class="input-group-text">hrs</span>
+                                    </div>
+                                    <small class="text-muted">Cooldown per child before this video can earn coins again (0 = none).</small>
+                                    <span asp-validation-for="CooldownHoursPerChild" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-4">
+                                    <label asp-for="MaxAwardsPerChild" class="form-label"></label>
+                                    <input asp-for="MaxAwardsPerChild" class="form-control" type="number" min="1" step="1" />
+                                    <small class="text-muted">Max number of times a child can earn from this video.</small>
+                                    <span asp-validation-for="MaxAwardsPerChild" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i> Save
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

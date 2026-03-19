@@ -1,0 +1,444 @@
+﻿@{
+    ViewData["Title"] = "Registered Users";
+    ViewData["ActivePage"] = "UserList";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .userlist-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+    }
+    .userlist-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    .userlist-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .userlist-table thead th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 1rem;
+    }
+    .userlist-table tbody tr {
+        transition: background-color 0.2s, transform 0.2s;
+    }
+    .userlist-table tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: scale(1.01);
+    }
+    .action-btn {
+        transition: all 0.3s;
+    }
+    .action-btn:hover {
+        transform: scale(1.05);
+    }
+    .stats-box {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s;
+    }
+    .stats-box:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    .filter-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Hero Section -->
+    <div class="userlist-hero">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="fw-bold mb-3">
+                    <i data-feather="users" class="me-3"></i>Manage Registered Users
+                </h1>
+                <p class="lead mb-0">
+                    View, filter, and manage all user accounts in the system
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div style="font-size: 5rem; opacity: 0.2;">
+                    <i data-feather="user-check"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i data-feather="alert-triangle" class="me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i data-feather="check-circle" class="me-2"></i>
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <h5 class="fw-bold mb-3">
+            <i data-feather="filter" class="me-2"></i>Filter Users
+        </h5>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label for="roleFilter" class="form-label fw-bold">
+                    <i data-feather="users" style="width: 16px; height: 16px;"></i>
+                    Filter by User Type
+                </label>
+                <select id="roleFilter" class="form-select form-select-lg">
+                    <option value="">-- All User Types --</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Employee">Employee</option>
+                    <option value="Parent">Parent</option>
+                    <option value="Guest">Guest</option>
+                </select>
+            </div>
+            <div class="col-md-6 d-flex align-items-end gap-2">
+                <button class="btn btn-primary btn-lg flex-grow-1 action-btn" onclick="loadUsers()">
+                    <i data-feather="search" class="me-2"></i>Apply Filter
+                </button>
+                <button class="btn btn-outline-secondary btn-lg action-btn" onclick="resetFilter()">
+                    <i data-feather="x" class="me-1"></i>Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card userlist-card mb-4">
+        <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 1.5rem;">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i data-feather="list" class="me-2"></i>Registered Users
+                </h5>
+                <a asp-action="Create" class="btn btn-light btn-sm">
+                    <i data-feather="user-plus" class="me-1"></i>Create New User
+                </a>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table userlist-table mb-0 align-middle" id="userTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i data-feather="mail" style="width: 16px; height: 16px;"></i>
+                                <span class="ms-2">Email</span>
+                            </th>
+                            <th>
+                                <i data-feather="user" style="width: 16px; height: 16px;"></i>
+                                <span class="ms-2">User Type</span>
+                            </th>
+                            <th>
+                                <i data-feather="calendar" style="width: 16px; height: 16px;"></i>
+                                <span class="ms-2">Registration Date</span>
+                            </th>
+                            <th>
+                                <i data-feather="check-circle" style="width: 16px; height: 16px;"></i>
+                                <span class="ms-2">Status</span>
+                            </th>
+                            <th class="text-center">
+                                <i data-feather="settings" style="width: 16px; height: 16px;"></i>
+                                <span class="ms-2">Actions</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="text-muted mt-2">Loading users...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-light">
+            <div class="d-flex justify-content-between align-items-center">
+                <a asp-action="Create" class="btn btn-outline-primary">
+                    <i data-feather="user-plus" class="me-2"></i>Create New User
+                </a>
+                <ul class="pagination mb-0" id="pagination">
+                    <!-- Pagination rendered by JS -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Information Card -->
+    <div class="card userlist-card">
+        <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 1.5rem;">
+            <h5 class="mb-0">
+                <i data-feather="info" class="me-2"></i>User Management Guide
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-primary mb-3">
+                        <i data-feather="edit" class="me-2"></i>Available Actions
+                    </h6>
+                    <ul class="ps-3">
+                        <li class="mb-2"><strong>Add Child</strong>: Associate children with Parent/Guest accounts</li>
+                        <li class="mb-2"><strong>Lock/Unlock</strong>: Control user access to the system</li>
+                        <li class="mb-2"><strong>Delete</strong>: Permanently remove user accounts (Admin only)</li>
+                        <li class="mb-2"><strong>Filter</strong>: View users by type or status</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-success mb-3">
+                        <i data-feather="help-circle" class="me-2"></i>Best Practices
+                    </h6>
+                    <ul class="ps-3">
+                        <li class="mb-2">Lock accounts instead of deleting when possible</li>
+                        <li class="mb-2">Regularly review user permissions and access</li>
+                        <li class="mb-2">Admin accounts cannot be locked or deleted</li>
+                        <li class="mb-2">Use filters to quickly find specific user types</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%); color: white;">
+                <h5 class="modal-title" id="deleteUserModalLabel">
+                    <i data-feather="alert-triangle" class="me-2"></i>Confirm User Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center">
+                    <div class="mb-3" style="font-size: 3rem; color: #dc3545;">
+                        <i data-feather="user-x"></i>
+                    </div>
+                    <h6 class="fw-bold mb-2">Delete User Account</h6>
+                    <p class="mb-3">
+                        Are you sure you want to delete this user account?
+                    </p>
+                    <div class="alert alert-warning text-start">
+                        <i data-feather="alert-circle" class="me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone. All user data will be permanently removed.
+                    </div>
+                </div>
+                <input type="hidden" id="deleteUserId" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i data-feather="x" class="me-1"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-danger" onclick="confirmDeleteUser()">
+                    <i data-feather="trash-2" class="me-1"></i>Delete User
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function loadUsers(page = 1) {
+            const roleFilter = $('#roleFilter').val();
+
+            $.get(`/Account/GetUsers?page=${page}&role=${roleFilter}`, function (data) {
+                let tbody = '';
+                data.users.forEach(u => {
+                    let lockBtn = '';
+                    let deleteBtn = '';
+                    let addChildBtn = '';
+
+                    if (u.userType !== 'Admin') {
+                        const lockIcon = u.isLockedOut ? 'lock' : 'unlock';
+                        const lockColor = u.isLockedOut ? 'danger' : 'success';
+                        lockBtn = `
+                            <button class="btn btn-sm btn-${lockColor} me-1 action-btn"
+                                    onclick="toggleUserLock('${u.id}', ${u.isLockedOut})" 
+                                    title="${u.isLockedOut ? 'Unlock' : 'Lock'} User">
+                                <i data-feather="${lockIcon}" style="width: 14px; height: 14px;"></i>
+                            </button>`;
+
+                        deleteBtn = `
+                            <button class="btn btn-sm btn-danger action-btn" 
+                                    onclick="deleteUser('${u.id}')" 
+                                    title="Delete User">
+                                <i data-feather="trash-2" style="width: 14px; height: 14px;"></i>
+                            </button>`;
+                    }
+
+                    if (u.userType === 'Parent' || u.userType === 'Guest') {
+                        addChildBtn = `
+                            <a href="/Account/AddChild?parentId=${u.id}" 
+                               class="btn btn-sm btn-info me-1 action-btn" 
+                               title="Add Child">
+                                <i data-feather="user-plus" style="width: 14px; height: 14px;"></i>
+                            </a>`;
+                    }
+
+                    const userTypeColor = u.userType === 'Admin' ? 'primary' : 
+                                        u.userType === 'Employee' ? 'success' : 
+                                        u.userType === 'Parent' ? 'info' : 'secondary';
+                    
+                    const statusColor = u.isApproved ? 'success' : 'warning';
+                    const statusText = u.isApproved ? 'Approved' : 'Pending';
+
+                    tbody += `<tr>
+                        <td>${u.email}</td>
+                        <td>
+                            <span class="badge bg-${userTypeColor} px-3 py-2">
+                                ${u.userType}
+                            </span>
+                        </td>
+                        <td>${new Date(u.registrationDate).toLocaleDateString()}</td>
+                        <td>
+                            <span class="badge bg-${statusColor} px-3 py-2">
+                                ${statusText}
+                            </span>
+                        </td>
+                        <td class="text-center text-nowrap">
+                            ${addChildBtn}
+                            ${lockBtn}
+                            ${deleteBtn}
+                        </td>
+                    </tr>`;
+                });
+
+                if (data.users.length === 0) {
+                    tbody = `<tr>
+                        <td colspan="5" class="text-center py-5">
+                            <div style="font-size: 3rem; color: #dee2e6;">
+                                <i data-feather="inbox"></i>
+                            </div>
+                            <h6 class="fw-bold mt-3">No Users Found</h6>
+                            <p class="text-muted">Try adjusting your filters or create a new user.</p>
+                        </td>
+                    </tr>`;
+                }
+
+                $('#userTableBody').html(tbody);
+
+                // Re-initialize Feather icons
+                setTimeout(() => {
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                }, 100);
+
+                let pagination = '';
+                for (let i = 1; i <= data.totalPages; i++) {
+                    pagination += `
+                        <li class="page-item ${i === data.currentPage ? 'active' : ''}">
+                            <button class="page-link" onclick="loadUsers(${i})">${i}</button>
+                        </li>`;
+                }
+                $('#pagination').html(pagination);
+            });
+        }
+
+        function resetFilter() {
+            $('#roleFilter').val('');
+            loadUsers();
+        }
+
+        function toggleUserLock(userId, isLocked) {
+            $.ajax({
+                url: '/Account/ToggleUserLock',
+                method: 'POST',
+                data: { id: userId },
+                success: () => {
+                    loadUsers();
+                },
+                error: () => alert("Error updating user lock status.")
+            });
+        }
+
+        function deleteUser(userId) {
+            $('#deleteUserId').val(userId);
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+            deleteModal.show();
+            
+            // Re-initialize feather icons in modal
+            setTimeout(() => {
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+            }, 100);
+        }
+
+        function confirmDeleteUser() {
+            const userId = $('#deleteUserId').val();
+            $.ajax({
+                url: '/Account/DeleteUser',
+                method: 'POST',
+                data: { id: userId },
+                success: () => {
+                    var deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteUserModal'));
+                    deleteModal.hide();
+                    loadUsers();
+                },
+                error: () => alert("You don't have permission to delete this user.")
+            });
+        }
+
+        $(document).ready(() => {
+            loadUsers();
+            
+            // Initialize Feather Icons
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+}

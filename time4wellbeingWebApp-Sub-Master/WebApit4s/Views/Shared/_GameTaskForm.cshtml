@@ -1,0 +1,103 @@
+﻿@* Views/Shared/_GameTaskForm.cshtml *@
+@model WebApit4s.ViewModels.CreateGameTaskViewModel
+@using WebApit4s.Models
+
+<div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+<div class="row g-3">
+    <!-- Title + Points -->
+    <div class="col-md-8">
+        <label asp-for="Title" class="form-label">
+            Task Title <span class="text-danger">*</span>
+        </label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label asp-for="Points" class="form-label">Points</label>
+        <input asp-for="Points" type="number" min="1" max="100" class="form-control" />
+        <span asp-validation-for="Points" class="text-danger"></span>
+    </div>
+
+    <!-- Target Area + Suggested Week + Media Link -->
+    <div class="col-md-6">
+        <label asp-for="TargetArea" class="form-label">
+            Target Area <span class="text-danger">*</span>
+        </label>
+        <select asp-for="TargetArea"
+                asp-items="Html.GetEnumSelectList<HealthArea>()"
+                class="form-select">
+            <option value="">-- Choose target area --</option>
+        </select>
+        <span asp-validation-for="TargetArea" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label asp-for="SuggestedWeek" class="form-label">Suggested Week</label>
+        <input asp-for="SuggestedWeek" type="number" min="1" max="12" class="form-control" />
+        <span asp-validation-for="SuggestedWeek" class="text-danger"></span>
+    </div>
+
+  @*   <div class="col-md-3">
+        <label asp-for="MediaLink" class="form-label">Media Link</label>
+        <input asp-for="MediaLink" class="form-control" placeholder="https://youtube.com/..." />
+        <span asp-validation-for="MediaLink" class="text-danger"></span>
+        <small class="text-muted">Optional: link to a video or resource.</small>
+    </div> *@
+
+    <!-- Description -->
+    <div class="col-12">
+        <label asp-for="Description" class="form-label">
+            Description <span class="text-danger">*</span>
+        </label>
+        <textarea asp-for="Description" rows="3" class="form-control"
+                  placeholder="Briefly describe what to do, when, and any tips..."></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <!-- Admin-only toggles (hidden for parent flow) -->
+    @if (Model.AllowCommonToggle || Model.AllowActiveToggle)
+    {
+        <div class="col-12">
+            <hr />
+        </div>
+
+        <div class="col-md-6">
+            @if (Model.AllowCommonToggle)
+            {
+                <div class="form-check">
+                    <input asp-for="IsCommonTask" class="form-check-input" id="isCommonTaskChk" />
+                    <label class="form-check-label" for="isCommonTaskChk">
+                        Make this a <strong>common task</strong> (visible to all my children/users)
+                    </label>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="IsCommonTask" value="false" />
+            }
+        </div>
+
+        <div class="col-md-6">
+            @if (Model.AllowActiveToggle)
+            {
+                <div class="form-check">
+                    <input asp-for="IsActive" class="form-check-input" id="isActiveChk" />
+                    <label class="form-check-label" for="isActiveChk">
+                        Active
+                    </label>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" asp-for="IsActive" value="true" />
+            }
+        </div>
+    }
+    else
+    {
+        <input type="hidden" asp-for="IsCommonTask" value="false" />
+        <input type="hidden" asp-for="IsActive" value="true" />
+    }
+</div>

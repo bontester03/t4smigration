@@ -1,0 +1,263 @@
+@model List<WebApit4s.Models.Feedback>
+@{
+    ViewData["Title"] = "Feedback";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+    var categories = ViewBag.Categories as List<string>;
+}
+
+<style>
+    .feedback-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    .feedback-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+    }
+    .feedback-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    .feedback-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .form-modern {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-left: 4px solid #667eea;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .form-modern label {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+    }
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e5e7eb;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    .submit-btn {
+        border-radius: 10px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .submit-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    .table-modern {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .table-modern thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .table-modern thead th {
+        border: none;
+        padding: 1rem 0.75rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    .table-modern tbody td {
+        padding: 0.875rem 0.75rem;
+        vertical-align: middle;
+        border-color: #e5e7eb;
+    }
+    .table-modern tbody tr:hover {
+        background-color: #f9fafb;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+    .empty-state i {
+        font-size: 3rem;
+        color: #d1d5db;
+        margin-bottom: 1.5rem;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Hero Section -->
+    <div class="feedback-hero">
+        <div class="row align-items-center position-relative">
+            <div class="col-md-8">
+                <h1 class="h2 fw-bold mb-2">
+                    <i data-feather="message-circle" class="me-2"></i>
+                    Feedback
+                </h1>
+                <p class="mb-0 opacity-90">Share your thoughts and help us improve your experience</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a asp-controller="Dashboard" asp-action="LandingPage" class="btn btn-light">
+                    <i data-feather="arrow-left" class="me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Feedback Card -->
+    <div class="feedback-card mb-4">
+        <div class="card-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1rem;">
+            <h5 class="mb-0">
+                <i data-feather="edit-3" class="me-2" style="width: 20px; height: 20px;"></i>
+                Submit New Feedback
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="Feedback" method="post">
+                <div class="form-modern">
+                    <label for="Category">
+                        <i data-feather="folder" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Category
+                    </label>
+                    <select name="Category" class="form-select" required>
+                        <option value="">-- Select Category --</option>
+                        @foreach (var category in categories)
+                        {
+                            <option value="@category">@category</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-modern">
+                    <label for="Rating">
+                        <i data-feather="star" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Rating
+                    </label>
+                    <select name="Rating" class="form-select" required>
+                        <option value="">-- Select Rating --</option>
+                        <option value="1">&#9733;&#9734;&#9734;&#9734;&#9734; - Poor</option>
+                        <option value="2">&#9733;&#9733;&#9734;&#9734;&#9734; - Fair</option>
+                        <option value="3">&#9733;&#9733;&#9733;&#9734;&#9734; - Good</option>
+                        <option value="4">&#9733;&#9733;&#9733;&#9733;&#9734; - Very Good</option>
+                        <option value="5">&#9733;&#9733;&#9733;&#9733;&#9733; - Excellent</option>
+                    </select>
+                </div>
+
+                <div class="form-modern">
+                    <label for="Comments">
+                        <i data-feather="message-square" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Comments (Optional)
+                    </label>
+                    <textarea name="Comments" class="form-control" rows="4" placeholder="Share your thoughts and suggestions..."></textarea>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success submit-btn">
+                        <i data-feather="send" class="me-2" style="width: 18px; height: 18px;"></i>
+                        Submit Feedback
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Feedback History Card -->
+    @if (Model.Any())
+    {
+        <div class="feedback-card mb-5">
+            <div class="card-header" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 1rem;">
+                <h5 class="mb-0">
+                    <i data-feather="list" class="me-2" style="width: 20px; height: 20px;"></i>
+                    Your Submitted Feedback
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-modern table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Rating</th>
+                                <th>Comments</th>
+                                <th>Submitted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var feedback in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-primary" style="padding: 0.5rem 0.75rem;">
+                                            @feedback.Category
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span style="color: #fbbf24; font-size: 1.1rem;">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                if (i <= feedback.Rating)
+                                                {
+                                                    <span>&#9733;</span>
+                                                }
+                                                else
+                                                {
+                                                    <span style="color: #e5e7eb;">&#9734;</span>
+                                                }
+                                            }
+                                        </span>
+                                    </td>
+                                    <td>@(string.IsNullOrWhiteSpace(feedback.Comments) ? "No comments" : feedback.Comments)</td>
+                                    <td>
+                                        <small class="text-muted">
+                                            <i data-feather="clock" style="width: 14px; height: 14px;" class="me-1"></i>
+                                            @feedback.SubmittedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")
+                                        </small>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="feedback-card mb-5">
+            <div class="card-body">
+                <div class="empty-state">
+                    <i data-feather="inbox" style="width: 64px; height: 64px;"></i>
+                    <h5 class="mb-2">No Feedback Yet</h5>
+                    <p class="text-muted mb-0">You haven't submitted any feedback yet. Share your thoughts above!</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+}

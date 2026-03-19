@@ -1,0 +1,475 @@
+@model WebApit4s.ViewModels.SchoolRecordsViewModel
+@{
+    ViewData["Title"] = $"Records for {Model.SchoolName}";
+    ViewData["ActivePage"] = "SchoolRecords";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .stat-card {
+        border-left: 4px solid;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .section-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+    }
+    .section-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 10px 10px 0 0;
+        font-weight: 600;
+    }
+    .child-row {
+        transition: all 0.2s;
+    }
+    .child-row:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+        transform: scale(1.01);
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-dark fw-bold mb-1">
+                <i class="fas fa-school text-primary me-2"></i> @Model.SchoolName
+            </h2>
+            <p class="text-muted mb-0">Comprehensive school records and statistics</p>
+        </div>
+        <div class="d-flex gap-2">
+            <!-- Export Dropdown -->
+            <div class="dropdown">
+                <button class="btn btn-success dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown">
+                    <i class="fas fa-file-word me-1"></i> Export to Word
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><h6 class="dropdown-header">Select Class to Export</h6></li>
+                    <li>
+                        <a class="dropdown-item" asp-action="ExportToWord" asp-route-schoolName="@Model.SchoolName">
+                            <i class="fas fa-list me-1"></i> All Classes
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    @{
+                        var uniqueClasses = Model.Children
+                            .Where(c => !string.IsNullOrEmpty(c.Class))
+                            .Select(c => c.Class)
+                            .Distinct()
+                            .OrderBy(c => c)
+                            .ToList();
+
+                        if (uniqueClasses.Any())
+                        {
+                            foreach (var className in uniqueClasses)
+                            {
+                                <li>
+                                    <a class="dropdown-item" asp-action="ExportToWord" asp-route-schoolName="@Model.SchoolName" asp-route-className="@className">
+                                        <i class="fas fa-file-alt me-1"></i> Class: @className
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li><span class="dropdown-item text-muted">No classes available</span></li>
+                        }
+                    }
+                </ul>
+            </div>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Back
+            </a>
+        </div>
+    </div>
+
+    <!-- Analytics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #007bff !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Children Enrolled</div>
+                            <div class="h3 mb-0 fw-bold text-primary">@Model.TotalChildrenRecords</div>
+                        </div>
+                        <div class="text-primary" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-child"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #17a2b8 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Parent Records</div>
+                            <div class="h3 mb-0 fw-bold text-info">@Model.TotalPersonalDetailsRecords</div>
+                        </div>
+                        <div class="text-info" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #28a745 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Health Scores</div>
+                            <div class="h3 mb-0 fw-bold text-success">@Model.TotalHealthScores</div>
+                        </div>
+                        <div class="text-success" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #ffc107 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Measurements</div>
+                            <div class="h3 mb-0 fw-bold text-warning">@Model.TotalMeasurements</div>
+                        </div>
+                        <div class="text-warning" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-weight"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Children Section -->
+    <div class="card section-card">
+        <div class="section-header">
+            <i class="fas fa-child me-2"></i>Children Enrolled (@Model.TotalChildrenRecords)
+        </div>
+        <div class="card-body">
+            @if (Model.Children.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-3">#</th>
+                                <th>Child Info</th>
+                                <th class="text-center">Gender</th>
+                                <th>Date of Birth</th>
+                                <th class="text-center">Age</th>
+                                <th>Parent Email</th>
+                                <th class="text-center">Engagement</th>
+                                <th class="text-center">Points</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var childIndex = 1;
+                            }
+                            @foreach (var child in Model.Children)
+                            {
+                                <tr class="child-row">
+                                    <td class="px-3"><strong>@childIndex</strong></td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-info text-white me-2" 
+                                                 style="width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                                @child.ChildName.Substring(0, 1).ToUpper()
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold">@child.ChildName</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-@(child.Gender.ToString() == "Male" ? "info" : "danger")">
+                                            <i class="fas fa-@(child.Gender.ToString() == "Male" ? "mars" : "venus") me-1"></i>
+                                            @child.Gender
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            <i class="far fa-calendar me-1"></i>
+                                            @child.DateOfBirth.ToShortDateString()
+                                        </small>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-secondary">@child.Age yrs</span>
+                                    </td>
+                                    <td>@(child.Class ?? "N/A")</td>
+                                    <td><small class="text-muted">@(child.User?.Email ?? "N/A")</small></td>
+                                    <td class="text-center">
+                                        @if (child.EngagementStatus == WebApit4s.Models.EngagementStatus.Engaged)
+                                        {
+                                            <span class="badge bg-success">Engaged</span>
+                                        }
+                                        else if (child.EngagementStatus == WebApit4s.Models.EngagementStatus.Withdrawn)
+                                        {
+                                            <span class="badge bg-warning text-dark">Withdrawn</span>
+                                        }
+                                        else if (child.EngagementStatus == WebApit4s.Models.EngagementStatus.Ineligible)
+                                        {
+                                            <span class="badge bg-danger">Ineligible</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Uncontactable</span>
+                                        }
+                                    </td>
+                                    <td class="text-center"><span class="badge bg-success">@child.TotalPoints</span></td>
+                                    <td class="text-center">
+                                        <a asp-action="ChildEdit" asp-route-childId="@child.Id" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye me-1"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                childIndex++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-child fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">No children found for this school.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Parent/Guardian Details Section -->
+    <div class="card section-card">
+        <div class="section-header">
+            <i class="fas fa-users me-2"></i>Parent/Guardian Details (@Model.TotalPersonalDetailsRecords)
+        </div>
+        <div class="card-body">
+            @if (Model.PersonalDetails.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-3">#</th>
+                                <th>Parent/Guardian Name</th>
+                                <th>Relationship</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Postcode</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var pdIndex = 1;
+                            }
+                            @foreach (var pd in Model.PersonalDetails)
+                            {
+                                <tr>
+                                    <td class="px-3"><strong>@pdIndex</strong></td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-primary text-white me-2" 
+                                                 style="width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                                @pd.ParentGuardianName.Substring(0, 1).ToUpper()
+                                            </div>
+                                            <div class="fw-semibold">@pd.ParentGuardianName</div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-secondary">@pd.RelationshipToChild</span></td>
+                                    <td><small class="text-muted">@pd.Email</small></td>
+                                    <td><small>@pd.TeleNumber</small></td>
+                                    <td>@pd.Postcode</td>
+                                </tr>
+                                pdIndex++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">No parent/guardian details found.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Health Scores Section -->
+    <div class="card section-card">
+        <div class="section-header">
+            <i class="fas fa-heartbeat me-2"></i>Health Assessment Scores (@Model.TotalHealthScores)
+        </div>
+        <div class="card-body">
+            @if (Model.HealthScores.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-3">#</th>
+                                <th>Child Name</th>
+                                <th class="text-center">Activity</th>
+                                <th class="text-center">Breakfast</th>
+                                <th class="text-center">Fruit/Veg</th>
+                                <th class="text-center">Sweets</th>
+                                <th class="text-center">Fats</th>
+                                <th class="text-center">Total</th>
+                                <th class="text-center">Classification</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var hsIndex = 1;
+                            }
+                            @foreach (var hs in Model.HealthScores)
+                            {
+                                <tr>
+                                    <td class="px-3"><strong>@hsIndex</strong></td>
+                                    <td>
+                                        <div class="fw-semibold">@(hs.Child?.ChildName ?? "N/A")</div>
+                                    </td>
+                                    <td class="text-center"><span class="badge bg-info">@hs.PhysicalActivityScore</span></td>
+                                    <td class="text-center"><span class="badge bg-info">@hs.BreakfastScore</span></td>
+                                    <td class="text-center"><span class="badge bg-info">@hs.FruitVegScore</span></td>
+                                    <td class="text-center"><span class="badge bg-info">@hs.SweetSnacksScore</span></td>
+                                    <td class="text-center"><span class="badge bg-info">@hs.FattyFoodsScore</span></td>
+                                    <td class="text-center"><strong class="text-primary">@hs.TotalScore</strong></td>
+                                    <td class="text-center">
+                                        <span class="badge bg-@(hs.HealthClassification == "Healthy" ? "success" : hs.HealthClassification == "Moderate" ? "warning" : "danger")">
+                                            @hs.HealthClassification
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            <i class="far fa-calendar me-1"></i>
+                                            @hs.DateRecorded.ToShortDateString()
+                                        </small>
+                                    </td>
+                                </tr>
+                                hsIndex++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-heartbeat fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">No health scores recorded yet.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Measurements Section -->
+    <div class="card section-card">
+        <div class="section-header">
+            <i class="fas fa-weight me-2"></i>Weekly Measurements (@Model.TotalMeasurements)
+        </div>
+        <div class="card-body">
+            @if (Model.Measurements.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-3">#</th>
+                                <th>Child Name</th>
+                                <th class="text-center">Age</th>
+                                <th class="text-center">Height (cm)</th>
+                                <th class="text-center">Weight (kg)</th>
+                                <th class="text-center">Centile</th>
+                                <th class="text-center">Health Range</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var mIndex = 1;
+                            }
+                            @foreach (var m in Model.Measurements)
+                            {
+                                var healthRange = m.CentileScore < 2 ? "Underweight" : 
+                                                  m.CentileScore >= 2 && m.CentileScore <= 90 ? "Healthy Weight" : "Overweight";
+                                var badgeClass = healthRange == "Healthy Weight" ? "success" : "warning";
+                                
+                                <tr>
+                                    <td class="px-3"><strong>@mIndex</strong></td>
+                                    <td>
+                                        <div class="fw-semibold">@(m.Child?.ChildName ?? "N/A")</div>
+                                    </td>
+                                    <td class="text-center"><span class="badge bg-secondary">@m.Age yrs</span></td>
+                                    <td class="text-center"><strong>@m.Height</strong></td>
+                                    <td class="text-center"><strong>@m.Weight</strong></td>
+                                    <td class="text-center"><span class="badge bg-info">@m.CentileScore</span></td>
+                                    <td class="text-center">
+                                        <span class="badge bg-@badgeClass">@healthRange</span>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            <i class="far fa-calendar me-1"></i>
+                                            @m.DateRecorded.ToShortDateString()
+                                        </small>
+                                    </td>
+                                </tr>
+                                mIndex++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-weight fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-0">No measurements recorded yet.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Export Section -->
+    <div class="card section-card">
+        <div class="card-header bg-dark text-white">
+            <i class="fas fa-download me-2"></i>Export Data
+        </div>
+        <div class="card-body">
+            <p class="mb-3">Download school data in JSON format for further analysis or reporting:</p>
+            <a href="@Url.Action("GetRecordsBySchool", new { schoolName = Model.SchoolName })" 
+               class="btn btn-dark" 
+               target="_blank">
+                <i class="fas fa-file-code me-1"></i> Export as JSON
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        console.log('School Records View Loaded');
+    </script>
+}

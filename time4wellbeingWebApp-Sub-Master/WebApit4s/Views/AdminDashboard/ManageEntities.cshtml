@@ -1,0 +1,94 @@
+﻿@model WebApit4s.Models.AdminEntityManagementViewModel
+@{
+    ViewData["Title"] = "Manage Entities";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Manage Schools</h2>
+    <form asp-action="AddSchool" method="post" class="d-flex mb-3 gap-2">
+        <input name="Name" class="form-control" placeholder="Add new school" required />
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+    <table class="table table-bordered">
+        <thead><tr><th>Name</th><th>Action</th></tr></thead>
+        <tbody>
+            @foreach (var school in Model.Schools)
+            {
+                <tr>
+                    <td>
+                        <form asp-action="EditSchool" method="post" class="d-flex gap-2">
+                            <input type="hidden" name="Id" value="@school.Id" />
+                            <input name="Name" class="form-control" value="@school.Name" />
+                            <button type="submit" class="btn btn-success btn-sm">Update</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-action="DeleteSchool" method="post" onsubmit="return confirm('Delete this school?');">
+                            <input type="hidden" name="id" value="@school.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h2 class="mt-5 mb-4">Manage Classes</h2>
+    <form asp-action="AddClass" method="post" class="d-flex mb-3 gap-2">
+        <input name="Name" class="form-control" placeholder="Add new class" required />
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+    <table class="table table-bordered">
+        <thead><tr><th>Name</th><th>Action</th></tr></thead>
+        <tbody>
+            @foreach (var cls in Model.Classes)
+            {
+                <tr>
+                    <td>
+                        <form asp-action="EditClass" method="post" class="d-flex gap-2">
+                            <input type="hidden" name="Id" value="@cls.Id" />
+                            <input name="Name" class="form-control" value="@cls.Name" />
+                            <button type="submit" class="btn btn-success btn-sm">Update</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-action="DeleteClass" method="post" onsubmit="return confirm('Delete this class?');">
+                            <input type="hidden" name="id" value="@cls.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h2 class="mt-5 mb-4">Manage Referral Types</h2>
+    <form asp-action="AddReferralType" method="post" class="d-flex mb-3 gap-2">
+        <input name="Name" class="form-control" placeholder="Add new referral type" required />
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+    <table class="table table-bordered">
+        <thead><tr><th>Name</th><th>Action</th></tr></thead>
+        <tbody>
+            @foreach (var referral in Model.ReferralTypes)
+            {
+                <tr>
+                    <td>
+                        <form asp-action="EditReferralType" method="post" class="d-flex gap-2">
+                            <input type="hidden" name="Id" value="@referral.Id" />
+                            <input name="Name" class="form-control" value="@referral.Name" />
+                            <button type="submit" class="btn btn-success btn-sm">Update</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form asp-action="DeleteReferralType" method="post" onsubmit="return confirm('Delete this referral type?');">
+                            <input type="hidden" name="id" value="@referral.Id" />
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

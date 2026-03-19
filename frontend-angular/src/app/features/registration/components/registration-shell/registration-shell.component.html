@@ -1,0 +1,49 @@
+<div class="registration-shell">
+  <div class="container-fluid registration-shell__container">
+    <div class="row g-0 min-vh-100 align-items-center">
+      <div class="col-lg-6 registration-shell__hero-column">
+        <section class="registration-shell__hero">
+          <a href="/Account/Login" title="Time4Wellbeing" class="registration-shell__brand-link">
+            <img
+              src="/images/Time4wellbeing_logo_AW[2024].png"
+              alt="Time4Wellbeing logo"
+              class="registration-shell__logo"
+            />
+          </a>
+
+          <p class="registration-shell__eyebrow">Looks like you're new here!</p>
+          <h1 class="registration-shell__headline">
+            Join our group in a few minutes. Sign up with your details to get started.
+          </h1>
+          <p class="registration-shell__copy">
+            Time4Wellbeing is a free health and wellbeing service for families with children aged 2 to 18 in
+            Staffordshire.
+          </p>
+        </section>
+      </div>
+
+      <div class="col-lg-6 registration-shell__panel-column">
+        <section class="registration-card">
+          <header class="registration-card__header">
+            <span class="registration-card__badge">
+              <i class="fa-solid fa-user-plus"></i>
+              {{ badgeText() }}
+            </span>
+            <h2 class="registration-card__title">{{ title() }}</h2>
+            @if (subtitle()) {
+              <p class="registration-card__subtitle">{{ subtitle() }}</p>
+            }
+          </header>
+
+          <div class="registration-card__body">
+            <ng-content />
+          </div>
+
+          @if (stepLabel()) {
+            <footer class="registration-card__footer">{{ stepLabel() }}</footer>
+          }
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,312 @@
+﻿@model IEnumerable<WebApit4s.Models.WeeklyMeasurements>
+@{
+    ViewData["Title"] = "Measurement";
+    ViewData["ActivePage"] = "Measurement";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+
+    bool canUseNhsBmi = ViewBag.CanUseNhsBmi is bool b && b;
+    var leftColClass = canUseNhsBmi ? "col-lg-8" : "col-lg-12";
+}
+
+<style>
+    .measurement-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    .measurement-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+    }
+    .measurement-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    .measurement-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .nav-tabs-modern {
+        border: none;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .nav-tabs-modern .nav-link {
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        color: #6b7280;
+        font-weight: 500;
+        transition: all 0.3s;
+        margin: 0 0.25rem;
+    }
+    .nav-tabs-modern .nav-link:hover {
+        background: #f3f4f6;
+        color: #667eea;
+    }
+    .nav-tabs-modern .nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    .chart-container {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+    .nhs-widget-container {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Hero Section -->
+    <div class="measurement-hero">
+        <div class="row align-items-center position-relative">
+            <div class="col-md-8">
+                <h1 class="h2 fw-bold mb-2">
+                    <i data-feather="activity" class="me-2"></i>
+                    Measurements
+                </h1>
+                <p class="mb-0 opacity-90">Track your child's growth and health metrics over time</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a asp-controller="Dashboard" asp-action="LandingPage" class="btn btn-light">
+                    <i data-feather="arrow-left" class="me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs-modern mb-4">
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Index" asp-controller="Dashboard">
+                <i data-feather="user" style="width: 16px; height: 16px;" class="me-1"></i>Profile
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Goal" asp-controller="Dashboard">
+                <i data-feather="target" style="width: 16px; height: 16px;" class="me-1"></i>Tracking Goal
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Questionnaire" asp-controller="Dashboard">
+                <i data-feather="clipboard" style="width: 16px; height: 16px;" class="me-1"></i>Questionnaire
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" asp-action="Measurement" asp-controller="Dashboard">
+                <i data-feather="activity" style="width: 16px; height: 16px;" class="me-1"></i>Measurement
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Suggestions" asp-controller="Dashboard">
+                <i data-feather="video" style="width: 16px; height: 16px;" class="me-1"></i>Videos
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Notifications" asp-controller="Dashboard">
+                <i data-feather="bell" style="width: 16px; height: 16px;" class="me-1"></i>Notifications
+            </a>
+        </li>
+    </ul>
+
+    <div class="row">
+        <!-- Left Column: Measurements and Chart -->
+        <div class="@leftColClass">
+            <!-- Create New Measurement -->
+            <div class="measurement-card mb-4">
+                <div class="card-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1rem;">
+                    <h5 class="mb-0">
+                        <i data-feather="plus-circle" class="me-2" style="width: 20px; height: 20px;"></i>
+                        Add New Measurement
+                    </h5>
+                </div>
+
+                <div class="card-body p-4">
+                    @await Html.PartialAsync("~/Views/WeeklyMeasurements/Create.cshtml", new WebApit4s.Models.WeeklyMeasurements())
+                </div>
+            </div>
+
+            <!-- Measurement History -->
+            <div class="measurement-card mb-4">
+                <div class="card-header" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 1rem;">
+                    <h5 class="mb-0">
+                        <i data-feather="clock" class="me-2" style="width: 20px; height: 20px;"></i>
+                        Measurement History
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    @await Html.PartialAsync("~/Views/WeeklyMeasurements/Index.cshtml", Model)
+                </div>
+            </div>
+
+            <!-- Measurement Chart -->
+            <div class="measurement-card mb-4">
+                <div class="card-header" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 1rem;">
+                    <h5 class="mb-0">
+                        <i data-feather="trending-up" class="me-2" style="width: 20px; height: 20px;"></i>
+                        12-Week Measurement Progress
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="chart-container">
+                        <canvas id="measurementChart" style="max-width: 100%; height: auto;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: NHS BMI Tool (only if NOT School) -->
+        @if (canUseNhsBmi)
+        {
+            <div class="col-lg-4">
+                <div class="measurement-card">
+                    <div class="card-header" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 1rem;">
+                        <h5 class="mb-0">
+                            <i data-feather="bar-chart-2" class="me-2" style="width: 20px; height: 20px;"></i>
+                            NHS BMI Calculator
+                        </h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="nhs-widget-container">
+                            <div id="nhsuk-toolscbmit_widget"></div>
+                            <script id="nhsuk-toolscbmit_widget-config" type="application/json">
+                                { "syndicatorId": "85645750-de8f-11ef-91b0-431d619fab89" }
+                            </script>
+                            <script id="nhsuk-toolscbmit_widget-launcher"
+                                    src="https://www.nhs.uk/health-assessment-tools/calculate-your-body-mass-index/calculate-bmi-for-children-teenagers/assets/scripts/widget-launcher.js">
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const data = @Html.Raw(ViewBag.ChartData ?? "[]");
+
+        if (data.length) {
+            const labels = data.map(x => x.date);
+            const heightData = data.map(x => x.height);
+            const weightData = data.map(x => x.weight);
+            const centileData = data.map(x => x.centileScore);
+
+            const ctx = document.getElementById('measurementChart').getContext('2d');
+            const chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Height (cm)',
+                            data: heightData,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Weight (kg)',
+                            data: weightData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Centile Score',
+                            data: centileData,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Measurement Progress Over Last 12 Weeks',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            color: '#1f2937'
+                        },
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        }
+                    }
+                }
+            });
+        } else {
+            const ctx = document.getElementById('measurementChart').getContext('2d');
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#6b7280';
+            ctx.textAlign = 'center';
+            ctx.fillText('No measurement data available yet. Add your first measurement above!', ctx.canvas.width / 2, ctx.canvas.height / 2);
+        }
+
+        // Replace feather icons
+        document.addEventListener("DOMContentLoaded", function () {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+}

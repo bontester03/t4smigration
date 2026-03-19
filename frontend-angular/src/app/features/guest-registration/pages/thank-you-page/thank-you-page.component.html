@@ -1,0 +1,18 @@
+<app-guest-registration-shell
+  title="Thank You"
+  subtitle="Your registration has been submitted successfully."
+  [context]="context()"
+>
+  <div class="text-center">
+    <div class="display-6 text-success mb-3">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <p class="mb-3">
+      Thank you for registering with Time4Wellbeing. We have received details for
+      <strong>{{ childrenCount() }}</strong> {{ childrenCount() === 1 ? 'child' : 'children' }}.
+    </p>
+    <p class="text-muted mb-0">
+      If a follow-up is needed, the team will contact you using the details you provided.
+    </p>
+  </div>
+</app-guest-registration-shell>

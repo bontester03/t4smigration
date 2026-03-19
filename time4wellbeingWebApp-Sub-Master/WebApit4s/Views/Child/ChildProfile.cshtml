@@ -1,0 +1,66 @@
+﻿@model WebApit4s.Models.Child
+@{
+    var avatarUrls = ViewBag.Avatars as List<string> ?? new();
+}
+@if (Model == null)
+{
+    <div class="card shadow-sm text-center">
+        <div class="card-body">
+            <p class="text-danger fw-semibold mb-3">No child profile found.</p>
+            <p class="text-muted">Please add your child's details to continue.</p>
+            <a href="@Url.Action("Create", "Child")" class="btn btn-primary mt-2">
+                <i class="fa-solid fa-plus me-1"></i> Add Child
+            </a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card shadow-sm text-center">
+        <div class="card-body">
+
+            @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+            {
+                <!-- ✅ Show existing avatar -->
+                <div class="mb-3">
+                    <img src="@Url.Content(Model.AvatarUrl)"
+                         alt="@Model.ChildName Avatar"
+                         class="rounded-circle"
+                         width="120" height="120" />
+                </div>
+            }
+            else
+            {
+                <!-- ✅ Show placeholder if no avatar -->
+                <div class="mb-3">
+                    <p class="text-muted">No avatar selected.</p>
+                </div>
+            }
+
+            <!-- ✅ Always show Update Avatar button -->
+            <div class="mb-3">
+                <a asp-controller="Child"
+                   asp-action="SelectAvatar"
+                   asp-route-childId="@Model.Id"
+                   asp-route-returnAction="ChildProfile"
+                   asp-route-returnController="Child"
+                   class="btn btn-outline-primary btn-sm mt-2">
+                    <i class="fa-solid fa-pen me-1"></i> Update Avatar
+                </a>
+            </div>
+
+            <h5 class="fw-bold mb-2">@Model.ChildName</h5>
+            <p class="text-muted mb-1">Gender: <strong>@Model.Gender</strong></p>
+            <p class="text-muted">Date of Birth: <strong>@Model.DateOfBirth.ToShortDateString()</strong></p>
+            @if (!string.IsNullOrWhiteSpace(Model.School))
+            {
+                <p class="text-muted mb-1">School: <strong>@Model.School</strong></p>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.Class))
+            {
+                <p class="text-muted mb-0">Class: <strong>@Model.Class</strong></p>
+            }
+        </div>
+    </div>
+}

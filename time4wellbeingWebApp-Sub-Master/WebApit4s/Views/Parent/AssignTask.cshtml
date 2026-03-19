@@ -1,0 +1,240 @@
+﻿@model WebApit4s.Models.ChildGameTask
+@{
+    var assignedTasks = ViewBag.AssignedTasks as List<ChildGameTask>;
+    var child = ViewBag.Child as WebApit4s.Models.Child;
+
+    ViewData["Title"] = "Assign Task";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div class="container-fluid px-2 px-md-4">
+    <div class="row">
+        <!-- Left: Form Column -->
+        <div class="col-lg-4">
+            @if (child != null)
+            {
+                <div class="card mb-3 border-start border-3 border-success">
+                    <div class="card-body">
+                        <h5 class="mb-1"><i class="fas fa-child text-primary me-1"></i> @child.ChildName</h5>
+                        <p class="mb-1 text-muted">
+                            <i class="fas fa-birthday-cake text-secondary me-1"></i> Age: <strong>@child.Age</strong><br />
+                            <i class="fas fa-coins text-warning me-1"></i> Total Coins: <strong>@child.TotalPoints</strong>
+                        </p>
+                    </div>
+                </div>
+            }
+
+            <div class="card shadow mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-tasks me-1"></i> Assign Task to @child?.ChildName
+                </div>
+                <div class="card-body">
+                    <form asp-action="AssignTask" method="post" novalidate>
+                        <input type="hidden" asp-for="ChildId" />
+
+                        <div class="mb-3">
+                            <label asp-for="GameTaskId" class="form-label">Select Task <span class="text-danger">*</span></label>
+                            <select asp-for="GameTaskId" asp-items="ViewBag.GameTasks" class="form-select">
+                                <option value="">-- Choose a Task --</option>
+                            </select>
+                            <span asp-validation-for="GameTaskId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="AssignedDate" class="form-label">Assign Date <span class="text-danger">*</span></label>
+                            <input asp-for="AssignedDate" type="datetime-local" class="form-control" />
+                            <span asp-validation-for="AssignedDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input asp-for="IsRecurringDaily" class="form-check-input" />
+                            <label asp-for="IsRecurringDaily" class="form-check-label">Repeat Daily?</label>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-plus-circle me-1"></i> Assign Task
+                            </button>
+                            <a asp-action="Dashboard" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Back
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Assigned Tasks Table -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="fas fa-tasks me-1"></i> Assigned Tasks
+                    </div>
+
+                    <!-- Bulk delete -->
+                    <form id="bulkDeleteForm" asp-action="BulkDeleteTasks" asp-controller="Parent" method="post" class="m-0">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="childId" value="@child?.Id" />
+                        <button id="bulkDeleteBtn" type="button" class="btn btn-sm btn-danger delete-trigger" data-form="bulkDeleteForm" disabled>
+                            <i class="fas fa-trash-alt me-1"></i> Delete Selected
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card-body table-responsive">
+                    @if (assignedTasks != null && assignedTasks.Any())
+                    {
+                        <table class="table table-bordered table-striped table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:36px;">
+                                        <input type="checkbox" id="selectAll" class="form-check-input" />
+                                    </th>
+                                    <th>Task</th>
+                                    <th>Assigned</th>
+                                    <th>Status</th>
+                                    <th>Recurring</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var task in assignedTasks.OrderByDescending(t => t.AssignedDate))
+                                {
+                                    var isExpired = !task.IsCompleted && DateTime.UtcNow > task.ExpiryDate;
+
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox"
+                                                   class="form-check-input row-check"
+                                                   name="taskIds"
+                                                   form="bulkDeleteForm"
+                                                   value="@task.Id" />
+                                        </td>
+                                        <td>@task.GameTask?.Title</td>
+                                        <td>@task.AssignedDate.ToString("dd MMM yyyy")</td>
+                                        <td>
+                                            @if (task.IsCompleted)
+                                            {
+                                                <span class="badge bg-success">Completed</span>
+                                            }
+                                            else if (isExpired)
+                                            {
+                                                <span class="badge bg-danger">Expired</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark">Pending</span>
+                                            }
+                                    </td>
+                                    <td>
+                                        @(task.IsRecurringDaily
+                                                                            ? Html.Raw("<span class='badge bg-info'>Yes</span>")
+                                                                            : Html.Raw("<span class='badge bg-secondary'>No</span>"))
+                                </td>
+                                <td class="text-nowrap">
+                                    <!-- Single delete -->
+                                    <form asp-action="DeleteTask"
+                                          asp-controller="Parent"
+                                          method="post"
+                                          class="d-inline"
+                                          id="deleteForm-@task.Id">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@task.Id" />
+                                        <input type="hidden" name="childId" value="@task.ChildId" />
+                                        <button type="button" class="btn btn-sm btn-danger delete-trigger" data-form="deleteForm-@task.Id">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                                                        }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No tasks assigned yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the selected task(s)?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        // Checkbox selection logic
+        (function () {
+            const selectAll = document.getElementById('selectAll');
+            const checks = () => Array.from(document.querySelectorAll('.row-check'));
+            const bulkBtn = document.getElementById('bulkDeleteBtn');
+
+            function updateBulkDeleteState() {
+                const anyChecked = checks().some(c => c.checked);
+                bulkBtn.disabled = !anyChecked;
+            }
+
+            if (selectAll) {
+                selectAll.addEventListener('change', function () {
+                    checks().forEach(c => c.checked = selectAll.checked);
+                    updateBulkDeleteState();
+                });
+            }
+
+            checks().forEach(c => c.addEventListener('change', function () {
+                const all = checks();
+                const allChecked = all.every(x => x.checked);
+                const anyChecked = all.some(x => x.checked);
+                if (selectAll) {
+                    selectAll.checked = allChecked;
+                    selectAll.indeterminate = !allChecked && anyChecked;
+                }
+                updateBulkDeleteState();
+            }));
+
+            updateBulkDeleteState();
+        })();
+
+        // Delete confirmation modal logic
+        document.addEventListener("DOMContentLoaded", function () {
+            let targetFormId = null;
+            const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
+            const confirmBtn = document.getElementById("confirmDeleteBtn");
+
+            document.querySelectorAll(".delete-trigger").forEach(btn => {
+                btn.addEventListener("click", function () {
+                    targetFormId = this.getAttribute("data-form");
+                    modal.show();
+                });
+            });
+
+            confirmBtn.addEventListener("click", function () {
+                if (targetFormId) {
+                    document.getElementById(targetFormId).submit();
+                }
+            });
+        });
+    </script>
+}

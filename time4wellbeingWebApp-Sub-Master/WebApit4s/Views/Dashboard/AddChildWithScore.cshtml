@@ -1,0 +1,296 @@
+﻿@model WebApit4s.ViewModels.ChildWithScoreViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+@{
+    ViewData["Title"] = "Add New Child & First Health Score";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<style>
+    .child-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    .child-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+    }
+    .child-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    .child-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .section-header {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-left: 4px solid #667eea;
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .form-group-modern {
+        margin-bottom: 1.5rem;
+    }
+    .form-group-modern label {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    .form-control, .form-select {
+        border-radius: 10px;
+        border: 2px solid #e5e7eb;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s;
+    }
+    .form-control:focus, .form-select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    .form-text {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    .submit-btn {
+        border-radius: 10px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .submit-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+    .score-option-card {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border-left: 4px solid #f59e0b;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Hero Section -->
+    <div class="child-hero">
+        <div class="row align-items-center position-relative">
+            <div class="col-md-8">
+                <h1 class="h2 fw-bold mb-2">
+                    <i data-feather="user-plus" class="me-2"></i>
+                    Add New Child
+                </h1>
+                <p class="mb-0 opacity-90">Register a new child and record their first health assessment</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a asp-controller="Dashboard" asp-action="LandingPage" class="btn btn-light">
+                    <i data-feather="arrow-left" class="me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="child-card mb-5">
+    
+
+        <div class="card-header" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 1rem;">
+            <h5 class="mb-0">
+                <i data-feather="user-check" class="me-2" style="width: 20px; height: 20px;"></i>
+                Child Registration & Health Assessment
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <form asp-action="AddChildWithScore" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <!-- Child Section -->
+                <div class="section-header">
+                    <h5 class="mb-0" style="color: #1f2937;">
+                        <i data-feather="user" style="width: 20px; height: 20px;" class="me-2"></i>
+                        Child Details
+                    </h5>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group-modern">
+                        <label asp-for="Child.ChildName">
+                            <i data-feather="user" style="width: 16px; height: 16px;" class="me-1"></i>
+                            Child Name
+                        </label>
+                        <input asp-for="Child.ChildName" class="form-control" placeholder="Enter full name" />
+                        <span asp-validation-for="Child.ChildName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6 form-group-modern">
+                        <label asp-for="Child.Gender">
+                            <i data-feather="users" style="width: 16px; height: 16px;" class="me-1"></i>
+                            Gender
+                        </label>
+                        <select asp-for="Child.Gender" class="form-select">
+                            <option value="">-- Select Gender --</option>
+                            <option>Male</option>
+                            <option>Female</option>
+                            <option>Other</option>
+                        </select>
+                        <span asp-validation-for="Child.Gender" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="form-group-modern">
+                    <label asp-for="Child.DateOfBirth">
+                        <i data-feather="calendar" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Date of Birth
+                    </label>
+                    <input asp-for="Child.DateOfBirth" type="date" class="form-control"
+                           value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                           max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="Child.DateOfBirth" class="text-danger small"></span>
+                </div>
+
+                <hr class="my-4" style="border-top: 2px solid #e5e7eb;" />
+
+                <!-- Health Score Section -->
+                <div class="section-header">
+                    <h5 class="mb-0" style="color: #1f2937;">
+                        <i data-feather="activity" style="width: 20px; height: 20px;" class="me-2"></i>
+                        Initial Health Score
+                    </h5>
+                </div>
+
+                @* Physical Activity *@
+                <div class="form-group-modern">
+                    <label>
+                        <i data-feather="zap" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Physical Activity
+                    </label>
+                    <p class="form-text">Minutes of moderate/high activity outside school in the last 7 days.</p>
+                    <select asp-for="HealthScore.PhysicalActivityScore" class="form-select">
+                        <option value="-1">Select...</option>
+                        <option value="0">Less than 60 mins</option>
+                        <option value="1">60-120 mins</option>
+                        <option value="2">180-240 mins</option>
+                        <option value="3">300-360 mins</option>
+                        <option value="4">420+ mins</option>
+                    </select>
+                    <span asp-validation-for="HealthScore.PhysicalActivityScore" class="text-danger small"></span>
+                </div>
+
+                @* Breakfast *@
+                <div class="form-group-modern">
+                    <label>
+                        <i data-feather="coffee" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Breakfast
+                    </label>
+                    <p class="form-text">How many days a week does your child eat breakfast?</p>
+                    <select asp-for="HealthScore.BreakfastScore" class="form-select">
+                        <option value="-1">Select...</option>
+                        <option value="0">0 days</option>
+                        <option value="1">1-2 days</option>
+                        <option value="2">3-4 days</option>
+                        <option value="3">5-6 days</option>
+                        <option value="4">7 days</option>
+                    </select>
+                    <span asp-validation-for="HealthScore.BreakfastScore" class="text-danger small"></span>
+                </div>
+
+                @* Fruit & Veg *@
+                <div class="form-group-modern">
+                    <label>
+                        <i data-feather="sun" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Fruit & Vegetable Intake
+                    </label>
+                    <p class="form-text">Daily number of portions your child consumes.</p>
+                    <select asp-for="HealthScore.FruitVegScore" class="form-select">
+                        <option value="-1">Select...</option>
+                        <option value="0">0 portions</option>
+                        <option value="1">1-2 portions</option>
+                        <option value="2">3 portions</option>
+                        <option value="3">4 portions</option>
+                        <option value="4">5+ portions</option>
+                    </select>
+                    <span asp-validation-for="HealthScore.FruitVegScore" class="text-danger small"></span>
+                </div>
+
+                @* Sweet Snacks *@
+                <div class="form-group-modern">
+                    <label>
+                        <i data-feather="alert-circle" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Sweet Snacks
+                    </label>
+                    <p class="form-text">How often does your child consume sweet snacks?</p>
+                    <select asp-for="HealthScore.SweetSnacksScore" class="form-select">
+                        <option value="-1">Select...</option>
+                        <option value="0">6+ times/week</option>
+                        <option value="1">3-5 times/week</option>
+                        <option value="2">1-2 times/week</option>
+                        <option value="3">Less than 1/week</option>
+                        <option value="4">Never</option>
+                    </select>
+                    <span asp-validation-for="HealthScore.SweetSnacksScore" class="text-danger small"></span>
+                </div>
+
+                @* Fatty Foods *@
+                <div class="form-group-modern">
+                    <label>
+                        <i data-feather="alert-triangle" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Fatty Foods
+                    </label>
+                    <p class="form-text">How often does your child eat fatty foods?</p>
+                    <select asp-for="HealthScore.FattyFoodsScore" class="form-select">
+                        <option value="-1">Select...</option>
+                        <option value="0">6+ times/week</option>
+                        <option value="1">3-5 times/week</option>
+                        <option value="2">1-2 times/week</option>
+                        <option value="3">Less than 1/week</option>
+                        <option value="4">Never</option>
+                    </select>
+                    <span asp-validation-for="HealthScore.FattyFoodsScore" class="text-danger small"></span>
+                </div>
+
+                <div class="form-group-modern">
+                    <label>
+                        <i data-feather="calendar" style="width: 16px; height: 16px;" class="me-1"></i>
+                        Date Recorded
+                    </label>
+                    <input asp-for="HealthScore.DateRecorded" class="form-control"
+                           type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")"
+                           max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="HealthScore.DateRecorded" class="text-danger small"></span>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-success submit-btn">
+                        <i data-feather="check-circle" class="me-2" style="width: 18px; height: 18px;"></i>
+                        Save Child and Score
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+}

@@ -1,0 +1,33 @@
+# Workspace-level ignore rules for the combined Angular + ASP.NET solution.
+
+# Root caches and artifacts
+.dotnet/
+artifacts/
+
+# Dependency caches
+**/node_modules/
+**/.angular/
+**/.dotnet/
+**/.nuget/
+**/.keys/
+
+# Build outputs
+**/bin/
+**/obj/
+frontend-angular/dist/
+frontend-angular/coverage/
+time4wellbeingWebApp-Sub-Master/WebApit4s/wwwroot/guest-registration/
+time4wellbeingWebApp-Sub-Master/WebApit4s[ ]/
+
+# Local logs and run output
+**/*.log
+
+# IDE and OS files
+**/.vs/
+**/.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+Thumbs.db
+.DS_Store

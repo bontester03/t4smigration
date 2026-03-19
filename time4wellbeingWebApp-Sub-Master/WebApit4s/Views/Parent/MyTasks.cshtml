@@ -1,0 +1,150 @@
+﻿@model IEnumerable<WebApit4s.Models.GameTask>
+@{
+    ViewData["Title"] = "My Tasks";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div class="container-fluid px-2 px-md-4">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <a asp-action="Dashboard" asp-controller="Parent" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+                <a asp-action="AddTask" asp-controller="Parent" class="btn btn-success">
+                    <i class="fas fa-plus-circle me-1"></i> Add Task
+                </a>
+            </div>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-1"></i> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-times-circle me-1"></i> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card shadow mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-tasks me-1"></i> My Tasks
+                </div>
+                <div class="card-body p-0">
+                    @if (!Model.Any())
+                    {
+                        <div class="p-3">
+                            <span class="text-muted">You haven’t created any tasks yet.</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Area</th>
+                                        <th class="text-center">Points</th>
+                                        <th class="text-center">Active</th>
+                                        <th class="text-center">Common</th>
+                                        <th>Created</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var t in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <a asp-action="TaskDetails" asp-route-id="@t.Id" class="text-decoration-none">
+                                                    @t.Title
+                                                </a>
+                                            </td>
+                                            <td>@t.TargetArea</td>
+                                            <td class="text-center">@t.Points</td>
+                                            <td class="text-center">
+                                                @(t.IsActive ? "Yes" : "No")
+                                            </td>
+                                            <td class="text-center">
+                                                @(t.IsCommonTask ? "Yes" : "No")
+                                            </td>
+                                            <td>@t.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                            <td class="text-end">
+                                                <button type="button"
+                                                        class="btn btn-sm btn-danger"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteGameTaskModal"
+                                                        data-id="@t.Id"
+                                                        data-title="@t.Title">
+                                                    <i class="fas fa-trash-alt me-1"></i> Delete
+                                                </button>
+                                            </td>
+
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteGameTaskModal" tabindex="-1" aria-labelledby="deleteGameTaskLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteGameTaskLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i> Confirm delete
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <p class="mb-0">
+                    Are you sure you want to delete <strong id="deleteTaskTitle"></strong>? This cannot be undone.
+                </p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+
+                <!-- The real POST form lives inside the modal -->
+                <form id="deleteTaskForm" method="post" asp-action="DeleteGameTask" asp-controller="Parent" class="d-inline">
+                    <input type="hidden" name="id" id="deleteTaskId" value="" />
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt me-1"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        (function () {
+            const modalEl = document.getElementById('deleteGameTaskModal');
+            if (!modalEl) return;
+
+            modalEl.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const id = button.getAttribute('data-id');
+                const title = button.getAttribute('data-title');
+
+                document.getElementById('deleteTaskId').value = id;
+                document.getElementById('deleteTaskTitle').textContent = title || '';
+            });
+        })();
+    </script>
+}

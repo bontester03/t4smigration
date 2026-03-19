@@ -1,0 +1,65 @@
+﻿@model WebApit4s.Models.AdminUserStatusViewModel
+
+
+@{
+  
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fa-solid fa-user-check text-primary"></i> My Data Completion Report</h2>
+    <div class="d-flex justify-content-end mb-3">
+        <a asp-controller="Dashboard" asp-action="LandingPage" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left me-2"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="mb-4">
+        <strong>Email:</strong> @Model.Email<br />
+        <strong>Referral Type:</strong> @Model.ReferralType<br />
+        <strong>Registration Date:</strong> @Model.RegistrationDate.ToString("dd MMM yyyy")
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white"><i class="fa-solid fa-child"></i> Per-Child Completion Summary</div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Child Name</th>
+                            <th>Date of Birth</th>
+                            <th>Personal Details</th>
+                            <th>Health Scores</th>
+                            <th>Measurements</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var child in Model.ChildStatuses)
+                        {
+                            <tr>
+                                <td>@child.ChildName</td>
+                                <td>@child.DateOfBirth.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <span class="badge bg-@(child.HasPersonalDetails ? "success" : "danger")">
+                                        @(child.HasPersonalDetails ? "Completed" : "Not Completed")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-@(child.HasHealthScores ? "success" : "danger")">
+                                        @(child.HasHealthScores ? "Completed" : "Not Completed")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-@(child.HasMeasurements ? "success" : "danger")">
+                                        @(child.HasMeasurements ? "Completed" : "Not Completed")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

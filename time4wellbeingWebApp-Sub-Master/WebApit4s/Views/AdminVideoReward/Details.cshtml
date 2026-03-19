@@ -1,0 +1,72 @@
+﻿@model WebApit4s.ViewModels.VideoWatchLogListItem
+
+@{
+    ViewData["Title"] = "Video Watch Log Details";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3><i class="fas fa-video me-2"></i> Video Watch Log Details</h3>
+        <a asp-action="Result" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Logs
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            Watch Details for <strong>@Model.VideoTitle</strong>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">Child</dt>
+                <dd class="col-sm-8">@Model.ChildName</dd>
+
+                <dt class="col-sm-4">Video</dt>
+                <dd class="col-sm-8">@Model.VideoTitle</dd>
+
+                <dt class="col-sm-4">Started At (UTC)</dt>
+                <dd class="col-sm-8">@Model.StartedUtc.ToString("dd MMM yyyy HH:mm:ss")</dd>
+
+                <dt class="col-sm-4">Ended At (UTC)</dt>
+                <dd class="col-sm-8">
+                    @(Model.EndedUtc?.ToString("dd MMM yyyy HH:mm:ss") ?? "Still watching / not ended")
+                </dd>
+
+                <dt class="col-sm-4">Duration Watched</dt>
+                <dd class="col-sm-8">@Model.DurationSeconds seconds</dd>
+
+                <dt class="col-sm-4">Video Duration</dt>
+                <dd class="col-sm-8">@Model.VideoDurationSeconds seconds</dd>
+
+                <dt class="col-sm-4">Max Position Reached</dt>
+                <dd class="col-sm-8">@Model.MaxPositionSeconds seconds</dd>
+
+                <dt class="col-sm-4">Percent Watched</dt>
+                <dd class="col-sm-8">@Model.PercentWatched %</dd>
+
+                <dt class="col-sm-4">Coins Awarded</dt>
+                <dd class="col-sm-8">
+                    @if (Model.CoinsAwarded)
+                    {
+                        <span class="badge bg-success">Yes</span>
+                        <small>(@Model.AwardedUtc?.ToString("dd MMM yyyy HH:mm:ss") ?? "")</small>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">No</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-4">Client IP</dt>
+                <dd class="col-sm-8">@Model.ClientIp</dd>
+
+                <dt class="col-sm-4">User Agent</dt>
+                <dd class="col-sm-8">@Model.UserAgent</dd>
+
+                <dt class="col-sm-4">Device ID</dt>
+                <dd class="col-sm-8">@Model.DeviceId</dd>
+            </dl>
+        </div>
+    </div>
+</div>

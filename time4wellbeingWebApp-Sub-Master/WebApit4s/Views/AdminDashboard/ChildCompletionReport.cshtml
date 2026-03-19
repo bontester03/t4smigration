@@ -1,0 +1,520 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<WebApit4s.ViewModels.ChildCompletionStatusViewModel>
+
+@{
+    ViewData["Title"] = "Child Completion Report";
+    ViewData["ActivePage"] = "ChildCompletionReport";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    
+    // Calculate analytics
+    var totalChildren = Model.TotalItemCount;
+    var completeCount = Model.Count(c => c.HasPersonalDetails && c.HasHealthScores && c.HasMeasurements);
+    var incompleteCount = totalChildren - completeCount;
+    var completionRate = totalChildren > 0 ? (completeCount / (double)totalChildren) * 100 : 0;
+    var missingPersonal = Model.Count(c => !c.HasPersonalDetails);
+    var missingHealth = Model.Count(c => !c.HasHealthScores);
+    var missingMeasurements = Model.Count(c => !c.HasMeasurements);
+}
+
+<style>
+    .stat-card {
+        border-left: 4px solid;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .completion-row-complete {
+        background-color: rgba(40, 167, 69, 0.05);
+    }
+    .completion-row-incomplete {
+        background-color: rgba(255, 193, 7, 0.05);
+    }
+    .filter-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        color: white;
+    }
+    .filter-section .form-label {
+        color: white;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+    .progress-ring {
+        width: 120px;
+        height: 120px;
+    }
+    .child-card {
+        border-left: 3px solid;
+        transition: all 0.3s;
+    }
+    .child-card:hover {
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transform: translateX(5px);
+    }
+    .child-card.complete {
+        border-left-color: #28a745;
+    }
+    .child-card.incomplete {
+        border-left-color: #ffc107;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-dark fw-bold mb-1">
+                <i class="fas fa-chart-line text-primary me-2"></i> Child Completion Report
+            </h2>
+            <p class="text-muted mb-0">Track registration completion status across all children</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Dashboard
+        </a>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Analytics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #007bff !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Total Children</div>
+                            <div class="h3 mb-0 fw-bold text-primary">@totalChildren</div>
+                        </div>
+                        <div class="text-primary" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #28a745 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Complete</div>
+                            <div class="h3 mb-0 fw-bold text-success">@completeCount</div>
+                            <small class="text-muted">@completionRate.ToString("F1")% completion</small>
+                        </div>
+                        <div class="text-success" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #ffc107 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Incomplete</div>
+                            <div class="h3 mb-0 fw-bold text-warning">@incompleteCount</div>
+                            <small class="text-muted">Need attention</small>
+                        </div>
+                        <div class="text-warning" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #dc3545 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Missing Data</div>
+                            <div class="small">
+                                <div><i class="fas fa-user me-1"></i> Personal: @missingPersonal</div>
+                                <div><i class="fas fa-heartbeat me-1"></i> Health: @missingHealth</div>
+                                <div><i class="fas fa-weight me-1"></i> Measure: @missingMeasurements</div>
+                            </div>
+                        </div>
+                        <div class="text-danger" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section shadow-sm">
+        <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filter Children</h5>
+        <form asp-action="ChildCompletionReport" method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-calendar-alt me-1"></i>Start Date</label>
+                <input type="date" name="startDate" class="form-control bg-white" value="@ViewBag.StartDate" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-calendar-alt me-1"></i>End Date</label>
+                <input type="date" name="endDate" class="form-control bg-white" value="@ViewBag.EndDate" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-tags me-1"></i>Referral Type</label>
+                <select name="referralTypeId" class="form-select bg-white">
+                    <option value="">All Referral Types</option>
+                    @foreach (var r in ViewBag.ReferralTypes as List<SelectListItem>)
+                    {
+                        <option value="@r.Value" selected="@(ViewBag.SelectedReferralType == r.Value)">@r.Text</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-user me-1"></i>Personal Details</label>
+                <select name="hasPersonalDetails" class="form-select bg-white">
+                    <option value="">Any</option>
+                    <option value="true" selected="@(ViewBag.HasPersonalDetails?.ToString() == "True")">Completed</option>
+                    <option value="false" selected="@(ViewBag.HasPersonalDetails?.ToString() == "False")">Missing</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-heartbeat me-1"></i>Health Scores</label>
+                <select name="hasHealthScores" class="form-select bg-white">
+                    <option value="">Any</option>
+                    <option value="true" selected="@(ViewBag.HasHealthScores?.ToString() == "True")">Completed</option>
+                    <option value="false" selected="@(ViewBag.HasHealthScores?.ToString() == "False")">Missing</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-weight me-1"></i>Measurements</label>
+                <select name="hasMeasurements" class="form-select bg-white">
+                    <option value="">Any</option>
+                    <option value="true" selected="@(ViewBag.HasMeasurements?.ToString() == "True")">Completed</option>
+                    <option value="false" selected="@(ViewBag.HasMeasurements?.ToString() == "False")">Missing</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-light flex-fill">
+                    <i class="fas fa-search me-1"></i> Apply Filters
+                </button>
+                <a asp-action="ChildCompletionReport" class="btn btn-outline-light flex-fill">
+                    <i class="fas fa-redo me-1"></i> Clear All
+                </a>
+            </div>
+        </form>
+    </div>
+    @if (Model != null && Model.Any())
+    {
+        <!-- Desktop Table View -->
+        <div class="card shadow-sm border-0 mb-4 d-none d-md-block">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0 text-dark">
+                    <i class="fas fa-list-alt me-2"></i>Completion Status by Child
+                    <span class="badge bg-primary ms-2">@Model.TotalItemCount</span>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-3">Child Info</th>
+                                <th>Referral Type</th>
+                                <th class="text-center">Registration</th>
+                                <th class="text-center">Personal</th>
+                                <th class="text-center">Health</th>
+                                <th class="text-center">Measurements</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var allComplete = item.HasPersonalDetails && item.HasHealthScores && item.HasMeasurements;
+                                var rowClass = allComplete ? "completion-row-complete" : "completion-row-incomplete";
+
+                                <tr class="@rowClass">
+                                    <td class="px-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                @if (allComplete)
+                                                {
+                                                    <i class="fas fa-check-circle text-success fa-2x"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="fas fa-exclamation-triangle text-warning fa-2x"></i>
+                                                }
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">@item.ChildName</div>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-envelope me-1"></i>@item.Email
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary">@item.ReferralType</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <small class="text-muted">
+                                            <i class="far fa-calendar me-1"></i>
+                                            @item.RegistrationDate.ToString("dd MMM yyyy")
+                                        </small>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.HasPersonalDetails)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Complete
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times me-1"></i>Missing
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.HasHealthScores)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Complete
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times me-1"></i>Missing
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        @if (item.HasMeasurements)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Complete
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times me-1"></i>Missing
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <form asp-action="SendReminderEmail" method="post" 
+                                              onsubmit="return confirm('Send reminder email to @item.Email?');" 
+                                              class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="email" value="@item.Email" />
+                                            <input type="hidden" name="childName" value="@item.ChildName" />
+                                            <input type="hidden" name="missingPersonal" value="@(!item.HasPersonalDetails)" />
+                                            <input type="hidden" name="missingHealth" value="@(!item.HasHealthScores)" />
+                                            <input type="hidden" name="missingMeasurement" value="@(!item.HasMeasurements)" />
+                                            <button type="submit" 
+                                                    class="btn btn-sm @(allComplete ? "btn-outline-secondary" : "btn-warning")" 
+                                                    @(allComplete ? "disabled" : "")
+                                                    title="@(allComplete ? "All data complete" : "Send reminder email")">
+                                                <i class="fas fa-envelope me-1"></i>
+                                                @(allComplete ? "Complete" : "Remind")
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="d-md-none">
+            @foreach (var item in Model)
+            {
+                var allComplete = item.HasPersonalDetails && item.HasHealthScores && item.HasMeasurements;
+                var cardClass = allComplete ? "complete" : "incomplete";
+
+                <div class="card child-card @cardClass shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="me-2">
+                                    @if (allComplete)
+                                    {
+                                        <i class="fas fa-check-circle text-success fa-2x"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-exclamation-triangle text-warning fa-2x"></i>
+                                    }
+                                </div>
+                                <div>
+                                    <div class="fw-bold">@item.ChildName</div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-envelope me-1"></i>@item.Email
+                                    </small>
+                                </div>
+                            </div>
+                            <span class="badge bg-secondary">@item.ReferralType</span>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-4">
+                                <div class="text-center">
+                                    <div class="small text-muted mb-1">Personal</div>
+                                    @if (item.HasPersonalDetails)
+                                    {
+                                        <span class="badge bg-success w-100">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger w-100">
+                                            <i class="fas fa-times"></i>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-center">
+                                    <div class="small text-muted mb-1">Health</div>
+                                    @if (item.HasHealthScores)
+                                    {
+                                        <span class="badge bg-success w-100">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger w-100">
+                                            <i class="fas fa-times"></i>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="text-center">
+                                    <div class="small text-muted mb-1">Measure</div>
+                                    @if (item.HasMeasurements)
+                                    {
+                                        <span class="badge bg-success w-100">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger w-100">
+                                            <i class="fas fa-times"></i>
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="far fa-calendar me-1"></i>
+                                @item.RegistrationDate.ToString("dd MMM yyyy")
+                            </small>
+
+                            <form asp-action="SendReminderEmail" method="post" 
+                                  onsubmit="return confirm('Send reminder?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="email" value="@item.Email" />
+                                <input type="hidden" name="childName" value="@item.ChildName" />
+                                <input type="hidden" name="missingPersonal" value="@(!item.HasPersonalDetails)" />
+                                <input type="hidden" name="missingHealth" value="@(!item.HasHealthScores)" />
+                                <input type="hidden" name="missingMeasurement" value="@(!item.HasMeasurements)" />
+                                <button type="submit" 
+                                        class="btn btn-sm @(allComplete ? "btn-outline-secondary" : "btn-warning")" 
+                                        @(allComplete ? "disabled" : "")>
+                                    <i class="fas fa-envelope me-1"></i>
+                                    @(allComplete ? "Complete" : "Remind")
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            @Html.PagedListPager(
+                Model,
+                page => Url.Action("ChildCompletionReport", new {
+                    page,
+                    startDate = ViewBag.StartDate,
+                    endDate = ViewBag.EndDate,
+                    referralTypeId = ViewBag.SelectedReferralType,
+                    hasPersonalDetails = ViewBag.HasPersonalDetails,
+                    hasHealthScores = ViewBag.HasHealthScores,
+                    hasMeasurements = ViewBag.HasMeasurements
+                }),
+                new PagedListRenderOptions
+                {
+                    UlElementClasses = new[] { "pagination" },
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" },
+                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                    LinkToFirstPageFormat = "First",
+                    LinkToLastPageFormat = "Last"
+                }
+            )
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">No children found</h5>
+                <p class="text-muted mb-0">Try adjusting your filters or check back later.</p>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Initialize tooltips if Bootstrap is loaded
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (el) { 
+            new bootstrap.Tooltip(el); 
+        });
+    });
+</script>
+

@@ -1,0 +1,64 @@
+﻿@model IEnumerable<WebApit4s.Models.WeeklyMeasurements>
+
+@{
+    ViewData["Title"] = "Measurements History";
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Age (years)</th>
+                        <th>Height (cm)</th>
+                        <th>Weight (kg)</th>
+                        <th>Centile Score</th>
+                        <th>Health Range</th>
+                        <th>Date Recorded</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Age</td>
+                                <td>@item.Height</td>
+                                <td>@item.Weight</td>
+                                <td>@item.CentileScore</td>
+                                <td>
+                                    @if (item.HealthRange == "Underweight")
+                                    {
+                                        <span class="badge bg-danger">@item.HealthRange</span>
+                                    }
+                                    else if (item.HealthRange == "Healthy Weight")
+                                    {
+                                        <span class="badge bg-success">@item.HealthRange</span>
+                                    }
+                                    else if (item.HealthRange == "Overweight")
+                                    {
+                                        <span class="badge bg-warning">@item.HealthRange</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@item.HealthRange</span>
+                                    }
+                                </td>
+
+                                <td>@item.DateRecorded.ToString("dd MMM yyyy")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No measurements found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

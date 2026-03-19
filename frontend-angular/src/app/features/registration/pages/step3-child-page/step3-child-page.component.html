@@ -1,0 +1,79 @@
+<app-registration-shell
+  title="Child Details"
+  subtitle="Provide details for the child you are registering."
+  stepLabel="Step 3 of 6"
+>
+  @if (isLoading) {
+    <div class="registration-loading"><div class="spinner-border text-success" role="status"></div></div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="registration-form">
+      @if (errorMessage) {
+        <div class="alert alert-danger registration-alert" role="alert">{{ errorMessage }}</div>
+      }
+
+      <div class="registration-grid registration-grid--two">
+        <div class="registration-field registration-grid__span-2">
+          <label class="registration-label required" for="childName">Child Name</label>
+          <input id="childName" formControlName="childName" class="form-control registration-control" />
+        </div>
+
+        <div class="registration-field">
+          <label class="registration-label required" for="gender">Gender</label>
+          <select id="gender" formControlName="gender" class="form-select registration-control">
+            <option value="">-- Select Gender --</option>
+            @for (gender of options()?.genders ?? []; track gender) {
+              <option [value]="gender">{{ gender }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="registration-field">
+          <label class="registration-label required" for="dateOfBirth">Date of Birth</label>
+          <input id="dateOfBirth" formControlName="dateOfBirth" type="date" class="form-control registration-control" />
+        </div>
+
+        <div class="registration-field">
+          <label class="registration-label required" for="school">School</label>
+          <select id="school" formControlName="school" class="form-select registration-control">
+            <option value="">-- Select School --</option>
+            @for (school of options()?.schools ?? []; track school.id) {
+              <option [value]="school.name">{{ school.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="registration-field">
+          <label class="registration-label required" for="class">Class</label>
+          <select id="class" formControlName="class" class="form-select registration-control">
+            <option value="">-- Select Class --</option>
+            @for (classOption of options()?.classes ?? []; track classOption.id) {
+              <option [value]="classOption.name">{{ classOption.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="registration-field">
+        <label class="registration-label required">Choose Avatar</label>
+        <p class="registration-helper">Select the character that will represent the child in the app.</p>
+        <div class="registration-avatar-grid">
+          @for (avatar of options()?.avatars ?? []; track avatar) {
+            <button
+              type="button"
+              class="registration-avatar-option"
+              [class.registration-avatar-option-selected]="form.controls.avatarUrl.value === avatar"
+              (click)="selectAvatar(avatar)"
+            >
+              <img [src]="avatar" alt="Child avatar option" class="registration-avatar-image" />
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="registration-actions">
+        <button type="button" class="btn registration-button registration-button--secondary" (click)="back()">Back</button>
+        <button type="submit" class="btn registration-button registration-button--primary">Save and Continue</button>
+      </div>
+    </form>
+  }
+</app-registration-shell>

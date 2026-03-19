@@ -1,0 +1,32 @@
+@import "bootstrap/functions";
+@import "bootstrap/variables";
+@import "bootstrap/variables-dark";
+@import "bootstrap/mixins";
+@import "bootstrap/vendor/rfs";
+
+
+//-------------------- Base Colors --------------------//
+
+$theme-color: 			$blue;
+
+$theme-hover-color :    darken($theme-color, 10%);
+
+$body-color:			#4c4d4d;
+
+//------------- Fonts -------------//
+
+$body-font-family: 'Poppins', sans-serif;
+
+
+//-------------------- Social Colors --------------------//
+
+$facebook:                 #1874eb;
+$twitter:                  #00ACEE;
+$google:                   #DB4437;
+$linkedin:                 #0E76A8;
+$instagram:                #3F729B;
+$vk:                       #2B587A;
+$yahoo:                    #720E9E;
+$apple:                    #000;
+$windows:                  #0090f4;
+$amazon:                   #f79400;

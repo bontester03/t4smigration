@@ -1,0 +1,371 @@
+﻿@model WebApit4s.Models.UserDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+    ViewData["ActivePage"] = "Dashboard";
+}
+
+<style>
+    .dashboard-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    .dashboard-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+    }
+    .dashboard-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .dashboard-card .card-header {
+        padding: 0.75rem 1rem;
+    }
+    .dashboard-card .card-header h5 {
+        font-size: 0.95rem;
+        margin: 0;
+    }
+    .dashboard-card .card-body {
+        padding: 1rem;
+    }
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s;
+        height: 100%;
+    }
+    .stat-card:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.75rem;
+        font-size: 1.2rem;
+    }
+    .quote-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-left: 4px solid #667eea;
+        border-radius: 15px;
+        padding: 2rem;
+    }
+    .video-container {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .metric-card {
+        border-radius: 15px;
+        padding: 1.5rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    .metric-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: rgba(255, 255, 255, 0.1);
+        transform: rotate(45deg);
+        pointer-events: none;
+    }
+    .action-btn {
+        transition: all 0.3s;
+    }
+    .action-btn:hover {
+        transform: scale(1.05);
+    }
+    .compact-quote {
+        padding: 0.5rem !important;
+    }
+    .compact-quote .fa-quote-left {
+        font-size: 1.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    .compact-quote .blockquote p {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem !important;
+    }
+    .compact-quote .blockquote-footer {
+        font-size: 0.75rem;
+    }
+</style>
+
+@if (ViewBag.ShowConsentPopup == true)
+{
+    <div class="modal fade show" id="consentModal" tabindex="-1" style="display:block;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+                <form method="post" asp-action="SubmitConsentFromPopup">
+                    <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 20px 20px 0 0;">
+                        <h5 class="modal-title">
+                            <i data-feather="file-text" class="me-2"></i>Consent Form
+                        </h5>
+                    </div>
+                    <div class="modal-body p-4">
+                        @for (int i = 0; i < ((List<ConsentQuestion>)ViewBag.ConsentQuestions).Count; i++)
+                        {
+                            var question = ((List<ConsentQuestion>)ViewBag.ConsentQuestions)[i];
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">
+                                    <i data-feather="help-circle" style="width: 16px; height: 16px;" class="me-2"></i>
+                                    @question.Text
+                                </label>
+                                <input type="hidden" name="Responses[@i].QuestionId" value="@question.Id" />
+                                <input type="hidden" name="Responses[@i].QuestionText" value="@question.Text" />
+                                <select class="form-select form-select-lg" name="Responses[@i].Answer" required style="border-radius: 10px;">
+                                    <option value="">-- Please Select --</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success btn-lg" style="border-radius: 10px;">
+                            <i data-feather="check-circle" class="me-2"></i>Submit Consent
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.body.classList.add("modal-open");
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+    </script>
+}
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Welcome Hero -->
+    <div class="dashboard-hero">
+        <div class="row align-items-center position-relative">
+            <div class="col-md-8">
+                <h1 class="h2 fw-bold mb-2">
+                    <i data-feather="smile" class="me-2"></i>
+                    Welcome back, @ViewBag.ActiveChildName!
+                </h1>
+                <p class="mb-0 opacity-90">Your personal wellness dashboard</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div style="font-size: 5rem; opacity: 0.2;">
+                    <i data-feather="activity"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Row: Quote, Video, Summary -->
+    <div class="row g-4 mb-4">
+        <!-- Quote of the Day -->
+        <div class="col-xxl-4 col-xl-12">
+            <div class="dashboard-card h-100">
+                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="mb-0">
+                        <i data-feather="heart" class="me-2" style="width: 16px; height: 16px;"></i>Quote of the Day
+                    </h5>
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <div class="text-center compact-quote">
+                        <i class="fa-solid fa-quote-left text-muted mb-2"></i>
+                        <blockquote class="blockquote mb-0">
+                            <p class="fst-italic">"@ViewBag.QuoteOfTheDay"</p>
+                            <footer class="blockquote-footer">Daily Inspiration</footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video of the Day -->
+        <div class="col-xxl-4 col-xl-6">
+            <div class="dashboard-card h-100">
+                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="mb-0">
+                        <i data-feather="video" class="me-2" style="width: 16px; height: 16px;"></i>Video of the Day
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.VideoOfTheDay != null)
+                    {
+                        var video = (ResourceViewModel)ViewBag.VideoOfTheDay;
+                        <div class="video-container">
+                            <div class="ratio ratio-16x9">
+                                <iframe src="@video.Url.Replace("watch?v=", "embed/")" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-3">
+                            <i data-feather="video-off" style="width: 32px; height: 32px;" class="text-muted mb-2"></i>
+                            <p class="text-muted mb-0 small">No video available today</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Statistics -->
+        <div class="col-xxl-4 col-xl-6">
+            <div class="dashboard-card h-100">
+                <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="mb-0">
+                        <i data-feather="trending-up" class="me-2" style="width: 16px; height: 16px;"></i>Your Progress
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2 mb-2">
+                        <div class="col-4">
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: white;">
+                                    <i data-feather="award" style="width: 20px; height: 20px;"></i>
+                                </div>
+                                <h5 class="fw-bold mb-0">@Model.AvailableRewards?.ChildCoins</h5>
+                                <small class="text-muted" style="font-size: 0.75rem;">Coins</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+                                    <i data-feather="gift" style="width: 20px; height: 20px;"></i>
+                                </div>
+                                <h5 class="fw-bold mb-0">@Model.AvailableRewards?.Rewards?.Count()</h5>
+                                <small class="text-muted" style="font-size: 0.75rem;">Rewards</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                    <i data-feather="check-square" style="width: 20px; height: 20px;"></i>
+                                </div>
+                                <h5 class="fw-bold mb-0">@Model.ActiveTasksCount</h5>
+                                <small class="text-muted" style="font-size: 0.75rem;">Tasks</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-grid">
+                        <a asp-controller="ChildGameTask" asp-action="Index" class="btn btn-outline-primary btn-sm action-btn">
+                            <i data-feather="eye" class="me-1" style="width: 14px; height: 14px;"></i>View Rewards & Tasks
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metrics Cards -->
+    <div class="row g-4">
+        <!-- User Report -->
+        <div class="col-lg-6 col-xl-3">
+            <div class="metric-card h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="d-flex justify-content-between align-items-center position-relative">
+                    <div>
+                        <div class="opacity-75 small mb-2">Completion Status</div>
+                        <div class="h5 fw-bold mb-0">My Progress</div>
+                    </div>
+                    <i data-feather="users" style="width: 48px; height: 48px;" class="opacity-50"></i>
+                </div>
+                <div class="mt-3">
+                    <a class="text-white text-decoration-none d-flex align-items-center justify-content-between" asp-action="MyCompletionStatus" asp-controller="Dashboard">
+                        <span>View Report</span>
+                        <i data-feather="arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weight Logs -->
+        <div class="col-lg-6 col-xl-3">
+            <div class="metric-card h-100" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);">
+                <div class="d-flex justify-content-between align-items-center position-relative">
+                    <div>
+                        <div class="opacity-75 small mb-2">Weight Logs</div>
+                        <div class="h3 fw-bold mb-0">@ViewBag.TotalWeightLogs</div>
+                    </div>
+                    <i data-feather="activity" style="width: 48px; height: 48px;" class="opacity-50"></i>
+                </div>
+                <div class="mt-3">
+                    <a class="text-white text-decoration-none d-flex align-items-center justify-content-between" asp-controller="Dashboard" asp-action="Measurement">
+                        <span>View Measurements</span>
+                        <i data-feather="arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registered Children -->
+        <div class="col-lg-6 col-xl-3">
+            <div class="metric-card h-100" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                <div class="d-flex justify-content-between align-items-center position-relative">
+                    <div>
+                        <div class="opacity-75 small mb-2">Registered Children</div>
+                        <div class="h3 fw-bold mb-0">@ViewBag.TotalChildren</div>
+                    </div>
+                    <i data-feather="user-check" style="width: 48px; height: 48px;" class="opacity-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questionnaires -->
+        <div class="col-lg-6 col-xl-3">
+            <div class="metric-card h-100" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+                <div class="d-flex justify-content-between align-items-center position-relative">
+                    <div>
+                        <div class="opacity-75 small mb-2">Questionnaires</div>
+                        <div class="h3 fw-bold mb-0">@ViewBag.TotalHealthScores</div>
+                    </div>
+                    <i data-feather="clipboard" style="width: 48px; height: 48px;" class="opacity-50"></i>
+                </div>
+                <div class="mt-3">
+                    <a class="text-white text-decoration-none d-flex align-items-center justify-content-between" asp-controller="Dashboard" asp-action="Questionnaire">
+                        <span>View Questionnaire</span>
+                        <i data-feather="arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+}

@@ -1,0 +1,69 @@
+<app-guest-registration-shell
+  title="Healthy Lifestyle Score"
+  subtitle="Please answer the following questions based on your child's weekly habits."
+  stepLabel="Step 3 of 5"
+  [context]="context()"
+>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="mb-3">
+      <label class="fw-semibold required">Physical Activity</label>
+      <p class="form-text">On how many days per week does your child do 60+ minutes of physical activity?</p>
+      <select formControlName="physicalActivityScore" class="form-select rounded-0">
+        <option [value]="-1">Select...</option>
+        @for (option of weeklyOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="fw-semibold required">Breakfast</label>
+      <p class="form-text">How many days a week does your child eat breakfast?</p>
+      <select formControlName="breakfastScore" class="form-select rounded-0">
+        <option [value]="-1">Select...</option>
+        @for (option of weeklyOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="fw-semibold required">Fruit &amp; Vegetable Intake</label>
+      <p class="form-text">Daily number of portions your child consumes.</p>
+      <select formControlName="fruitVegScore" class="form-select rounded-0">
+        <option [value]="-1">Select...</option>
+        @for (option of fruitVegOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="fw-semibold required">Sweet Snacks</label>
+      <p class="form-text">How often does your child consume sweet snacks?</p>
+      <select formControlName="sweetSnacksScore" class="form-select rounded-0">
+        <option [value]="-1">Select...</option>
+        @for (option of snackOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="mb-4">
+      <label class="fw-semibold required">Fatty Foods</label>
+      <p class="form-text">How often does your child eat fatty foods?</p>
+      <select formControlName="fattyFoodsScore" class="form-select rounded-0">
+        <option [value]="-1">Select...</option>
+        @for (option of snackOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="d-grid my-4">
+      <button type="submit" class="btn btn-success rounded-0 guest-btn-primary">
+        Save and Continue
+      </button>
+    </div>
+  </form>
+</app-guest-registration-shell>

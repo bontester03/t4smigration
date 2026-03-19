@@ -1,0 +1,160 @@
+﻿@model WebApit4s.ViewModels.AvailableRewardsViewModel
+
+<!-- Rewards Card -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <!-- Left: Title -->
+    <div class="d-flex align-items-center">
+        <i class="fas fa-gift me-2"></i>
+        <span class="fw-bold">Available Rewards</span>
+    </div>
+   
+    <!-- Right: History button + count -->
+    <div class="d-flex align-items-center">
+        <a asp-controller="Dashboard" asp-action="MyRedemptions"
+           class="btn btn-sm btn-light text-primary me-3">
+            <i class="fas fa-list me-1"></i> Coin Redemption History
+        </a>
+        <span class="small">@(Model?.Rewards?.Count ?? 0) item(s)</span>
+    </div>
+</div>
+
+
+    <div class="card-body">
+        <!-- Alerts -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-1"></i> @TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-times-circle me-1"></i> @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (Model.Rewards == null || !Model.Rewards.Any())
+        {
+            <div class="alert alert-info mb-0">
+                <i class="fas fa-info-circle me-1"></i> No rewards available right now.
+            </div>
+        }
+        else
+        {
+            <div class="row g-3">
+                @foreach (var item in Model.Rewards)
+                {
+                    var canAfford = Model.ChildCoins >= item.CoinCost;
+                    var requiresApproval = item.RequiresParentApproval;
+
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body">
+                                <!-- Title & Cost -->
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="card-title mb-1">@item.Title</h5>
+                                    <span class="badge bg-info">
+                                        <i class="fas fa-coins me-1"></i>@item.CoinCost
+                                    </span>
+                                </div>
+
+                                <!-- Description -->
+                                @if (!string.IsNullOrWhiteSpace(item.Description))
+                                {
+                                    <p class="card-text text-muted mb-2">@item.Description</p>
+                                }
+
+                                <!-- Badges -->
+                                <div class="mb-2">
+                                    @if (item.IsCommon)
+                                    {
+                                        <span class="badge bg-secondary me-1">
+                                            <i class="fas fa-users me-1"></i> Common
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-dark me-1">
+                                            <i class="fas fa-child me-1"></i> Child-specific
+                                        </span>
+                                    }
+
+                                    @if (requiresApproval)
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-check-double me-1"></i> Requires approval
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-bolt me-1"></i> Instant
+                                        </span>
+                                    }
+                                </div>
+
+                                <!-- Validity & Cooldown -->
+                                <div class="small text-muted">
+                                    @{
+                                        var fromTxt = item.ValidFromUtc?.ToLocalTime().ToString("dd MMM yyyy");
+                                        var toTxt = item.ValidToUtc?.ToLocalTime().ToString("dd MMM yyyy");
+                                    }
+
+                                    @if (item.ValidFromUtc.HasValue || item.ValidToUtc.HasValue)
+                                    {
+                                        <div>
+                                            <i class="far fa-calendar-alt me-1"></i>
+                                            @(fromTxt ?? "Any") – @(toTxt ?? "Any")
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div>
+                                            <i class="far fa-calendar-alt me-1"></i> Any time
+                                        </div>
+                                    }
+
+                                    @if (item.CooldownDaysPerChild.HasValue && item.CooldownDaysPerChild.Value > 0)
+                                    {
+                                        <div>
+                                            <i class="fas fa-hourglass-half me-1"></i>
+                                            Cooldown: @item.CooldownDaysPerChild d
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Footer with Redeem Button -->
+                            <div class="card-footer bg-transparent border-0 pt-0 pb-3 px-3">
+                                <form asp-action="RedeemReward"
+                                      asp-controller="Dashboard"
+                                      method="post"
+                                      class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="rewardId" value="@item.Id" />
+                                    <button type="submit"
+                                            class="btn btn-success btn-sm"
+                                            @(canAfford ? null : "disabled")
+                                            title="@(canAfford ? (requiresApproval ? "Send request to parent" : "Redeem now") : "Not enough coins")">
+                                        <i class="fas fa-gift me-1"></i>
+                                        @(requiresApproval ? "Request" : "Redeem")
+                                    </button>
+                                </form>
+
+                                @if (!canAfford)
+                                {
+                                    <span class="text-muted small ms-2">Not enough coins.</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>

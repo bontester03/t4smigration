@@ -1,0 +1,199 @@
+﻿@model WebApit4s.Models.HealthScore
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>HealthScore</h4>
+<hr />
+
+<div class="col-xl-8">
+    <!-- Edit Health Score Form -->
+    <div class="card mb-4">
+        <div class="card-header">Edit Health Score</div>
+        <div class="card-body">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <!-- Physical Activity Score Card -->
+                <div class="card mb-3">
+                    <div class="card-header">Physical Activity Score</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="PhysicalActivityScore" class="control-label"></label>
+                            <input asp-for="PhysicalActivityScore" class="form-control" />
+                            <span asp-validation-for="PhysicalActivityScore" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Breakfast Score Card -->
+                <div class="card mb-3">
+                    <div class="card-header">Breakfast Score</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="BreakfastScore" class="control-label"></label>
+                            <input asp-for="BreakfastScore" class="form-control" />
+                            <span asp-validation-for="BreakfastScore" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fruit and Veg Score Card -->
+                <div class="card mb-3">
+                    <div class="card-header">Fruit and Vegetable Score</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="FruitVegScore" class="control-label"></label>
+                            <input asp-for="FruitVegScore" class="form-control" />
+                            <span asp-validation-for="FruitVegScore" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sweet Snacks Score Card -->
+                <div class="card mb-3">
+                    <div class="card-header">Sweet Snacks Score</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="SweetSnacksScore" class="control-label"></label>
+                            <input asp-for="SweetSnacksScore" class="form-control" />
+                            <span asp-validation-for="SweetSnacksScore" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fatty Foods Score Card -->
+                <div class="card mb-3">
+                    <div class="card-header">Fatty Foods Score</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="FattyFoodsScore" class="control-label"></label>
+                            <input asp-for="FattyFoodsScore" class="form-control" />
+                            <span asp-validation-for="FattyFoodsScore" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Score Card -->
+                <div class="card mb-3">
+                    <div class="card-header">Total Score</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="TotalScore" class="control-label"></label>
+                            <input asp-for="TotalScore" class="form-control" />
+                            <span asp-validation-for="TotalScore" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Classification Card -->
+                <div class="card mb-3">
+                    <div class="card-header">Health Classification</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="HealthClassification" class="control-label"></label>
+                            <input asp-for="HealthClassification" class="form-control" />
+                            <span asp-validation-for="HealthClassification" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date Recorded Card -->
+                <div class="card mb-3">
+                    <div class="card-header">Date Recorded</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="DateRecorded" class="control-label"></label>
+                            <input asp-for="DateRecorded" class="form-control" type="date" />
+                            <span asp-validation-for="DateRecorded" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User ID Card -->
+                <div class="card mb-3">
+                    <div class="card-header">User</div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label asp-for="UserId" class="control-label"></label>
+                            <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                            <span asp-validation-for="UserId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="form-group mt-3">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@* <div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="PhysicalActivityScore" class="control-label"></label>
+                <input asp-for="PhysicalActivityScore" class="form-control" />
+                <span asp-validation-for="PhysicalActivityScore" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BreakfastScore" class="control-label"></label>
+                <input asp-for="BreakfastScore" class="form-control" />
+                <span asp-validation-for="BreakfastScore" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FruitVegScore" class="control-label"></label>
+                <input asp-for="FruitVegScore" class="form-control" />
+                <span asp-validation-for="FruitVegScore" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SweetSnacksScore" class="control-label"></label>
+                <input asp-for="SweetSnacksScore" class="form-control" />
+                <span asp-validation-for="SweetSnacksScore" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FattyFoodsScore" class="control-label"></label>
+                <input asp-for="FattyFoodsScore" class="form-control" />
+                <span asp-validation-for="FattyFoodsScore" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TotalScore" class="control-label"></label>
+                <input asp-for="TotalScore" class="form-control" />
+                <span asp-validation-for="TotalScore" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HealthClassification" class="control-label"></label>
+                <input asp-for="HealthClassification" class="form-control" />
+                <span asp-validation-for="HealthClassification" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DateRecorded" class="control-label"></label>
+                <input asp-for="DateRecorded" class="form-control" />
+                <span asp-validation-for="DateRecorded" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserId" class="control-label"></label>
+                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div> *@
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

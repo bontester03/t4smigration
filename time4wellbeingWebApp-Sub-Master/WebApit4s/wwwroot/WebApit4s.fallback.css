@@ -1,0 +1,6 @@
+/* App-level fallback stylesheet to satisfy layout references. */
+
+html, body {
+    min-height: 100%;
+}
+

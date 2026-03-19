@@ -1,0 +1,340 @@
+﻿@model X.PagedList.IPagedList<WebApit4s.Models.Feedback>
+@using X.PagedList.Mvc.Core
+
+@{
+    ViewData["Title"] = "User Feedback";
+    ViewData["ActivePage"] = "AllFeedback";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var categories = ViewBag.Categories as List<string>;
+    
+    // Calculate analytics
+    var totalFeedback = Model.TotalItemCount;
+    var avgRating = Model.Any() ? Model.Average(f => f.Rating) : 0;
+    var fiveStarCount = Model.Count(f => f.Rating == 5);
+    var oneStarCount = Model.Count(f => f.Rating == 1);
+}
+
+<style>
+    .stat-card {
+        border-left: 4px solid;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .rating-stars {
+        color: #ffc107;
+        font-size: 1.1rem;
+    }
+    .feedback-card {
+        border-left: 3px solid #28a745;
+        transition: all 0.3s;
+    }
+    .feedback-card:hover {
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transform: translateX(5px);
+    }
+    .badge-category {
+        font-size: 0.85rem;
+        padding: 0.4em 0.8em;
+    }
+    .filter-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        color: white;
+    }
+    .filter-section .form-label {
+        color: white;
+        font-weight: 500;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-dark fw-bold mb-1">
+                <i class="fas fa-comment-dots text-success me-2"></i> User Feedback Management
+            </h2>
+            <p class="text-muted mb-0">Monitor and analyze user feedback across all categories</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Dashboard
+        </a>
+    </div>
+
+    <!-- Analytics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #007bff !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Total Feedback</div>
+                            <div class="h3 mb-0 fw-bold text-primary">@totalFeedback</div>
+                        </div>
+                        <div class="text-primary" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #ffc107 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Average Rating</div>
+                            <div class="h3 mb-0 fw-bold text-warning">
+                                @avgRating.ToString("F1") <small class="text-muted">/ 5.0</small>
+                            </div>
+                        </div>
+                        <div class="text-warning" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #28a745 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">5-Star Reviews</div>
+                            <div class="h3 mb-0 fw-bold text-success">@fiveStarCount</div>
+                        </div>
+                        <div class="text-success" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-thumbs-up"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #dc3545 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">1-Star Reviews</div>
+                            <div class="h3 mb-0 fw-bold text-danger">@oneStarCount</div>
+                        </div>
+                        <div class="text-danger" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-thumbs-down"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section shadow-sm">
+        <h5 class="mb-3"><i class="fas fa-filter me-2"></i>Filter Feedback</h5>
+        <form method="get" asp-action="AllFeedback" class="row g-3">
+
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-tag me-1"></i>Category</label>
+                <select name="category" class="form-select bg-white">
+                    <option value="">All Categories</option>
+                    @foreach (var cat in categories)
+                    {
+                        var isSelected = Context.Request.Query["category"] == cat;
+                        <option value="@cat" selected="@(isSelected ? "selected" : null)">@cat</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label"><i class="fas fa-envelope me-1"></i>User Email</label>
+                <input type="text" name="userEmail" class="form-control bg-white" 
+                       placeholder="Search by email..." 
+                       value="@(Context.Request.Query["userEmail"])" />
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label"><i class="fas fa-calendar-alt me-1"></i>Start Date</label>
+                <input type="date" name="startDate" class="form-control bg-white" 
+                       value="@(Context.Request.Query["startDate"])" />
+            </div>
+
+            <div class="col-md-2">
+                <label class="form-label"><i class="fas fa-calendar-alt me-1"></i>End Date</label>
+                <input type="date" name="endDate" class="form-control bg-white" 
+                       value="@(Context.Request.Query["endDate"])" />
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-light flex-fill">
+                    <i class="fas fa-search me-1"></i> Apply
+                </button>
+                <a asp-action="AllFeedback" class="btn btn-outline-light flex-fill">
+                    <i class="fas fa-redo me-1"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <!-- Desktop Table View -->
+        <div class="card shadow-sm border-0 mb-4 d-none d-md-block">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0 text-dark">
+                    <i class="fas fa-list me-2"></i>Feedback Records
+                    <span class="badge bg-primary ms-2">@Model.TotalItemCount</span>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-3">User</th>
+                                <th>Category</th>
+                                <th>Rating</th>
+                                <th>Comments</th>
+                                <th>Submitted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="px-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-primary text-white me-2" style="width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                                @(item.User?.Email?.Substring(0, 1).ToUpper() ?? "?")
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold">@(item.User?.Email ?? "Unknown")</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-category bg-info">@item.Category</span>
+                                    </td>
+                                    <td>
+                                        <div class="rating-stars">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <i class="@(i <= item.Rating ? "fas fa-star" : "far fa-star text-muted")"></i>
+                                            }
+                                        </div>
+                                        <small class="text-muted">(@item.Rating/5)</small>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(item.Comments))
+                                        {
+                                            <div style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                @item.Comments
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted fst-italic">No comments</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            <i class="far fa-clock me-1"></i>
+                                            @item.SubmittedAt.ToLocalTime().ToString("dd MMM yyyy")
+                                            <br />
+                                            @item.SubmittedAt.ToLocalTime().ToString("HH:mm")
+                                        </small>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="d-md-none">
+            @foreach (var item in Model)
+            {
+                <div class="card feedback-card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle bg-primary text-white me-2" style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">
+                                    @(item.User?.Email?.Substring(0, 1).ToUpper() ?? "?")
+                                </div>
+                                <div>
+                                    <div class="fw-semibold">@(item.User?.Email ?? "Unknown")</div>
+                                    <small class="text-muted">
+                                        <i class="far fa-clock me-1"></i>
+                                        @item.SubmittedAt.ToLocalTime().ToString("dd MMM yyyy · HH:mm")
+                                    </small>
+                                </div>
+                            </div>
+                            <span class="badge badge-category bg-info">@item.Category</span>
+                        </div>
+
+                        <div class="mb-2">
+                            <div class="rating-stars">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <i class="@(i <= item.Rating ? "fas fa-star" : "far fa-star text-muted")"></i>
+                                }
+                            </div>
+                            <span class="ms-2 text-muted small">(@item.Rating/5)</span>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(item.Comments))
+                        {
+                            <div class="mt-2">
+                                <div class="small text-muted mb-1"><i class="fas fa-comment me-1"></i>Comments</div>
+                                <div class="p-2 bg-light rounded">@item.Comments</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            @Html.PagedListPager(
+                Model,
+                page => Url.Action("AllFeedback", new {
+                    page,
+                    category = Context.Request.Query["category"].ToString(),
+                    userEmail = Context.Request.Query["userEmail"].ToString(),
+                    startDate = Context.Request.Query["startDate"].ToString(),
+                    endDate = Context.Request.Query["endDate"].ToString()
+                }),
+                new PagedListRenderOptions
+                {
+                    UlElementClasses = new[] { "pagination" },
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" },
+                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                    LinkToFirstPageFormat = "First",
+                    LinkToLastPageFormat = "Last"
+                }
+            )
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">No feedback records found</h5>
+                <p class="text-muted mb-0">Try adjusting your filters or check back later.</p>
+            </div>
+        </div>
+    }
+</div>
+

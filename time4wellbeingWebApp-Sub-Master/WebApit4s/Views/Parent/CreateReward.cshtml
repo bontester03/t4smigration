@@ -1,0 +1,155 @@
+﻿@model WebApit4s.ViewModels.CreateParentRewardViewModel
+@{
+    ViewData["Title"] = "Create Reward";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div class="container-fluid px-2 px-md-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+
+            <!-- Back -->
+            <a asp-action="MyRewards" asp-controller="Parent" class="btn btn-secondary mb-3">
+                <i class="fas fa-arrow-left me-1"></i> Back to My Rewards
+            </a>
+
+            <!-- Flash messages -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-1"></i> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-times-circle me-1"></i> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-gift me-1"></i> Create Reward
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="CreateReward" asp-controller="Parent" method="post" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label asp-for="Title" class="form-label">Reward Title <span class="text-danger">*</span></label>
+                                <input asp-for="Title" class="form-control" />
+                                <span asp-validation-for="Title" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="CoinCost" class="form-label">Coin Cost <span class="text-danger">*</span></label>
+                                <input asp-for="CoinCost" type="number" min="1" class="form-control" />
+                                <span asp-validation-for="CoinCost" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <label asp-for="Description" class="form-label">Description</label>
+                            <textarea asp-for="Description" rows="3" class="form-control" placeholder="e.g. Trip to the park, pick a treat, family movie night"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <hr />
+
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input asp-for="IsCommon" class="form-check-input" id="isCommonChk" />
+                                    <label class="form-check-label" for="isCommonChk">
+                                        Make this a <strong>common reward</strong> for all my children
+                                    </label>
+                                </div>
+                                <small class="text-muted">Untick to assign to a specific child only.</small>
+                            </div>
+
+                            <div class="col-md-6" id="childPickerWrap">
+                                <label asp-for="ChildId" class="form-label">Assign to a specific child</label>
+                                <select asp-for="ChildId" asp-items="Model.Children" class="form-select">
+                                    <option value="">-- Select child --</option>
+                                </select>
+                                <span asp-validation-for="ChildId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-3">
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input asp-for="RequiresParentApproval" class="form-check-input" id="requiresApprovalChk" />
+                                    <label class="form-check-label" for="requiresApprovalChk">
+                                        Requires my approval before coins are deducted
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="CooldownDaysPerChild" class="form-label">Cooldown (days)</label>
+                                <input asp-for="CooldownDaysPerChild" type="number" min="0" class="form-control" />
+                                <small class="text-muted">Leave blank for no cooldown.</small>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-1">
+                            <div class="col-md-4">
+                                <label asp-for="ValidFromUtc" class="form-label">Valid From</label>
+                                <input asp-for="ValidFromUtc" type="date" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="ValidToUtc" class="form-label">Valid To</label>
+                                <input asp-for="ValidToUtc" type="date" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save me-1"></i> Create Reward
+                            </button>
+                            <a asp-action="MyRewards" asp-controller="Parent" class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        (function () {
+            const chk = document.getElementById('isCommonChk');
+            const wrap = document.getElementById('childPickerWrap');
+            const childSelect = document.getElementById('ChildId');
+
+            function toggleChildPicker() {
+                const isCommon = chk.checked;
+                if (isCommon) {
+                    wrap.style.display = 'none';
+                    if (childSelect) {
+                        childSelect.value = "";
+                        childSelect.setAttribute('disabled', 'disabled');
+                    }
+                } else {
+                    wrap.style.display = 'block';
+                    if (childSelect) {
+                        childSelect.removeAttribute('disabled');
+                    }
+                }
+            }
+
+            if (chk) {
+                chk.addEventListener('change', toggleChildPicker);
+                toggleChildPicker();
+            }
+        })();
+    </script>
+}

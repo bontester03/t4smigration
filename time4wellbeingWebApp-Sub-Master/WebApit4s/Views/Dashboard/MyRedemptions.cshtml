@@ -1,0 +1,103 @@
+﻿@model IEnumerable<WebApit4s.Models.ParentRewardRedemption>
+@{
+    ViewData["Title"] = "My Redemptions";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+
+<div class="container-fluid px-2 px-md-4">
+    <div class="row">
+        <div class="col-12">
+
+            <!-- Top actions -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <a asp-action="Index" asp-controller="ChildGameTask" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Game Task
+                </a>
+                <a asp-action="Index" asp-controller="ChildGameTask" class="btn btn-primary">
+                    <i class="fas fa-gift me-1"></i> Available Rewards
+                </a>
+            </div>
+
+            <!-- Alerts -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-1"></i> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-times-circle me-1"></i> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+        
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-history me-1"></i> My Redeemed Rewards</span>
+                    <span class="small">@((Model?.Count() ?? 0)) item(s)</span>
+                    <span class="badge bg-warning text-dark">
+                        <i class="fas fa-coins me-1"></i> Total Redeemed: @ViewBag.TotalRedeemed
+                    </span>
+               
+                </div>
+
+                <div class="card-body table-responsive">
+                    @if (Model != null && Model.Any())
+                    {
+                        <table class="table table-bordered table-striped table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Reward</th>
+                                    <th style="width:110px;">Cost</th>
+                                    <th style="width:130px;">Status</th>
+                                    <th style="width:130px;">Requested</th>
+                                    <th style="width:130px;">Approved</th>
+                                    <th style="width:130px;">Redeemed</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.OrderByDescending(x => x.RequestedUtc))
+                                {
+                                    var badgeClass =
+                                    item.Status == WebApit4s.Models.ParentReward.ParentRewardRedemptionStatus.Requested ? "warning" :
+                                    item.Status == WebApit4s.Models.ParentReward.ParentRewardRedemptionStatus.Approved ? "primary" :
+                                    item.Status == WebApit4s.Models.ParentReward.ParentRewardRedemptionStatus.Redeemed ? "success" :
+                                    item.Status == WebApit4s.Models.ParentReward.ParentRewardRedemptionStatus.Rejected ? "danger" :
+                                    "secondary";
+                                    <tr>
+                                        <td>
+                                            <div class="fw-semibold">@item.ParentReward?.Title</div>
+                                            @* Optional: show description if you include it via eager load *@
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info"><i class="fas fa-coins me-1"></i>@item.CoinCostAtPurchase</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-@badgeClass">@item.Status</span>
+                                        </td>
+                                        <td>@item.RequestedUtc.ToLocalTime().ToString("dd/MM/yyyy")</td>
+                                        <td>@(item.ApprovedUtc.HasValue? item.ApprovedUtc.Value.ToLocalTime().ToString("dd/MM/yyyy") : "-")</td>
+                                        <td>@(item.RedeemedUtc.HasValue? item.RedeemedUtc.Value.ToLocalTime().ToString("dd/MM/yyyy") : "-")</td>
+                                        <td>@(string.IsNullOrWhiteSpace(item.Notes) ? "-" : item.Notes)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-1"></i> No rewards redeemed yet.
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

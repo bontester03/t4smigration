@@ -1,0 +1,149 @@
+﻿@model WebApit4s.Models.VideoReward
+@{
+    ViewData["Title"] = "Edit Video Reward";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container-fluid px-2 px-md-4">
+    <div class="row">
+        <div class="col-lg-8 col-xl-7">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0"><i class="fas fa-edit me-2"></i> Edit Video Reward</h4>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to list
+                </a>
+            </div>
+
+            <div class="card shadow">
+                <div class="card-body">
+                    <form asp-action="Edit" method="post" novalidate>
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label"></label>
+                            <input asp-for="Title" class="form-control" placeholder="e.g. 10-Minute Kid-Friendly Workout" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-2">
+                            <label asp-for="YouTubeUrl" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fab fa-youtube"></i></span>
+                                <input asp-for="YouTubeUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=VIDEO_ID or https://youtu.be/VIDEO_ID" />
+                                <button type="button" id="btnPreview" class="btn btn-outline-primary">Preview</button>
+                            </div>
+                            <div class="form-text">
+                                Paste a full YouTube link; we’ll extract the video ID automatically.
+                            </div>
+                            <span asp-validation-for="YouTubeUrl" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4" id="previewWrapper" style="display:none;">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="ratio ratio-16x9 border rounded">
+                                        <iframe id="ytFrame" src="" title="YouTube preview" allowfullscreen></iframe>
+                                    </div>
+                                </div>
+                                <div class="col-12 d-flex align-items-center gap-2">
+                                    <img id="ytThumb" alt="Thumbnail preview" class="rounded border" style="max-height: 90px; display:none;" />
+                                    <code id="ytCode" class="text-muted"></code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label asp-for="CoinValue" class="form-label"></label>
+                                <input asp-for="CoinValue" class="form-control" type="number" min="1" step="1" />
+                                <div class="form-text">Minimum 1 coin.</div>
+                                <span asp-validation-for="CoinValue" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <div class="form-check form-switch">
+                                    <input asp-for="IsActive" class="form-check-input" />
+                                    <label asp-for="IsActive" class="form-check-label"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        @* If you later add gating fields to VideoReward, include them here too *@
+
+                        <div class="mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Update
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const urlInput = document.getElementById("@Html.IdFor(m => m.YouTubeUrl)");
+            const btnPreview = document.getElementById("btnPreview");
+            const wrapper = document.getElementById("previewWrapper");
+            const frame = document.getElementById("ytFrame");
+            const thumb = document.getElementById("ytThumb");
+            const code = document.getElementById("ytCode");
+
+            function extractYouTubeId(url) {
+                if (!url) return null;
+                try {
+                    // Accepts: watch?v=, youtu.be/, embed/, shorts/
+                    const u = new URL(url);
+                    if ((u.hostname.includes("youtube.com") || u.hostname.includes("youtu.be"))) {
+                        if (u.searchParams.get("v")) return u.searchParams.get("v");
+                        const parts = u.pathname.split("/").filter(Boolean);
+                        // youtu.be/VIDEOID or /embed/VIDEOID or /shorts/VIDEOID
+                        if (parts.length) return parts[parts.length - 1];
+                    }
+                } catch { /* fallthrough */ }
+                // Fallback: plain ID?
+                const plainId = url.trim();
+                if (/^[a-zA-Z0-9_-]{6,}$/.test(plainId)) return plainId;
+                return null;
+            }
+
+            function updatePreview() {
+                const id = extractYouTubeId(urlInput.value);
+                if (!id) {
+                    wrapper.style.display = "none";
+                    frame.src = "";
+                    thumb.style.display = "none";
+                    thumb.src = "";
+                    code.textContent = "";
+                    return;
+                }
+                const embed = `https://www.youtube.com/embed/${id}`;
+                const thumbUrl = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+
+                frame.src = embed;
+                thumb.src = thumbUrl;
+                thumb.style.display = "inline-block";
+                code.textContent = `Video ID: ${id}`;
+                wrapper.style.display = "block";
+            }
+
+            // Auto-preview on blur and when pressing the button
+            urlInput.addEventListener("blur", updatePreview);
+            btnPreview.addEventListener("click", updatePreview);
+
+            // If the model already has a URL, show preview on load
+            document.addEventListener("DOMContentLoaded", function () {
+                if (urlInput.value) updatePreview();
+            });
+        })();
+    </script>
+}

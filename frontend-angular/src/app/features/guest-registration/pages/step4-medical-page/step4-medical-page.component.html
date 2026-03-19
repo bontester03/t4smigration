@@ -1,0 +1,63 @@
+<app-guest-registration-shell
+  title="Medical Details"
+  subtitle="Provide the child's medical information. Fields marked with * are required."
+  stepLabel="Step 4 of 5"
+  [context]="context()"
+>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="mb-3">
+      <label class="fw-semibold required" for="gpPracticeName">GP Practice Name</label>
+      <input id="gpPracticeName" formControlName="gpPracticeName" class="form-control rounded-0" placeholder="e.g. Silver Birch Medical Centre" />
+      @if (form.controls.gpPracticeName.touched && form.controls.gpPracticeName.invalid) {
+        <span class="text-danger small">GP Practice Name is required.</span>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="fw-semibold required" for="gpContactNumber">GP Contact Number</label>
+      <input id="gpContactNumber" formControlName="gpContactNumber" class="form-control rounded-0" placeholder="e.g. 01782 123456" />
+      @if (form.controls.gpContactNumber.touched && form.controls.gpContactNumber.invalid) {
+        <span class="text-danger small">GP Contact Number is required.</span>
+      }
+      <p class="form-text">UK numbers preferred. Include area code.</p>
+    </div>
+
+    <div class="mb-3">
+      <label class="fw-semibold" for="medicalConditions">Medical Conditions (optional)</label>
+      <textarea id="medicalConditions" formControlName="medicalConditions" class="form-control rounded-0" rows="3" placeholder="E.g. asthma, diabetes, eczema..."></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="fw-semibold" for="allergies">Allergies (optional)</label>
+      <textarea id="allergies" formControlName="allergies" class="form-control rounded-0" rows="2" placeholder="E.g. peanuts, dairy, pollen..."></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="fw-semibold" for="medications">Medications (optional)</label>
+      <textarea id="medications" formControlName="medications" class="form-control rounded-0" rows="2" placeholder="E.g. inhaler, epipen, daily tablets..."></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="fw-semibold" for="additionalNotes">Additional Notes (optional)</label>
+      <textarea id="additionalNotes" formControlName="additionalNotes" class="form-control rounded-0" rows="3" placeholder="Anything else we should know to keep the child safe."></textarea>
+    </div>
+
+    <div class="form-check mb-3">
+      <input id="isSensitive" formControlName="isSensitive" class="form-check-input" type="checkbox" />
+      <label class="form-check-label" for="isSensitive">Contains sensitive medical information</label>
+    </div>
+
+    <div class="d-grid my-4">
+      <button type="submit" class="btn btn-success rounded-0 guest-btn-primary">
+        Continue to Consent
+      </button>
+    </div>
+
+    <div class="text-center">
+      <a [routerLink]="['/', code, 'step-3']" class="text-decoration-none">
+        &laquo; Back to Health Scores
+      </a>
+    </div>
+  </form>
+</app-guest-registration-shell>
+

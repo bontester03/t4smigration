@@ -1,0 +1,81 @@
+﻿@model IEnumerable<WebApit4s.Models.PersonalDetails>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<div class="col-xl-8">
+    <!-- Account details card-->
+    <div class="card mb-4">
+        <div class="card-header">Personal Details</div>
+        <div class="card-body">
+            @foreach (var item in Model)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <!-- Form Row-->
+                        <div class="row gx-3 mb-3">
+                            <!-- Form Group (Parent/Guardian Name)-->
+                            <div class="col-md-12">
+                                <label class="small mb-1">Parent/Guardian Name</label>
+                                <input class="form-control" type="text" value="@item.ParentGuardianName" readonly />
+                            </div>
+                        </div>
+
+                        <!-- Form Row-->
+                        <div class="row gx-3 mb-3">
+                            <!-- Form Group (Relationship to Child)-->
+                            <div class="col-md-6">
+                                <label class="small mb-1">Relationship to Child</label>
+                                <input class="form-control" type="text" value="@item.RelationshipToChild" readonly />
+                            </div>
+
+                            <!-- Form Group (Phone Number)-->
+                            <div class="col-md-6">
+                                <label class="small mb-1">Phone Number</label>
+                                <input class="form-control" type="tel" value="@item.TeleNumber" readonly />
+                            </div>
+                        </div>
+
+                        <!-- Form Group (Email)-->
+                        <div class="mb-3">
+                            <label class="small mb-1">Email</label>
+                            <input class="form-control" type="email" value="@item.Email" readonly />
+                        </div>
+
+                        <!-- Form Row-->
+                        <div class="row gx-3 mb-3">
+                            <!-- Form Group (Postcode)-->
+                            <div class="col-md-6">
+                                <label class="small mb-1">Postcode</label>
+                                <input class="form-control" type="text" value="@item.Postcode" readonly />
+                            </div>
+
+                            <!-- Form Group (GP Practice)-->
+                       
+                        </div>
+
+                        <!-- Form Group (User ID)-->
+                     @*    <div class="mb-3">
+                            <label class="small mb-1">User ID</label>
+                            <input class="form-control" type="text" value="@item.User.Id" readonly />
+                        </div> *@
+
+                        <!-- Actions Row-->
+                        <div class="d-flex justify-content-end">
+                            <a class="btn btn-secondary btn-sm me-2" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                            <a class="btn btn-secondary btn-sm me-2" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                            <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

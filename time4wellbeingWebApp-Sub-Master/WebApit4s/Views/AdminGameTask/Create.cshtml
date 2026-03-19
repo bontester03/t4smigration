@@ -1,0 +1,70 @@
+﻿@model WebApit4s.Models.GameTask
+
+@{
+    ViewData["Title"] = "Create Game Task";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
+
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        Create New Game Task
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post" novalidate>
+            <div class="mb-3">
+                <label asp-for="Title" class="form-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Points" class="form-label"></label>
+                <input asp-for="Points" type="number" class="form-control" />
+                <span asp-validation-for="Points" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="SuggestedWeek" class="form-label"></label>
+                <input asp-for="SuggestedWeek" type="number" class="form-control" />
+                <span asp-validation-for="SuggestedWeek" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TargetArea" class="form-label"></label>
+                <select asp-for="TargetArea" asp-items="Html.GetEnumSelectList<HealthArea>()" class="form-control">
+                    <option value="">-- Select Area --</option>
+                </select>
+                <span asp-validation-for="TargetArea" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="MediaLink" class="form-label"></label>
+                <input asp-for="MediaLink" class="form-control" />
+                <span asp-validation-for="MediaLink" class="text-danger"></span>
+            </div>
+
+            <div class="form-check mb-2">
+                <input asp-for="IsActive" class="form-check-input" />
+                <label asp-for="IsActive" class="form-check-label"></label>
+            </div>
+
+            <div class="form-check mb-4">
+                <input asp-for="IsCommonTask" class="form-check-input" />
+                <label asp-for="IsCommonTask" class="form-check-label">Common Task for All Children</label>
+            </div>
+
+            <button type="submit" class="btn btn-success">Create</button>
+            <a asp-action="Index" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>

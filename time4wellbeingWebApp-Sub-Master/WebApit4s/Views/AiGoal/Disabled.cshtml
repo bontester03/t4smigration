@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "AI Goal Feature Disabled";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<div class="card shadow-sm mt-5">
+    <div class="card-header bg-danger text-white">
+        <i class="fa-solid fa-circle-xmark me-2"></i> AI Goal Feature Disabled
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning d-flex align-items-center" role="alert">
+            <i class="fa-solid fa-triangle-exclamation fa-lg me-2"></i>
+            <div>
+                This user is not autorize to use AI-generated goals. If you’d like to enable this feature, please contact support.
+            </div>
+        </div>
+
+        <a href="@Url.Action("LandingPage", "Dashboard")" class="btn btn-outline-primary">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>

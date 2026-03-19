@@ -1,0 +1,43 @@
+﻿@model List<TimelineActivityViewModel>
+
+@{
+    ViewData["Title"] = "Recent Activity";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fa-solid fa-bolt text-warning"></i> Recent Activity</h2>
+
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <div><i class="fa-solid fa-clock-rotate-left"></i> User Activity Timeline</div>
+            <a asp-action="Index" asp-controller="AdminDashboard" class="btn btn-light btn-sm text-primary">
+                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="timeline timeline-xs">
+                    @foreach (var activity in Model)
+                    {
+                        <div class="timeline-item mb-3">
+                            <div class="timeline-item-marker d-flex flex-column align-items-center">
+                                <div class="timeline-item-marker-text small text-muted">@activity.Timestamp</div>
+                                <div class="timeline-item-marker-indicator @activity.Color"></div>
+                            </div>
+                            <div class="timeline-item-content ms-3">
+                                @activity.Activity
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No recent activity found.</p>
+            }
+        </div>
+    </div>
+</div>

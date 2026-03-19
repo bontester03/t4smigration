@@ -1,0 +1,46 @@
+<app-guest-registration-shell
+  title="Child Information"
+  subtitle="Please provide your child's details."
+  stepLabel="Step 2 of 5"
+  [context]="context()"
+>
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="mb-3">
+      <label class="form-label fw-600 text-dark required" for="childName">Child's Full Name</label>
+      <input id="childName" formControlName="childName" class="form-control rounded-0" placeholder="Enter child's full name" />
+      @if (form.controls.childName.touched && form.controls.childName.invalid) {
+        <span class="text-danger small">Child's name is required.</span>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-600 text-dark required" for="dateOfBirth">Date of Birth</label>
+      <input id="dateOfBirth" formControlName="dateOfBirth" type="date" class="form-control rounded-0" />
+      @if (form.controls.dateOfBirth.touched && form.controls.dateOfBirth.hasError('required')) {
+        <span class="text-danger small">Date of birth is required.</span>
+      }
+      @if (form.controls.dateOfBirth.touched && form.controls.dateOfBirth.hasError('invalidAge')) {
+        <span class="text-danger small">Child's age must be between 2 and 17 years.</span>
+      }
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-600 text-dark required" for="gender">Gender</label>
+      <select id="gender" formControlName="gender" class="form-select rounded-0">
+        <option value="">-- Select Gender --</option>
+        @for (gender of genders; track gender) {
+          <option [value]="gender">{{ gender }}</option>
+        }
+      </select>
+      @if (form.controls.gender.touched && form.controls.gender.invalid) {
+        <span class="text-danger small">Please select a gender.</span>
+      }
+    </div>
+
+    <div class="d-grid my-4">
+      <button type="submit" class="btn btn-success rounded-0 guest-btn-primary">
+        Save and Continue
+      </button>
+    </div>
+  </form>
+</app-guest-registration-shell>

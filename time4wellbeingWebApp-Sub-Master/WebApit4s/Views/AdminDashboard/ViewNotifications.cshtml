@@ -1,0 +1,72 @@
+﻿@model IEnumerable<NotificationViewModel>
+
+@{
+    ViewData["Title"] = "All Notifications";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fa-solid fa-bell text-primary"></i> All Notifications</h2>
+
+    <div class="card shadow border-0 mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <div><i class="fa-solid fa-bell"></i> Notification History</div>
+            <a asp-controller="AdminDashboard" asp-action="SendNotification" class="btn btn-light btn-sm text-primary">
+                <i class="fa-solid fa-paper-plane"></i> Back to Send Notification
+            </a>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>User</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                            <th>Date Sent</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            foreach (var notification in Model)
+                            {
+                                <tr>
+                                    <td>@notification.UserName</td>
+                                    <td>@notification.Message</td>
+                                    <td>
+                                        <span class="badge @(notification.IsRead == "Read" ? "bg-success" : "bg-warning")">
+                                            @notification.IsRead
+                                        </span>
+                                    </td>
+                                    <td>@notification.CreatedAt.ToString("dd MMM yyyy HH:mm")</td>
+                                    <td>
+                                        @if (notification.IsRead == "Unread")
+                                        {
+                                            <form asp-controller="AdminDashboard" asp-action="MarkNotificationAsRead" method="post" style="display:inline;">
+                                                <input type="hidden" name="id" value="@notification.Id" />
+                                                <button type="submit" class="btn btn-sm btn-success">Mark as Read</button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted"><i class="fa-solid fa-check-circle"></i> Read</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No notifications found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

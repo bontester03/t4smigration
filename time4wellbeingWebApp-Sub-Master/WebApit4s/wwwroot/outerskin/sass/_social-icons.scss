@@ -1,0 +1,251 @@
+/* =================================== */
+/*  5. Social Icons
+/* =================================== */
+
+.oxyy-login-register {
+.social-icons {
+  margin: 0;
+  padding: 0;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  list-style: none;
+  li {
+    margin: 0px 6px 4px;
+    padding: 0;
+    overflow: visible;
+    a {
+      display: block;
+      height: 38px;
+      line-height: 38px;
+      width: 38px;
+      font-size: 18px;
+      text-align: center;
+	  background-color: rgba(0,0,0,0.6);
+      color: #fff;
+      text-decoration: none;
+	  @include transition(all 0.2s ease);
+    }
+    i {
+      line-height: inherit;
+    }
+  }
+  &.social-icons-lg li a{
+	  height: 45px;
+      line-height: 45px;
+      width: 45px;
+   }
+  li:hover {
+    a {
+	  opacity:0.8;
+    }
+  }
+  &.social-icons-rounded li {
+    a {
+      border-radius:.25rem;
+    }
+  }
+  &.social-icons-circle li {
+    a {
+      border-radius:50%;
+    }
+  }
+  li.social-icons-twitter a {
+    background-color: $twitter;
+  }
+  li.social-icons-facebook a {
+    background-color: $facebook;
+  }
+  li.social-icons-linkedin a {
+    background-color: $linkedin;
+  }
+  li.social-icons-google a {
+    background-color: $google;
+  }
+  li.social-icons-instagram a {
+    background-color: $instagram;
+  }
+  li.social-icons-vk a {
+    background-color: $vk;
+  }
+  li.social-icons-yahoo a {
+    background-color: $yahoo;
+  }
+  li.social-icons-apple a {
+    background-color: $apple;
+  }
+  li.social-icons-windows a {
+    background-color: $windows;
+  }
+  li.social-icons-amazon a {
+    background-color: $amazon;
+  }
+}
+
+.btn-facebook{
+	background-color: $facebook;
+	color:#fff!important;
+	&:hover{
+		background-color: darken($facebook, 6%);
+}
+}
+
+.btn-outline-facebook{
+	border-color: $facebook;
+	color:$facebook;
+	&:hover{
+		background-color: $facebook;
+		color:#fff;
+}
+}
+
+.btn-twitter{
+	background-color: $twitter;
+	color:#fff!important;
+	&:hover{
+		background-color: darken($twitter, 6%);
+}
+}
+
+.btn-outline-twitter{
+	border-color: $twitter;
+	color:$twitter;
+	&:hover{
+		background-color: $twitter;
+		color:#fff;
+}
+}
+
+.btn-google{
+	background-color: $google;
+	color:#fff!important;
+	&:hover{
+		background-color: darken($google, 6%);
+}
+}
+
+.btn-outline-google{
+	border-color: $google;
+	color:$google;
+	&:hover{
+		background-color: $google;
+		color:#fff;
+}
+}
+
+.btn-linkedin{
+	background-color: $linkedin;
+	color:#fff!important;
+	&:hover{
+		background-color: darken($linkedin, 6%);
+}
+}
+
+.btn-outline-linkedin{
+	border-color: $linkedin;
+	color:$linkedin;
+	&:hover{
+		background-color: $linkedin;
+		color:#fff;
+}
+}
+.btn-instagram{
+	background-color: $instagram;
+	color:#fff!important;
+	&:hover{
+		background-color: darken($instagram, 6%);
+}
+}
+
+.btn-outline-instagram{
+	border-color: $instagram;
+	color:$instagram;
+	&:hover{
+		background-color: $instagram;
+		color:#fff;
+}
+}
+.btn-vk{
+	background-color: $vk;
+	color:#fff!important;
+	&:hover{
+		background-color: darken($vk, 6%);
+}
+}
+
+.btn-outline-vk{
+	border-color: $vk;
+	color:$vk;
+	&:hover{
+		background-color: $vk;
+		color:#fff;
+}
+}
+.btn-yahoo{
+	background-color: $yahoo;
+	color:#fff!important;
+	&:hover{
+		background-color: darken($yahoo, 6%);
+}
+}
+
+.btn-outline-yahoo{
+	border-color: $yahoo;
+	color:$yahoo;
+	&:hover{
+		background-color: $yahoo;
+		color:#fff;
+}
+}
+.btn-apple{
+	background-color: $apple;
+	color:#fff!important;
+	&:hover{
+		background-color: darken($apple, 6%);
+}
+}
+
+.btn-outline-apple{
+	border-color: $apple;
+	color:$apple;
+	&:hover{
+		background-color: $apple;
+		color:#fff;
+}
+}
+
+.btn-windows{
+	background-color: $windows;
+	color:#fff!important;
+	&:hover{
+		background-color: darken($windows, 6%);
+}
+}
+
+.btn-outline-windows{
+	border-color: $windows;
+	color:$windows;
+	&:hover{
+		background-color: $windows;
+		color:#fff;
+}
+}
+.btn-amazon{
+	background-color: $amazon;
+	color:#fff!important;
+	&:hover{
+		background-color: darken($amazon, 6%);
+}
+}
+
+.btn-outline-amazon{
+	border-color: $amazon;
+	color:$amazon;
+	&:hover{
+		background-color: $amazon;
+		color:#fff;
+}
+}
+
+}

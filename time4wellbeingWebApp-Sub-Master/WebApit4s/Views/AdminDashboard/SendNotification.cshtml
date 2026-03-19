@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Send Notification";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fa-solid fa-paper-plane text-primary"></i> Send Notification</h2>
+
+    <div class="row">
+        <!-- Send Notification Form -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <i class="fa-solid fa-envelope"></i> Send a Message
+                </div>
+                <div class="card-body">
+                    <form asp-action="SendNotificationUser" method="post">
+                        <div class="mb-3">
+                            <label for="UserId" class="form-label">Select User</label>
+                            <select class="form-control" name="UserId" required>
+                                <option value="">-- Select User --</option>
+                                @if (ViewBag.Users != null)
+                                {
+                                    foreach (var user in ViewBag.Users)
+                                    {
+                                        <option value="@user.Value">@user.Text</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Message" class="form-label">Message</label>
+                            <textarea class="form-control" name="Message" rows="4" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">Send Notification</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Notifications Link -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-secondary text-white">
+                    <i class="fa-solid fa-bell"></i> Notifications Panel
+                </div>
+                <div class="card-body d-flex align-items-center justify-content-center">
+                    <a asp-controller="AdminDashboard" asp-action="ViewNotifications" class="btn btn-outline-primary">
+                        <i class="fa-solid fa-eye"></i> View All Notifications
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

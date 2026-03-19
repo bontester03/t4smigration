@@ -1,0 +1,555 @@
+﻿@model List<WebApit4s.Models.Classes>
+@{
+    ViewData["Title"] = "Manage Classes";
+    ViewData["ActivePage"] = "ManageClasses";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .classes-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+    }
+    .classes-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    .classes-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .classes-table thead th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 1rem;
+    }
+    .classes-table tbody tr {
+        transition: background-color 0.2s, transform 0.2s;
+    }
+    .classes-table tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: scale(1.01);
+    }
+    .class-row-number {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1rem;
+    }
+    .action-btn {
+        transition: all 0.3s;
+    }
+    .action-btn:hover {
+        transform: scale(1.05);
+    }
+    .stats-box {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s;
+    }
+    .stats-box:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    .add-class-section {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .class-name-display {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        color: #495057;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Hero Section -->
+    <div class="classes-hero">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="fw-bold mb-3">
+                    <i data-feather="book" class="me-3"></i>Manage Classes
+                </h1>
+                <p class="lead mb-0">
+                    Create, edit, and organize classes for your schools
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div style="font-size: 5rem; opacity: 0.2;">
+                    <i data-feather="book-open"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i data-feather="alert-triangle" class="me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i data-feather="check-circle" class="me-2"></i>
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Quick Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <i data-feather="book"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count ?? 0)</h3>
+                <p class="text-muted mb-0">Total Classes</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%); color: white;">
+                    <i data-feather="check-circle"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count(c => c.IsActive) ?? 0)</h3>
+                <p class="text-muted mb-0">Active Classes</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: white;">
+                    <i data-feather="x-circle"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count(c => !c.IsActive) ?? 0)</h3>
+                <p class="text-muted mb-0">Inactive Classes</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New Class Section -->
+    <div class="add-class-section">
+        <h5 class="fw-bold mb-3">
+            <i data-feather="plus-circle" class="me-2"></i>Add New Class
+        </h5>
+        <form asp-action="AddClass" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+            <div class="col-md-9">
+                <label class="form-label fw-bold">Class Name</label>
+                <input type="text" 
+                       name="Name" 
+                       class="form-control form-control-lg" 
+                       placeholder="e.g., Year 5A, Grade 3B, Room 101" 
+                       required />
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-success btn-lg w-100">
+                    <i data-feather="plus-circle" class="me-2"></i>Add Class
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Classes Table -->
+    @if (Model != null && Model.Any())
+    {
+        <!-- Desktop / Tablet (md and up) -->
+        <div class="d-none d-md-block">
+            <div class="card classes-card mb-4">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table classes-table mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="width: 80px;">
+                                        <i data-feather="hash" style="width: 16px; height: 16px;"></i>
+                                    </th>
+                                    <th>
+                                        <i data-feather="book" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        Class Name
+                                    </th>
+                                    <th style="width: 120px;">
+                                        <i data-feather="activity" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        Status
+                                    </th>
+                                    <th style="width: 280px;">
+                                        <i data-feather="settings" class="me-2" style="width: 16px; height: 16px;"></i>
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var index = 1;
+                                }
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="text-center">
+                                            <div class="class-row-number">
+                                                @index
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <form asp-action="EditClass" method="post" class="d-flex align-items-center gap-2">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="Id" value="@item.Id" />
+                                                <div class="flex-grow-1">
+                                                    <input name="Name" 
+                                                           class="form-control" 
+                                                           value="@item.Name"
+                                                           placeholder="Enter class name" />
+                                                </div>
+                                                <button class="btn btn-primary btn-sm action-btn" 
+                                                        type="submit"
+                                                        title="Save changes">
+                                                    <i data-feather="save" style="width: 14px; height: 14px;"></i>
+                                                    <span class="ms-1">Save</span>
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            @if (item.IsActive)
+                                            {
+                                                <span class="badge bg-success px-3 py-2">
+                                                    <i data-feather="check-circle" style="width: 14px; height: 14px;"></i>
+                                                    <span class="ms-1">Active</span>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark px-3 py-2">
+                                                    <i data-feather="x-circle" style="width: 14px; height: 14px;"></i>
+                                                    <span class="ms-1">Inactive</span>
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                                                {
+                                                    <form asp-action="ToggleClassStatus" method="post" class="d-inline">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@item.Id" />
+                                                        <button class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success") action-btn"
+                                                                title="@(item.IsActive ? "Deactivate" : "Activate") this class">
+                                                            <i data-feather="@(item.IsActive ? "slash" : "check-circle")" style="width: 14px; height: 14px;"></i>
+                                                            <span class="ms-1">@(item.IsActive ? "Deactivate" : "Activate")</span>
+                                                        </button>
+                                                    </form>
+                                                }
+
+                                                <button type="button"
+                                                        class="btn btn-sm btn-danger action-btn"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteConfirmModal"
+                                                        data-id="@item.Id"
+                                                        data-name="@item.Name"
+                                                        title="Delete this class">
+                                                    <i data-feather="trash-2" style="width: 14px; height: 14px;"></i>
+                                                    <span class="ms-1">Delete</span>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    index++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile cards (< md) -->
+        <div class="d-md-none">
+            @{
+                var mIndex = 1;
+            }
+            @foreach (var item in Model)
+            {
+                <div class="card classes-card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <div class="small text-muted mb-1">
+                                    <i data-feather="hash" style="width: 14px; height: 14px;"></i>
+                                    #@mIndex
+                                </div>
+                                <h6 class="fw-bold mb-0">@item.Name</h6>
+                            </div>
+                            <div>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark">Inactive</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <form asp-action="EditClass" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="Id" value="@item.Id" />
+                                <label class="form-label small fw-bold text-muted">
+                                    <i data-feather="edit-2" style="width: 14px; height: 14px;"></i>
+                                    Edit Class Name
+                                </label>
+                                <div class="input-group">
+                                    <input name="Name" class="form-control" value="@item.Name" />
+                                    <button class="btn btn-primary" type="submit">
+                                        <i data-feather="save" style="width: 14px; height: 14px;"></i>
+                                        <span class="ms-1">Save</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                            {
+                                <form asp-action="ToggleClassStatus" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")">
+                                        <i data-feather="@(item.IsActive ? "slash" : "check-circle")" style="width: 14px; height: 14px;"></i>
+                                        <span class="ms-1">@(item.IsActive ? "Deactivate" : "Activate")</span>
+                                    </button>
+                                </form>
+                            }
+
+                            <button type="button"
+                                    class="btn btn-sm btn-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteConfirmModal"
+                                    data-id="@item.Id"
+                                    data-name="@item.Name">
+                                <i data-feather="trash-2" style="width: 14px; height: 14px;"></i>
+                                <span class="ms-1">Delete Class</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                mIndex++;
+            }
+        </div>
+
+        <!-- Information Card -->
+        <div class="card classes-card">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 1.5rem;">
+                <h5 class="mb-0">
+                    <i data-feather="info" class="me-2"></i>Managing Classes
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-primary mb-3">
+                            <i data-feather="edit" class="me-2"></i>Quick Actions
+                        </h6>
+                        <ul class="ps-3">
+                            <li class="mb-2">Click <strong>Save</strong> to update a class name</li>
+                            <li class="mb-2">Use <strong>Activate/Deactivate</strong> to toggle class status</li>
+                            <li class="mb-2">Click <strong>Delete</strong> to remove a class permanently</li>
+                            <li class="mb-2">Add new classes using the form above</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-success mb-3">
+                            <i data-feather="help-circle" class="me-2"></i>Best Practices
+                        </h6>
+                        <ul class="ps-3">
+                            <li class="mb-2">Use clear, descriptive class names (e.g., "Year 5A")</li>
+                            <li class="mb-2">Deactivate rather than delete classes with existing data</li>
+                            <li class="mb-2">Keep class names consistent across your school</li>
+                            <li class="mb-2">Review and update class lists at the start of each term</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card classes-card">
+            <div class="card-body text-center p-5">
+                <div class="mb-3" style="font-size: 5rem; color: #dee2e6;">
+                    <i data-feather="book-open"></i>
+                </div>
+                <h5 class="fw-bold mb-2">No Classes Found</h5>
+                <p class="text-muted mb-4">
+                    You haven't created any classes yet. Use the form above to add your first class.
+                </p>
+            </div>
+        </div>
+    }
+
+    <!-- Quick Navigation -->
+    <div class="row g-4 mt-3">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #667eea;">
+                        <i data-feather="home"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Manage Schools</h5>
+                    <p class="text-muted mb-3">
+                        Add, edit, and organize schools in the system
+                    </p>
+                    <a asp-action="ManageSchools" class="btn btn-outline-primary">
+                        <i data-feather="settings" class="me-1"></i>Manage Schools
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #28a745;">
+                        <i data-feather="link"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Guest Links</h5>
+                    <p class="text-muted mb-3">
+                        Create registration links for classes
+                    </p>
+                    <a asp-controller="GuestLink" asp-action="Create" class="btn btn-outline-success">
+                        <i data-feather="plus-circle" class="me-1"></i>Create Link
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #17a2b8;">
+                        <i data-feather="database"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">School Records</h5>
+                    <p class="text-muted mb-3">
+                        View detailed records for each school
+                    </p>
+                    <a asp-controller="AdminSchool" asp-action="Index" class="btn btn-outline-info">
+                        <i data-feather="bar-chart-2" class="me-1"></i>View Records
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%); color: white;">
+                <h5 class="modal-title" id="deleteConfirmLabel">
+                    <i data-feather="alert-triangle" class="me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center">
+                    <div class="mb-3" style="font-size: 3rem; color: #dc3545;">
+                        <i data-feather="trash-2"></i>
+                    </div>
+                    <h6 class="fw-bold mb-2">Delete Class</h6>
+                    <p class="mb-3">
+                        Are you sure you want to delete <strong id="deleteItemName">this class</strong>?
+                    </p>
+                    <div class="alert alert-warning text-start">
+                        <i data-feather="alert-circle" class="me-2"></i>
+                        <strong>Warning:</strong> This action cannot be undone. Consider deactivating instead if the class has existing data.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" method="post" asp-action="DeleteClass" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteId" />
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i data-feather="x" class="me-1"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i data-feather="trash-2" class="me-1"></i>Yes, Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize Feather Icons
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+
+        // Delete modal wiring
+        const deleteModal = document.getElementById('deleteConfirmModal');
+        if (deleteModal) {
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                const btn = event.relatedTarget;
+                const id = btn?.getAttribute('data-id');
+                const name = btn?.getAttribute('data-name') || 'this class';
+                document.getElementById('deleteId').value = id;
+                document.getElementById('deleteItemName').textContent = name;
+                
+                // Re-initialize feather icons in modal
+                setTimeout(() => {
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                }, 100);
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+}

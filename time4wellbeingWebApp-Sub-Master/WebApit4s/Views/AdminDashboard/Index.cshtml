@@ -1,0 +1,311 @@
+﻿@model WebApit4s.Models.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+    ViewData["ActivePage"] = "Dashboard";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .stat-card {
+        border-left: 4px solid;
+        transition: transform 0.2s, box-shadow 0.2s;
+        cursor: pointer;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    .stat-card-primary { border-left-color: #007bff !important; }
+    .stat-card-warning { border-left-color: #ffc107 !important; }
+    .stat-card-success { border-left-color: #28a745 !important; }
+    .stat-card-danger { border-left-color: #dc3545 !important; }
+    
+    .welcome-banner {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+    }
+    
+    .filter-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .quick-link-card {
+        border-radius: 10px;
+        transition: all 0.3s;
+        border: 1px solid #e0e0e0;
+    }
+    .quick-link-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        border-color: #667eea;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-dark fw-bold mb-1">
+                <i class="fas fa-chart-pie text-primary me-2"></i> Admin Dashboard
+            </h2>
+            <p class="text-muted mb-0">Welcome back! Here's what's happening with Time4Wellbeing today</p>
+        </div>
+        <div class="text-muted">
+            <i class="far fa-calendar-alt me-2"></i>
+            @DateTime.Now.ToString("dd MMM yyyy, HH:mm")
+        </div>
+    </div>
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h3 class="mb-2">
+                    <i class="fas fa-hand-sparkles me-2"></i>Welcome to Time4Wellbeing Admin Portal
+                </h3>
+                <p class="mb-0 opacity-75">
+                    Monitor registrations, track referrals, and manage child well-being progress in real-time.
+                    Use the quick stats and filters below to access detailed reports.
+                </p>
+            </div>
+            <div class="col-md-4 text-end d-none d-md-block">
+                <i class="fas fa-chart-line" style="font-size: 5rem; opacity: 0.2;"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <h6 class="mb-3">
+            <i class="fas fa-filter me-2"></i>Filter Dashboard Data
+        </h6>
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label fw-bold">
+                    <i class="far fa-calendar me-1"></i>Start Date
+                </label>
+                <input type="date" name="startDate" class="form-control" value="@ViewBag.StartDate" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-bold">
+                    <i class="far fa-calendar me-1"></i>End Date
+                </label>
+                <input type="date" name="endDate" class="form-control" value="@ViewBag.EndDate" />
+            </div>
+            <div class="col-md-4 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-primary flex-fill">
+                    <i class="fas fa-search me-1"></i> Apply Filter
+                </button>
+                <a href="@Url.Action("Index", "AdminDashboard")" class="btn btn-outline-secondary flex-fill">
+                    <i class="fas fa-redo me-1"></i> Clear
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <a href="@Url.Action("ChildCompletionReport")" class="text-decoration-none">
+                <div class="card stat-card stat-card-primary border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted small mb-1">Total Registered Users</div>
+                                <div class="h2 mb-0 fw-bold text-primary">@Model.UserCount</div>
+                                <small class="text-success">
+                                    <i class="fas fa-arrow-up me-1"></i>Active users
+                                </small>
+                            </div>
+                            <div class="text-primary" style="font-size: 3rem; opacity: 0.2;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pt-0">
+                        <div class="d-flex justify-content-between align-items-center small text-primary">
+                            <span>View Completion Report</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a href="@Url.Action("WeeklyMeasurementsAdmin")" class="text-decoration-none">
+                <div class="card stat-card stat-card-warning border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted small mb-1">Weight Logs</div>
+                                <div class="h2 mb-0 fw-bold text-warning">@Model.TotalWeightLogs</div>
+                                <small class="text-muted">
+                                    <i class="fas fa-chart-bar me-1"></i>Total entries
+                                </small>
+                            </div>
+                            <div class="text-warning" style="font-size: 3rem; opacity: 0.2;">
+                                <i class="fas fa-weight"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pt-0">
+                        <div class="d-flex justify-content-between align-items-center small text-warning">
+                            <span>View Measurements</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a href="@Url.Action("RegisteredChildren")" class="text-decoration-none">
+                <div class="card stat-card stat-card-success border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted small mb-1">Children Registered</div>
+                                <div class="h2 mb-0 fw-bold text-success">@Model.TotalChildren</div>
+                                <small class="text-success">
+                                    <i class="fas fa-child me-1"></i>Active children
+                                </small>
+                            </div>
+                            <div class="text-success" style="font-size: 3rem; opacity: 0.2;">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pt-0">
+                        <div class="d-flex justify-content-between align-items-center small text-success">
+                            <span>View All Children</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a href="@Url.Action("AllHealthScores")" class="text-decoration-none">
+                <div class="card stat-card stat-card-danger border-0 shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-muted small mb-1">Health Questionnaires</div>
+                                <div class="h2 mb-0 fw-bold text-danger">@Model.TotalHealthScores</div>
+                                <small class="text-muted">
+                                    <i class="fas fa-clipboard-check me-1"></i>Completed
+                                </small>
+                            </div>
+                            <div class="text-danger" style="font-size: 3rem; opacity: 0.2;">
+                                <i class="fas fa-heartbeat"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pt-0">
+                        <div class="d-flex justify-content-between align-items-center small text-danger">
+                            <span>View All Scores</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Links Section -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <h5 class="mb-3">
+                <i class="fas fa-link me-2"></i>Quick Actions
+            </h5>
+        </div>
+        
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+            <a href="@Url.Action("RegisteredChildren")" class="text-decoration-none">
+                <div class="card quick-link-card text-center p-3 h-100">
+                    <i class="fas fa-child fa-2x text-info mb-2"></i>
+                    <div class="fw-bold small">Registered Children</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+            <a href="@Url.Action("ChildCompletionReport")" class="text-decoration-none">
+                <div class="card quick-link-card text-center p-3 h-100">
+                    <i class="fas fa-tasks fa-2x text-primary mb-2"></i>
+                    <div class="fw-bold small">Completion Report</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+            <a href="@Url.Action("AllHealthScores")" class="text-decoration-none">
+                <div class="card quick-link-card text-center p-3 h-100">
+                    <i class="fas fa-heartbeat fa-2x text-danger mb-2"></i>
+                    <div class="fw-bold small">Health Scores</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+            <a href="@Url.Action("WeeklyMeasurementsAdmin")" class="text-decoration-none">
+                <div class="card quick-link-card text-center p-3 h-100">
+                    <i class="fas fa-weight fa-2x text-warning mb-2"></i>
+                    <div class="fw-bold small">Measurements</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+            <a href="@Url.Action("ManageSchools")" class="text-decoration-none">
+                <div class="card quick-link-card text-center p-3 h-100">
+                    <i class="fas fa-school fa-2x text-success mb-2"></i>
+                    <div class="fw-bold small">Manage Schools</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+            <a href="@Url.Action("AllFeedback")" class="text-decoration-none">
+                <div class="card quick-link-card text-center p-3 h-100">
+                    <i class="fas fa-comments fa-2x text-secondary mb-2"></i>
+                    <div class="fw-bold small">User Feedback</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-5 pt-4 border-top">
+        <div class="row">
+            <div class="col-md-6 small text-muted">
+                &copy; Time4Wellbeing @DateTime.Now.Year
+            </div>
+            <div class="col-md-6 text-md-end small">
+                <a href="#" class="text-muted text-decoration-none">Privacy Policy</a>
+                <span class="text-muted mx-2">&middot;</span>
+                <a href="#" class="text-muted text-decoration-none">Terms & Conditions</a>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (window.feather) {
+            feather.replace();
+        }
+    });
+</script>
+

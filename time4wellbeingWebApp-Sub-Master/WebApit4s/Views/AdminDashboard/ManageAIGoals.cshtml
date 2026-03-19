@@ -1,0 +1,46 @@
+﻿@model List<WebApit4s.ViewModels.UserAIGoalToggleViewModel>
+@{
+    ViewData["Title"] = "Manage AI Goal Access";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="card mt-4">
+    <div class="card-header bg-secondary text-white">
+        <i class="fas fa-brain"></i> Manage AI Goal Access
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th class="text-center">AI Goal Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td class="text-center">
+                                <span class="badge @(user.EnableAIGoals ? "bg-success" : "bg-secondary")">
+                                    @(user.EnableAIGoals ? "Enabled" : "Disabled")
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <form asp-action="UpdateAIGoalSetting" method="post" class="d-inline">
+                                    <input type="hidden" name="userId" value="@user.UserId" />
+                                    <input type="hidden" name="enable" value="@(user.EnableAIGoals ? "false" : "true")" />
+                                    <button class="btn btn-sm @(user.EnableAIGoals ? "btn-warning" : "btn-success")">
+                                        @(user.EnableAIGoals ? "Disable" : "Enable")
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

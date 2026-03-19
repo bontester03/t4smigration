@@ -1,0 +1,464 @@
+﻿@model IEnumerable<WebApit4s.ViewModels.SchoolLinkIndexViewModel>
+
+@{
+    ViewData["Title"] = "School Registration Links";
+    ViewData["ActivePage"] = "SchoolPages";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<style>
+    .school-links-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+    }
+    .school-links-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    .school-links-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .school-table thead th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        font-weight: 600;
+        padding: 1rem;
+    }
+    .school-table tbody tr {
+        transition: background-color 0.2s, transform 0.2s;
+    }
+    .school-table tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: scale(1.01);
+    }
+    .school-row-number {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+    .link-display {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-family: 'Courier New', monospace;
+        font-size: 0.85rem;
+        color: #495057;
+        word-break: break-all;
+    }
+    .action-btn {
+        transition: all 0.3s;
+    }
+    .action-btn:hover {
+        transform: scale(1.05);
+    }
+    .stats-box {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s;
+    }
+    .stats-box:hover {
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Hero Section -->
+    <div class="school-links-hero">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="fw-bold mb-3">
+                    <i data-feather="home" class="me-3"></i>School Registration Pages
+                </h1>
+                <p class="lead mb-0">
+                    Access dedicated registration pages for each school with organized class links
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a asp-action="Create" class="btn btn-light btn-lg">
+                    <i data-feather="plus-circle" class="me-2"></i>Create New Link
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i data-feather="alert-triangle" class="me-2"></i>
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i data-feather="check-circle" class="me-2"></i>
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Quick Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <i data-feather="home"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count() ?? 0)</h3>
+                <p class="text-muted mb-0">Total Schools</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%); color: white;">
+                    <i data-feather="link"></i>
+                </div>
+                <h3 class="fw-bold mb-1">@(Model?.Count() ?? 0)</h3>
+                <p class="text-muted mb-0">Active Pages</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-box">
+                <div class="feature-icon mx-auto" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); color: white;">
+                    <i data-feather="users"></i>
+                </div>
+                <h3 class="fw-bold mb-1">∞</h3>
+                <p class="text-muted mb-0">Available Registrations</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schools Table -->
+    @if (Model != null && Model.Any())
+    {
+        <div class="card school-links-card mb-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table school-table mb-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">
+                                    <i data-feather="hash" style="width: 16px; height: 16px;"></i>
+                                </th>
+                                <th>
+                                    <i data-feather="home" class="me-2" style="width: 16px; height: 16px;"></i>
+                                    School Name
+                                </th>
+                                <th>
+                                    <i data-feather="link" class="me-2" style="width: 16px; height: 16px;"></i>
+                                    Public Registration Page
+                                </th>
+                                <th style="width: 200px;">
+                                    <i data-feather="settings" class="me-2" style="width: 16px; height: 16px;"></i>
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Select((x, i) => new { Index = i + 1, Data = x }))
+                            {
+                                <tr>
+                                    <td class="text-center">
+                                        <div class="school-row-number">
+                                            @item.Index
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3" style="font-size: 2rem; color: #667eea;">
+                                                <i data-feather="home"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-0">@item.Data.SchoolName</h6>
+                                                <small class="text-muted">School ID: @item.Data.SchoolId</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="link-display flex-grow-1">
+                                                @item.Data.SchoolPageUrl
+                                            </div>
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-primary action-btn"
+                                                    onclick="copyToClipboard('@item.Data.SchoolPageUrl', @item.Index)"
+                                                    title="Copy link">
+                                                <i data-feather="copy" style="width: 16px; height: 16px;"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <a href="@item.Data.SchoolPageUrl" 
+                                               target="_blank" 
+                                               class="btn btn-primary btn-sm action-btn flex-grow-1"
+                                               title="Open in new tab">
+                                                <i data-feather="external-link" style="width: 14px; height: 14px;"></i>
+                                                <span class="ms-1">Open</span>
+                                            </a>
+                                            <button type="button"
+                                                    class="btn btn-info btn-sm action-btn"
+                                                    onclick="showQRCode('@item.Data.SchoolPageUrl', '@item.Data.SchoolName')"
+                                                    title="Show QR Code">
+                                                <i data-feather="maximize" style="width: 14px; height: 14px;"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Information Card -->
+        <div class="card school-links-card">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 1.5rem;">
+                <h5 class="mb-0">
+                    <i data-feather="info" class="me-2"></i>How to Use School Pages
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-primary mb-3">
+                            <i data-feather="list" class="me-2"></i>For Administrators
+                        </h6>
+                        <ol class="ps-3">
+                            <li class="mb-2">Click "Open" to view the school's public registration page</li>
+                            <li class="mb-2">Use "Copy" button to share the link with school staff</li>
+                            <li class="mb-2">Click QR code icon to display a scannable code</li>
+                            <li class="mb-2">Each page shows all available class registration links</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-success mb-3">
+                            <i data-feather="users" class="me-2"></i>For Parents/Guardians
+                        </h6>
+                        <ul class="ps-3">
+                            <li class="mb-2">Access the school page via the link provided</li>
+                            <li class="mb-2">Select the appropriate class for their child</li>
+                            <li class="mb-2">Complete the multi-step registration form</li>
+                            <li class="mb-2">No account creation required for first-time users</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card school-links-card">
+            <div class="card-body text-center p-5">
+                <div class="mb-3" style="font-size: 5rem; color: #dee2e6;">
+                    <i data-feather="inbox"></i>
+                </div>
+                <h5 class="fw-bold mb-2">No Schools Available</h5>
+                <p class="text-muted mb-4">
+                    There are no schools registered in the system yet. Please add schools to the database first.
+                </p>
+                <a asp-controller="AdminDashboard" asp-action="ManageSchools" class="btn btn-primary btn-lg me-2">
+                    <i data-feather="plus-circle" class="me-2"></i>Add Schools
+                </a>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                    <i data-feather="list" class="me-2"></i>View All Links
+                </a>
+            </div>
+        </div>
+    }
+
+    <!-- Quick Actions -->
+    <div class="row g-4 mt-3">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #667eea;">
+                        <i data-feather="link"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">All Guest Links</h5>
+                    <p class="text-muted mb-3">
+                        View and manage all individual guest registration links
+                    </p>
+                    <a asp-action="Index" class="btn btn-outline-primary">
+                        <i data-feather="list" class="me-1"></i>View Links
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #28a745;">
+                        <i data-feather="plus-circle"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">Create New Link</h5>
+                    <p class="text-muted mb-3">
+                        Generate a new guest registration link for a class
+                    </p>
+                    <a asp-action="Create" class="btn btn-outline-success">
+                        <i data-feather="edit" class="me-1"></i>Create Link
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3" style="font-size: 3rem; color: #17a2b8;">
+                        <i data-feather="bar-chart-2"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">School Records</h5>
+                    <p class="text-muted mb-3">
+                        View detailed records for each school's children
+                    </p>
+                    <a asp-controller="AdminSchool" asp-action="Index" class="btn btn-outline-info">
+                        <i data-feather="database" class="me-1"></i>View Records
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- QR Code Modal -->
+<div class="modal fade" id="qrCodeModal" tabindex="-1" aria-labelledby="qrCodeLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h5 class="modal-title" id="qrCodeLabel">
+                    <i data-feather="maximize" class="me-2"></i>QR Code
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <h6 class="fw-bold mb-3" id="qrSchoolName"></h6>
+                <div id="qrCodeContainer" class="mb-3">
+                    <!-- QR Code will be generated here -->
+                    <div class="bg-light p-4 rounded">
+                        <p class="text-muted mb-0">QR Code functionality requires a QR code library</p>
+                        <small class="text-muted">Link: <span id="qrLinkText"></span></small>
+                    </div>
+                </div>
+                <p class="text-muted small mb-0">Scan this code to access the school registration page</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i data-feather="x" class="me-1"></i>Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Copy Success Modal -->
+<div class="modal fade" id="copySuccessModal" tabindex="-1" aria-labelledby="copySuccessLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-success">
+            <div class="modal-header" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%); color: white;">
+                <h5 class="modal-title" id="copySuccessLabel">
+                    <i data-feather="check-circle" class="me-2"></i>Link Copied!
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="mb-3" style="font-size: 3rem; color: #28a745;">
+                    <i data-feather="clipboard"></i>
+                </div>
+                <p class="mb-0">The school page link has been copied to your clipboard!</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+                    <i data-feather="thumbs-up" class="me-1"></i>Got it!
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize Feather Icons
+        if (typeof feather !== 'undefined') {
+            feather.replace();
+        }
+
+        // Copy to clipboard function
+        function copyToClipboard(url, index) {
+            navigator.clipboard.writeText(url)
+                .then(() => {
+                    var modal = new bootstrap.Modal(document.getElementById('copySuccessModal'));
+                    modal.show();
+                    
+                    // Re-initialize feather icons
+                    setTimeout(() => {
+                        if (typeof feather !== 'undefined') {
+                            feather.replace();
+                        }
+                    }, 100);
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    // Fallback
+                    prompt('Copy this link:', url);
+                });
+        }
+
+        // Show QR Code modal
+        function showQRCode(url, schoolName) {
+            document.getElementById('qrSchoolName').textContent = schoolName;
+            document.getElementById('qrLinkText').textContent = url;
+            
+            var modal = new bootstrap.Modal(document.getElementById('qrCodeModal'));
+            modal.show();
+            
+            // Re-initialize feather icons
+            setTimeout(() => {
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+            }, 100);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+}

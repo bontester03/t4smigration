@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Time4Wellbeing</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/WebApit4s.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/Greenbackground.css" />
+</head>
+<body>
+    <div class="container-xl px-4">
+        <main class="pb-5">
+            <section class="hero mb-4">
+                <div class="hero-content text-center">
+                    <img src="~/images/time4sport-logo.png" alt="Time4Wellbeing Logo" class="footer-logo mb-3">
+                    <h2>Time4Wellbeing is a free health and wellbeing service for families with children aged 2-17*, who live in Staffordshire.</h2>
+                </div>
+            </section>
+
+            <!-- Render Body -->
+            <section class="form-section">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card shadow-lg border-0 rounded-lg">
+                            <div class="card shadow-lg rounded-layered mt-2">
+                                <div class="card-header d-flex justify-content-center align-items-center flex-column">
+                                    <img src="~/images/Time4wellbeing_logo_AW[2024].png" alt="Time4Wellbeing Logo" class="footer-logo mb-3">
+                                    <h3 class="text-center">Family Questionnaire</h3>
+                                </div>
+                                <div class="card-body">
+                                    <hr />
+                                    @RenderBody()
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/app.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

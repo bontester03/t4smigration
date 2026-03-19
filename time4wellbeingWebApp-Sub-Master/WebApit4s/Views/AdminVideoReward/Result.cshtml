@@ -1,0 +1,190 @@
+﻿@model X.PagedList.IPagedList<WebApit4s.ViewModels.VideoWatchLogListItem>
+@using X.PagedList.Mvc.Core
+
+
+@{
+    ViewData["Title"] = "Video Watch Logs";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var q = ViewBag.Search as string;
+}
+
+<div class="container-fluid px-2 px-md-4">
+    <div class="row">
+        <div class="col-12">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0"><i class="fas fa-list me-2"></i> Video Watch Logs</h4>
+                <div class="d-flex gap-2">
+                    <a asp-action="ExportCsv"
+                       asp-route-q="@q"
+                       asp-route-childId="@ViewBag.ChildId"
+                       asp-route-videoId="@ViewBag.VideoId"
+                       asp-route-awarded="@ViewBag.Awarded"
+                       asp-route-fromUtc="@ViewBag.FromUtc"
+                       asp-route-toUtc="@ViewBag.ToUtc"
+                       class="btn btn-outline-secondary">
+                        <i class="fas fa-file-csv me-1"></i> Export CSV
+                    </a>
+                </div>
+            </div>
+
+          <form method="get" class="card card-body shadow-sm mb-3">
+    <div class="row g-2 row-cols-1 row-cols-md-6">
+        <!-- Search -->
+        <div class="col">
+            <input type="text" name="q" value="@q" class="form-control" placeholder="Search name, title, IP, UA" />
+        </div>
+
+        <!-- Children -->
+        <div class="col">
+            <select name="childId" class="form-select"
+                    asp-items="@(new SelectList((IEnumerable<SelectListItem>)ViewBag.Children, "Value", "Text", ViewBag.ChildId))">
+                <option value="">All Children</option>
+            </select>
+        </div>
+
+        <!-- Videos -->
+        <div class="col">
+            <select name="videoId" class="form-select"
+                    asp-items="@(new SelectList((IEnumerable<SelectListItem>)ViewBag.Videos, "Value", "Text", ViewBag.VideoId))">
+                <option value="">All Videos</option>
+            </select>
+        </div>
+
+        <!-- Awarded -->
+        <div class="col">
+            <select name="awarded" class="form-select"
+                    asp-items="@(new SelectList(
+                        new List<SelectListItem>
+                        {
+                            new SelectListItem { Text = "Awarded: Any", Value = "" },
+                            new SelectListItem { Text = "Yes", Value = "true" },
+                            new SelectListItem { Text = "No", Value = "false" }
+                        },
+                        "Value",
+                        "Text",
+                        ViewBag.Awarded?.ToString().ToLower()
+                    ))">
+            </select>
+        </div>
+
+        <!-- Date From -->
+        <div class="col">
+            <input type="date" name="fromUtc" class="form-control" value="@ViewBag.FromUtc" title="From (UTC)" />
+        </div>
+
+        <!-- Date To -->
+        <div class="col">
+            <input type="date" name="toUtc" class="form-control" value="@ViewBag.ToUtc" title="To (UTC)" />
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="mt-3 d-flex flex-wrap gap-2">
+        <button class="btn btn-primary">
+            <i class="fas fa-search me-1"></i> Filter
+        </button>
+        <a asp-action="Result" class="btn btn-outline-secondary">
+            <i class="fas fa-times me-1"></i> Clear
+        </a>
+    </div>
+</form>
+
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <span>Logs</span>
+                    <span class="small">@Model.TotalItemCount total</span>
+                </div>
+
+                <div class="card-body table-responsive">
+                    @if (Model == null || !Model.Any())
+                    {
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-1"></i> No logs found for the selected filters.
+                        </div>
+                    }
+                    else
+                    {
+                        <table class="table table-bordered table-striped table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:240px;">Child</th>
+                                    <th>Video</th>
+                                    <th style="width:160px;">Started (UTC)</th>
+                                    <th style="width:140px;">Ended (UTC)</th>
+                                    <th style="width:120px;">Watched %</th>
+                                    <th style="width:130px;">Play / Max / Len</th>
+                                    <th style="width:120px;">Awarded</th>
+                                    <th style="width:160px;">Client</th>
+                                    <th style="width:80px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var r in Model)
+                                {
+                                    <tr>
+                                        <td class="fw-semibold"><i class="fas fa-child me-1 text-primary"></i>@r.ChildName</td>
+                                        <td>@r.VideoTitle</td>
+                                        <td>@r.StartedUtc.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td>@(r.EndedUtc.HasValue ? r.EndedUtc.Value.ToString("yyyy-MM-dd HH:mm") : "-")</td>
+                                        <td>
+                                            <span class="badge bg-@(r.PercentWatched >= 80 ? "success" : r.PercentWatched >= 50 ? "warning text-dark" : "secondary")">
+                                                @r.PercentWatched.ToString("0.##")%
+                                            </span>
+                                        </td>
+                                        <td class="small">
+                                            @r.DurationSeconds.ToString("0.#")s /
+                                            @r.MaxPositionSeconds.ToString("0.#")s /
+                                            @r.VideoDurationSeconds.ToString("0.#")s
+                                        </td>
+                                        <td>
+                                            @if (r.CoinsAwarded)
+                                            {
+                                                <span class="badge bg-success">Yes</span>
+                                                <div class="small text-muted">@r.AwardedUtc?.ToString("yyyy-MM-dd HH:mm")</div>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">No</span>
+                                            }
+                                        </td>
+                                        <td class="small">
+                                            <div>@r.ClientIp</div>
+                                            <div class="text-truncate" style="max-width:220px;" title="@r.UserAgent">@r.UserAgent</div>
+                                        </td>
+                                        <td class="text-nowrap">
+                                            <a asp-action="Details" asp-route-id="@r.Id" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-center">
+                            @Html.PagedListPager(
+                                Model,
+                                page => Url.Action("Index", new {
+                                    page,
+                                    q = ViewBag.Search,
+                                    childId = ViewBag.ChildId,
+                                    videoId = ViewBag.VideoId,
+                                    awarded = ViewBag.Awarded,
+                                    fromUtc = ViewBag.FromUtc,
+                                    toUtc = ViewBag.ToUtc
+                                }),
+                                new PagedListRenderOptions
+                                {
+                                    LiElementClasses = new[] { "page-item" },
+                                    PageClasses = new[] { "page-link" }
+                                })
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

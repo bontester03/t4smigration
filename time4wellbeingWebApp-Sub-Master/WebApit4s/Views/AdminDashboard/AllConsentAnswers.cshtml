@@ -1,0 +1,74 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@model IPagedList<WebApit4s.Models.AdminConsentAnswerViewModel>
+
+@{
+    ViewData["Title"] = "Consent Answers - Admin";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fa fa-file-signature text-primary"></i> Consent Answers</h2>
+
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <div><i class="fa fa-clipboard-list"></i> Submitted Consent Responses</div>
+            <a asp-controller="AdminDashboard" asp-action="Index" class="btn btn-light btn-sm text-primary">
+                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>User Email</th>
+                            <th>Child Name</th>
+                            <th>Consent Question</th>
+                            <th>Answer</th>
+                            <th>Submitted At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                        <tr>
+                                            <td>@item.UserEmail</td>
+                                            <td>@item.ChildName</td>
+                                            <td>@item.Question</td>
+                                            <td>
+                                                <span class="badge bg-@(item.Answer == "Yes" ? "success" : "danger")">@item.Answer</span>
+                                            </td>
+                                            <td>@item.SubmittedAt.ToString("dd MMM yyyy HH:mm")</td>
+                                        </tr>
+                            }
+                        }
+                        else
+                        {
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No consent answers found.</td>
+                                </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-3">
+                @Html.PagedListPager(Model, page => Url.Action("AllConsentAnswers", new { page }),
+                              new PagedListRenderOptions
+                     {
+                         LiElementClasses = new[] { "page-item" },
+                         PageClasses = new[] { "page-link" },
+                         DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                         DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                         DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                         DisplayLinkToNextPage = PagedListDisplayMode.Always
+                     })
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,352 @@
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<AdminHealthScoreViewModel>
+
+@{
+    ViewData["Title"] = "All Health Scores";
+    ViewData["ActivePage"] = "AllHealthScores";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    
+    // Calculate analytics
+    var totalScores = Model.TotalItemCount;
+    var healthyCount = Model.Count(h => h.HealthClassification == "Healthy");
+    var moderateCount = Model.Count(h => h.HealthClassification == "Moderate");
+    var unhealthyCount = Model.Count(h => h.HealthClassification == "Unhealthy");
+    var avgTotalScore = Model.Any() ? Model.Average(h => h.TotalScore) : 0;
+}
+
+<style>
+    .stat-card {
+        border-left: 4px solid;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .health-score-row {
+        transition: all 0.2s;
+    }
+    .health-score-row:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+        transform: scale(1.01);
+    }
+    .health-score-card {
+        border-left: 3px solid;
+        transition: all 0.3s;
+    }
+    .health-score-card:hover {
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        transform: translateX(5px);
+    }
+    .health-score-card.healthy {
+        border-left-color: #28a745;
+    }
+    .health-score-card.moderate {
+        border-left-color: #ffc107;
+    }
+    .health-score-card.unhealthy {
+        border-left-color: #dc3545;
+    }
+</style>
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-dark fw-bold mb-1">
+                <i class="fas fa-heartbeat text-danger me-2"></i> All Health Scores
+            </h2>
+            <p class="text-muted mb-0">Comprehensive view of lifestyle and health questionnaire responses</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Analytics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #007bff !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Total Health Scores</div>
+                            <div class="h3 mb-0 fw-bold text-primary">@totalScores</div>
+                        </div>
+                        <div class="text-primary" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #28a745 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Healthy</div>
+                            <div class="h3 mb-0 fw-bold text-success">@healthyCount</div>
+                            <small class="text-muted">@(totalScores > 0 ? ((healthyCount / (double)totalScores) * 100).ToString("F1") : "0")%</small>
+                        </div>
+                        <div class="text-success" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-smile"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #ffc107 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Moderate</div>
+                            <div class="h3 mb-0 fw-bold text-warning">@moderateCount</div>
+                            <small class="text-muted">@(totalScores > 0 ? ((moderateCount / (double)totalScores) * 100).ToString("F1") : "0")%</small>
+                        </div>
+                        <div class="text-warning" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-meh"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100" style="border-left-color: #dc3545 !important;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="text-muted small mb-1">Unhealthy</div>
+                            <div class="h3 mb-0 fw-bold text-danger">@unhealthyCount</div>
+                            <small class="text-muted">@(totalScores > 0 ? ((unhealthyCount / (double)totalScores) * 100).ToString("F1") : "0")%</small>
+                        </div>
+                        <div class="text-danger" style="font-size: 2.5rem; opacity: 0.3;">
+                            <i class="fas fa-frown"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <!-- Desktop Table View -->
+        <div class="card shadow-sm border-0 mb-4 d-none d-lg-block">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0 text-dark">
+                    <i class="fas fa-table me-2"></i>Health Score Records
+                    <span class="badge bg-primary ms-2">@Model.TotalItemCount</span>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-3">User</th>
+                                <th>Activity</th>
+                                <th>Breakfast</th>
+                                <th>Fruit/Veg</th>
+                                <th>Sweets</th>
+                                <th>Fats</th>
+                                <th class="text-center">Total</th>
+                                <th class="text-center">Classification</th>
+                                <th class="text-center">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var score in Model)
+                            {
+                                <tr class="health-score-row">
+                                    <td class="px-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle bg-primary text-white me-2" 
+                                                 style="width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                                                @score.UserName.Substring(0, 1).ToUpper()
+                                            </div>
+                                            <div>
+                                                <div class="fw-semibold">@score.UserName</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><small>@GetPhysicalActivityOption(score.PhysicalActivityScore)</small></td>
+                                    <td><small>@GetBreakfastOption(score.BreakfastScore)</small></td>
+                                    <td><small>@GetFruitVegOption(score.FruitVegScore)</small></td>
+                                    <td><small>@GetSweetSnacksOption(score.SweetSnacksScore)</small></td>
+                                    <td><small>@GetFattyFoodsOption(score.FattyFoodsScore)</small></td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info">@score.TotalScore</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-@(score.HealthClassification == "Healthy" ? "success" : score.HealthClassification == "Moderate" ? "warning" : "danger")">
+                                            @score.HealthClassification
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <small class="text-muted">
+                                            <i class="far fa-calendar me-1"></i>
+                                            @score.DateRecorded.ToString("dd MMM yyyy")
+                                        </small>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile/Tablet Card View -->
+        <div class="d-lg-none">
+            @foreach (var score in Model)
+            {
+                var cardClass = score.HealthClassification == "Healthy" ? "healthy" : 
+                                score.HealthClassification == "Moderate" ? "moderate" : "unhealthy";
+
+                <div class="card health-score-card @cardClass shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle bg-primary text-white me-2" 
+                                     style="width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem;">
+                                    @score.UserName.Substring(0, 1).ToUpper()
+                                </div>
+                                <div>
+                                    <div class="fw-bold">@score.UserName</div>
+                                    <small class="text-muted">
+                                        <i class="far fa-calendar me-1"></i>
+                                        @score.DateRecorded.ToString("dd MMM yyyy")
+                                    </small>
+                                </div>
+                            </div>
+                            <span class="badge bg-@(score.HealthClassification == "Healthy" ? "success" : score.HealthClassification == "Moderate" ? "warning" : "danger")">
+                                @score.HealthClassification
+                            </span>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <small class="text-muted d-block">Physical Activity</small>
+                                <small><strong>@GetPhysicalActivityOption(score.PhysicalActivityScore)</strong></small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Breakfast</small>
+                                <small><strong>@GetBreakfastOption(score.BreakfastScore)</strong></small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Fruit & Veg</small>
+                                <small><strong>@GetFruitVegOption(score.FruitVegScore)</strong></small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Sweet Snacks</small>
+                                <small><strong>@GetSweetSnacksOption(score.SweetSnacksScore)</strong></small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Fatty Foods</small>
+                                <small><strong>@GetFattyFoodsOption(score.FattyFoodsScore)</strong></small>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted d-block">Total Score</small>
+                                <span class="badge bg-info">@score.TotalScore / 20</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-4">
+            @Html.PagedListPager(
+                Model, 
+                page => Url.Action("AllHealthScores", new { page }),
+                new PagedListRenderOptions
+                {
+                    UlElementClasses = new[] { "pagination" },
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" },
+                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                    DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                    LinkToFirstPageFormat = "First",
+                    LinkToLastPageFormat = "Last"
+                }
+            )
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-heartbeat fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">No health scores found</h5>
+                <p class="text-muted mb-0">Check back later when users have completed their health questionnaires.</p>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (window.feather) {
+            feather.replace();
+        }
+    });
+</script>
+
+@functions {
+    private string GetPhysicalActivityOption(int score) => score switch
+    {
+        0 => "< 60 mins",
+        1 => "60-120 mins",
+        2 => "180-240 mins",
+        3 => "300-360 mins",
+        4 => "420+ mins",
+        _ => "Unknown"
+    };
+
+    private string GetBreakfastOption(int score) => score switch
+    {
+        0 => "0 days",
+        1 => "1-2 days",
+        2 => "3-4 days",
+        3 => "5-6 days",
+        4 => "7 days",
+        _ => "Unknown"
+    };
+
+    private string GetFruitVegOption(int score) => score switch
+    {
+        0 => "0 portions",
+        1 => "1-2 portions",
+        2 => "3 portions",
+        3 => "4 portions",
+        4 => "5+ portions",
+        _ => "Unknown"
+    };
+
+    private string GetSweetSnacksOption(int score) => score switch
+    {
+        0 => "6+ times/wk",
+        1 => "3-5 times/wk",
+        2 => "1-2 times/wk",
+        3 => "< 1/week",
+        4 => "Never",
+        _ => "Unknown"
+    };
+
+    private string GetFattyFoodsOption(int score) => score switch
+    {
+        0 => "6+ times/wk",
+        1 => "3-5 times/wk",
+        2 => "1-2 times/wk",
+        3 => "< 1/week",
+        4 => "Never",
+        _ => "Unknown"
+    };
+}
+

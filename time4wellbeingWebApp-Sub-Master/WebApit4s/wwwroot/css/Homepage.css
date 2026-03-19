@@ -1,0 +1,219 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Nunito', sans-serif;
+}
+
+body {
+    position: relative;
+    background: linear-gradient(to bottom, #8be23f 60%, #3ecbff 40%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: 'Nunito', sans-serif;
+}
+
+    /* Carrot background as a pseudo-element */
+    body::after {
+        content: "";
+        position: absolute;
+        right: 20%;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 250px;
+        height: 250px;
+        background-image: url('/images/hand.png');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        opacity: 0;
+        animation: fadeInCarrot 1.5s ease-out forwards, floatCarrot 4s ease-in-out infinite;
+        z-index: 1;
+    }
+
+@keyframes floatCarrot {
+    0% {
+        transform: translateY(-50%) translateY(0);
+    }
+
+    50% {
+        transform: translateY(-50%) translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(-50%) translateY(0);
+    }
+}
+
+
+/* Make carrot smaller on tablet screens */
+@media (max-width: 1024px) {
+    body::after {
+        width: 180px;
+        height: 180px;
+        right: 10%;
+    }
+}
+
+/* Hide carrot on small mobile screens */
+@media (max-width: 640px) {
+    body::after {
+        display: none;
+    }
+}
+
+
+
+/* Animation Keyframes */
+@keyframes fadeInCarrot {
+    0% {
+        opacity: 0;
+        transform: translateY(-60%) scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+    }
+}
+
+/* Optional: Hide the mascot on small screens */
+@media (max-width: 768px) {
+    body::after {
+        display: none;
+    }
+}
+
+
+
+
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    padding: 2rem;
+}
+
+.login-box h2 {
+    font-size: 2rem;
+    color: white;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.login-box .highlight {
+    font-weight: 800;
+}
+
+.form-card {
+    background-color: #fffbea;
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+    .form-card h3 {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+        color: #222;
+        text-align: center;
+    }
+
+.brand {
+    color: #2a9c2d;
+    font-weight: 700;
+}
+
+.subtext {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+    .input-group label {
+        display: block;
+        font-size: 0.85rem;
+        color: #444;
+        margin-bottom: 0.25rem;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 0.65rem;
+        border: 1px solid #ccc;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+    }
+
+.login-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #50b848;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 0.5rem;
+}
+
+    .login-button:hover {
+        background-color: #419d3b;
+    }
+
+.extra-links {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+}
+
+    .extra-links a {
+        color: #2c6de0;
+        text-decoration: none;
+    }
+
+        .extra-links a:hover {
+            text-decoration: underline;
+        }
+
+
+/* Custom slim scrollbar for form scrollable area */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Light grey background */
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #38a169; /* Green thumb */
+    border-radius: 10px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #2f855a; /* Darker green when hovering */
+    }
+
+/* For Firefox */
+.scrollable-form {
+    scrollbar-width: thin;
+    scrollbar-color: #38a169 #f1f1f1;
+}
+
+

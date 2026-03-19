@@ -1,0 +1,149 @@
+﻿@model WebApit4s.Models.Child
+@using System.IO
+@{
+    ViewData["Title"] = "Child Registration";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+
+    var userId = User.Identity.IsAuthenticated
+        ? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+        : ViewBag.UserId?.ToString();
+}
+
+<div class="col-md-6 d-flex align-items-center py-5">
+    <div class="container my-auto py-4 shadow-lg bg-white">
+        <div class="row">
+            <div class="col-11 col-lg-10 mx-auto">
+                <h3 class="text-9 fw-600 text-center my-3">Enter Child Details</h3>
+
+                <form asp-action="Create" method="post" id="childForm">
+                    <div asp-validation-summary="ModelOnly" class="text-danger text-center mb-3"></div>
+
+                    <!-- Hidden: UserId and ChildGuid -->
+                    <input type="hidden" name="UserId" value="@userId" />
+                    <input type="hidden" asp-for="ChildGuid" />
+
+                    <!-- Child Name -->
+                    <div class="mb-3">
+                        <label asp-for="ChildName" class="form-label text-dark fw-600"></label>
+                        <input asp-for="ChildName" class="form-control rounded-0" placeholder="Enter child's name" />
+                        <span asp-validation-for="ChildName" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Gender -->
+                    <div class="mb-3">
+                        <label asp-for="Gender" class="form-label text-dark fw-600"></label>
+                        <select asp-for="Gender" class="form-select rounded-0">
+                            <option value="">-- Select Gender --</option>
+                            @foreach (var gender in Enum.GetValues(typeof(WebApit4s.Models.Gender)))
+                            {
+                                <option value="@gender">@gender</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Gender" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div class="mb-3">
+                        <label asp-for="DateOfBirth" class="form-label text-dark fw-600"></label>
+                        <input type="date"
+                               class="form-control rounded-0"
+                               name="DateOfBirth"
+                               value="@(Model.DateOfBirth == DateTime.MinValue ? DateTime.Today.ToString("yyyy-MM-dd") : Model.DateOfBirth.ToString("yyyy-MM-dd"))"
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               required />
+                        <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                    </div>
+
+                    <!-- School -->
+<div class="mb-3">
+    <label asp-for="School" class="form-label text-dark fw-600"></label>
+    <input asp-for="School" class="form-control rounded-0" placeholder="Enter school name" />
+    <span asp-validation-for="School" class="text-danger small"></span>
+</div>
+
+<!-- Class -->
+<div class="mb-3">
+    <label asp-for="Class" class="form-label text-dark fw-600"></label>
+    <input asp-for="Class" class="form-control rounded-0" placeholder="Enter class (e.g., 4A)" />
+    <span asp-validation-for="Class" class="text-danger small"></span>
+</div>
+
+
+                    <!-- Choose Avatar -->
+                    <div class="mb-3">
+                        <label class="form-label text-dark fw-600">Choose Avatar</label>
+
+                        @if (ViewBag.Avatars is List<string> avatars && avatars.Any())
+                        {
+                            <div class="row g-3">
+                                @foreach (var url in avatars)
+                                {
+                                    <div class="col-3 col-sm-2 col-md-2">
+                                        <label class="d-block text-center avatar-option">
+                                            <input type="radio" asp-for="AvatarUrl" value="@url" class="d-none" />
+                                            <img src="@url" alt="Avatar" class="img-fluid avatar-preview" />
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                            <span asp-validation-for="AvatarUrl" class="text-danger small"></span>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning small mb-0">
+                                No avatars found in <code>wwwroot/characters</code>.
+                            </div>
+                        }
+                    </div>
+
+
+
+
+                    <!-- Submit -->
+                    <div class="d-grid my-4">
+                        <button class="btn btn-success rounded-0" type="submit">Save and Continue</button>
+                    </div>
+                </form>
+
+                <div class="d-flex align-items-center my-4">
+                    <hr class="flex-grow-1" />
+                    <span class="mx-2 text-2 text-muted">Step 1 of 3</span>
+                    <hr class="flex-grow-1" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .avatar-option {
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: inline-block;
+    }
+
+    .avatar-preview {
+        border-radius: 50%;
+        border: 2px solid transparent;
+        padding: 4px;
+        width: 100%;
+        height: auto;
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    /* Hover effect - show subtle black glow */
+    .avatar-option:hover .avatar-preview {
+        box-shadow: 0 0 0 .25rem rgba(0, 0, 0, 0.3);
+        transform: scale(1.05);
+    }
+
+    /* Selected effect - solid black border */
+    .avatar-option input[type="radio"]:checked + .avatar-preview {
+        border-color: #000;
+        box-shadow: 0 0 0 .25rem rgba(0, 0, 0, 0.5);
+        transform: scale(1.1);
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

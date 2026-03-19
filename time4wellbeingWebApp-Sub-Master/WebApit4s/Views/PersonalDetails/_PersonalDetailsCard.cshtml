@@ -1,0 +1,89 @@
+﻿@model IEnumerable<WebApit4s.Models.PersonalDetails>
+
+@{
+    ViewData["Title"] = "Personal Details";
+}
+
+
+    <!-- Page Header -->
+   
+
+    <!-- Personal Details Card -->
+    <div class="card shadow-sm">
+  
+
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                   
+                        <div class="card-body">
+                            <!-- School -->
+                          @*   <div class="mb-3">
+                                <label class="form-label fw-semibold">School</label>
+                                <input type="text" class="form-control" value="@item.School" readonly />
+                            </div> *@
+
+                            <!-- Class and Parent Name -->
+                            <div class="mb-3">
+                              @*   <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Class</label>
+                                    <input type="text" class="form-control" value="@item.Class" readonly />
+                                </div> *@
+                               
+                                    <label class="form-label fw-semibold">Parent/Guardian Name</label>
+                                    <input type="text" class="form-control" value="@item.ParentGuardianName" readonly />
+                            
+                            </div>
+
+                            <!-- Relationship and Phone -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Relationship to Child</label>
+                                    <input type="text" class="form-control" value="@item.RelationshipToChild" readonly />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Phone Number</label>
+                                    <input type="tel" class="form-control" value="@item.TeleNumber" readonly />
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Email</label>
+                                <input type="email" class="form-control" value="@item.Email" readonly />
+                            </div>
+
+                            <!-- Postcode and GP Practice -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Postcode</label>
+                                    <input type="text" class="form-control" value="@item.Postcode" readonly />
+                                </div>
+                            
+                            </div>
+
+                            <!-- Optional Actions -->
+                            <div class="d-flex justify-content-end">
+                                @* <a class="btn btn-outline-secondary btn-sm" asp-action="Edit" asp-route-id="@item.Id">
+                                    <i class="fa-solid fa-pen me-1"></i> Request Change
+                                </a> *@
+                            </div>
+                        </div>
+                    
+                }
+            }
+            else
+            {
+                <p class="text-muted">No personal details found.</p>
+            }
+        </div>
+    </div>
+
+
+@section Scripts {
+    <script>
+        feather.replace();
+    </script>
+}

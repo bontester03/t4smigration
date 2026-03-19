@@ -1,0 +1,71 @@
+<app-guest-registration-shell
+  title="Parent / Guardian Information"
+  subtitle="Please provide your personal details to begin registration."
+  stepLabel="Step 1 of 5"
+  [context]="context()"
+>
+  @if (isLoading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+    </div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (errorMessage) {
+        <div class="alert alert-danger text-center mb-3">
+          {{ errorMessage }}
+        </div>
+      }
+
+      <div class="mb-3">
+        <label class="form-label text-dark fw-600 required" for="parentName">Parent / Guardian Name</label>
+        <input id="parentName" formControlName="parentName" class="form-control rounded-0" placeholder="Enter full name" />
+        @if (form.controls.parentName.touched && form.controls.parentName.invalid) {
+          <span class="text-danger small">Parent / Guardian name is required.</span>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-dark fw-600 required" for="relationship">Relationship to Child</label>
+        <select id="relationship" formControlName="relationship" class="form-select rounded-0">
+          <option value="">-- Select Relationship --</option>
+          @for (relationship of relationships; track relationship) {
+            <option [value]="relationship">{{ relationship }}</option>
+          }
+        </select>
+        @if (form.controls.relationship.touched && form.controls.relationship.invalid) {
+          <span class="text-danger small">Please select your relationship to the child.</span>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-dark fw-600 required" for="email">Email</label>
+        <input id="email" formControlName="email" type="email" class="form-control rounded-0" placeholder="Enter email address" />
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <span class="text-danger small">Please enter a valid email address.</span>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-dark fw-600 required" for="phoneNumber">Phone Number</label>
+        <input id="phoneNumber" formControlName="phoneNumber" type="tel" class="form-control rounded-0" placeholder="Enter phone number" />
+        @if (form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid) {
+          <span class="text-danger small">Phone number is required.</span>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-dark fw-600 required" for="postcode">Postcode</label>
+        <input id="postcode" formControlName="postcode" class="form-control rounded-0" placeholder="Enter postcode" />
+        @if (form.controls.postcode.touched && form.controls.postcode.invalid) {
+          <span class="text-danger small">Postcode is required.</span>
+        }
+      </div>
+
+      <div class="d-grid my-4">
+        <button type="submit" class="btn btn-success rounded-0 guest-btn-primary" [disabled]="isSubmitting">
+          Save and Continue
+        </button>
+      </div>
+    </form>
+  }
+</app-guest-registration-shell>

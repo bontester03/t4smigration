@@ -1,0 +1,55 @@
+<app-registration-shell
+  title="Parent / Guardian Details"
+  subtitle="Tell us who will be responsible for the registration and contact details."
+  stepLabel="Step 2 of 6"
+>
+  @if (isLoading) {
+    <div class="registration-loading"><div class="spinner-border text-success" role="status"></div></div>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="registration-form">
+      @if (errorMessage) {
+        <div class="alert alert-danger registration-alert" role="alert">{{ errorMessage }}</div>
+      }
+
+      <div class="registration-grid registration-grid--two">
+        <div class="registration-field registration-grid__span-2">
+          <label class="registration-label required" for="parentGuardianName">Parent / Guardian Name</label>
+          <input id="parentGuardianName" formControlName="parentGuardianName" class="form-control registration-control" />
+        </div>
+
+        <div class="registration-field">
+          <label class="registration-label required" for="relationshipToChild">Relationship to Child</label>
+          <select id="relationshipToChild" formControlName="relationshipToChild" class="form-select registration-control">
+            <option value="">-- Select Relationship --</option>
+            @for (relationship of options()?.relationships ?? []; track relationship) {
+              <option [value]="relationship">{{ relationship }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="registration-field">
+          <label class="registration-label required" for="teleNumber">Telephone Number</label>
+          <input id="teleNumber" formControlName="teleNumber" class="form-control registration-control" />
+        </div>
+
+        <div class="registration-field">
+          <label class="registration-label required" for="parentEmail">Email</label>
+          <div class="registration-input-wrap">
+            <i class="fa-solid fa-envelope registration-input-icon"></i>
+            <input id="parentEmail" formControlName="email" type="email" class="form-control registration-control" />
+          </div>
+        </div>
+
+        <div class="registration-field">
+          <label class="registration-label required" for="postcode">Postcode</label>
+          <input id="postcode" formControlName="postcode" class="form-control registration-control" />
+        </div>
+      </div>
+
+      <div class="registration-actions">
+        <button type="button" class="btn registration-button registration-button--secondary" (click)="back()">Back</button>
+        <button type="submit" class="btn registration-button registration-button--primary">Save and Continue</button>
+      </div>
+    </form>
+  }
+</app-registration-shell>

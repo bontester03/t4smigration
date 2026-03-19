@@ -1,0 +1,275 @@
+﻿@model IEnumerable<UserNotificationViewModel>
+
+@{
+    ViewData["Title"] = "Notifications";
+    ViewData["ActivePage"] = "Notifications";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+<style>
+    .notifications-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        color: white;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    .notifications-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        pointer-events: none;
+    }
+    .notifications-card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 15px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+    .notifications-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .nav-tabs-modern {
+        border: none;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .nav-tabs-modern .nav-link {
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1.5rem;
+        color: #6b7280;
+        font-weight: 500;
+        transition: all 0.3s;
+        margin: 0 0.25rem;
+    }
+    .nav-tabs-modern .nav-link:hover {
+        background: #f3f4f6;
+        color: #667eea;
+    }
+    .nav-tabs-modern .nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    .notification-item {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border-left: 4px solid #667eea;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s;
+    }
+    .notification-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+    .notification-item.unread {
+        border-left-color: #f59e0b;
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    }
+    .notification-item.read {
+        opacity: 0.8;
+    }
+    .mark-read-btn {
+        border-radius: 10px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+    .mark-read-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+    .empty-state i {
+        font-size: 4rem;
+        color: #d1d5db;
+        margin-bottom: 1.5rem;
+    }
+    .table-modern {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .table-modern thead {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .table-modern thead th {
+        border: none;
+        padding: 1rem 0.75rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    .table-modern tbody td {
+        padding: 0.875rem 0.75rem;
+        vertical-align: middle;
+        border-color: #e5e7eb;
+    }
+    .table-modern tbody tr:hover {
+        background-color: #f9fafb;
+    }
+</style>
+
+
+<div class="container-fluid px-4 mt-4">
+    <!-- Hero Section -->
+    <div class="notifications-hero">
+        <div class="row align-items-center position-relative">
+            <div class="col-md-8">
+                <h1 class="h2 fw-bold mb-2">
+                    <i data-feather="bell" class="me-2"></i>
+                    Your Notifications
+                </h1>
+                <p class="mb-0 opacity-90">Stay updated with all your important messages and alerts</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a asp-controller="Dashboard" asp-action="LandingPage" class="btn btn-light">
+                    <i data-feather="arrow-left" class="me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs-modern mb-4">
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Index" asp-controller="Dashboard">
+                <i data-feather="user" style="width: 16px; height: 16px;" class="me-1"></i>Profile
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Goal" asp-controller="Dashboard">
+                <i data-feather="target" style="width: 16px; height: 16px;" class="me-1"></i>Tracking Goal
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Questionnaire" asp-controller="Dashboard">
+                <i data-feather="clipboard" style="width: 16px; height: 16px;" class="me-1"></i>Questionnaire
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Measurement" asp-controller="Dashboard">
+                <i data-feather="activity" style="width: 16px; height: 16px;" class="me-1"></i>Measurement
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-action="Suggestions" asp-controller="Dashboard">
+                <i data-feather="video" style="width: 16px; height: 16px;" class="me-1"></i>Videos
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link active" asp-action="Notifications" asp-controller="Dashboard">
+                <i data-feather="bell" style="width: 16px; height: 16px;" class="me-1"></i>Notifications
+            </a>
+        </li>
+    </ul>
+
+    <!-- Notifications Card -->
+    <div class="notifications-card mb-5">
+        <div class="card-header" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 1rem;">
+            <h5 class="mb-0">
+                <i data-feather="inbox" class="me-2" style="width: 20px; height: 20px;"></i>
+                Recent Notifications
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var notification in Model)
+                {
+                    <div class="notification-item @(notification.IsRead ? "read" : "unread")">
+                        <div class="row align-items-center">
+                            <div class="col-md-1 text-center">
+                                @if (notification.IsRead)
+                                {
+                                    <i data-feather="check-circle" style="width: 32px; height: 32px; color: #10b981;"></i>
+                                }
+                                else
+                                {
+                                    <i data-feather="alert-circle" style="width: 32px; height: 32px; color: #f59e0b;"></i>
+                                }
+                            </div>
+                            <div class="col-md-7">
+                                <p class="mb-1 fw-bold" style="color: #1f2937;">@notification.Message</p>
+                                <small class="text-muted">
+                                    <i data-feather="clock" style="width: 14px; height: 14px;" class="me-1"></i>
+                                    @notification.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                                </small>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                @if (notification.IsRead)
+                                {
+                                    <span class="badge bg-success" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                                        <i data-feather="check" style="width: 14px; height: 14px;" class="me-1"></i>Read
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning text-dark" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                                        <i data-feather="bell" style="width: 14px; height: 14px;" class="me-1"></i>Unread
+                                    </span>
+                                }
+                            </div>
+                            <div class="col-md-2 text-end">
+                                @if (!notification.IsRead)
+                                {
+                                    <form asp-controller="Dashboard" asp-action="MarkNotificationAsRead" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@notification.Id" />
+                                        <button type="submit" class="btn btn-success btn-sm mark-read-btn">
+                                            <i data-feather="check-square" style="width: 14px; height: 14px;" class="me-1"></i>
+                                            Mark Read
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <small class="text-muted">
+                                        <i data-feather="check-circle" style="width: 16px; height: 16px;"></i>
+                                    </small>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state">
+                    <i data-feather="inbox" style="width: 64px; height: 64px;"></i>
+                    <h5 class="mb-2">No Notifications Yet</h5>
+                    <p class="text-muted mb-3">You're all caught up! New notifications will appear here.</p>
+                    <a asp-controller="Dashboard" asp-action="LandingPage" class="btn btn-primary">
+                        <i data-feather="home" class="me-2" style="width: 16px; height: 16px;"></i>
+                        Go to Dashboard
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+}

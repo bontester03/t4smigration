@@ -1,0 +1,139 @@
+﻿@model IEnumerable<WebApit4s.Models.HealthScore>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+}
+
+
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<div class="card">
+    <div class="card-header">Health Scores</div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.PhysicalActivityScore)</th>
+                    <th>@Html.DisplayNameFor(model => model.BreakfastScore)</th>
+                    <th>@Html.DisplayNameFor(model => model.FruitVegScore)</th>
+                    <th>@Html.DisplayNameFor(model => model.SweetSnacksScore)</th>
+                    <th>@Html.DisplayNameFor(model => model.FattyFoodsScore)</th>
+                    <th>@Html.DisplayNameFor(model => model.TotalScore)</th>
+                    <th>@Html.DisplayNameFor(model => model.HealthClassification)</th>
+                    <th>@Html.DisplayNameFor(model => model.DateRecorded)</th>
+                    <th>@Html.DisplayNameFor(model => model.Child)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @GetPhysicalActivityOption(item.PhysicalActivityScore)
+                        </td>
+                        <td>
+                            @GetBreakfastOption(item.BreakfastScore)
+                        </td>
+                        <td>
+                            @GetFruitVegOption(item.FruitVegScore)
+                        </td>
+                        <td>
+                            @GetSweetSnacksOption(item.SweetSnacksScore)
+                        </td>
+                        <td>
+                            @GetFattyFoodsOption(item.FattyFoodsScore)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TotalScore)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.HealthClassification)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateRecorded)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Child.Id)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@functions {
+    private string GetPhysicalActivityOption(int score)
+    {
+        return score switch
+        {
+            0 => "Less than 60 mins",
+            1 => "60-120 mins",
+            2 => "180-240 mins",
+            3 => "300-360 mins",
+            4 => "420+ mins",
+            _ => "Unknown"
+        };
+    }
+
+    private string GetBreakfastOption(int score)
+    {
+        return score switch
+        {
+            0 => "0 days",
+            1 => "1-2 days",
+            2 => "3-4 days",
+            3 => "5-6 days",
+            4 => "7 days",
+            _ => "Unknown"
+        };
+    }
+
+    private string GetFruitVegOption(int score)
+    {
+        return score switch
+        {
+            0 => "0 portions",
+            1 => "1-2 portions",
+            2 => "3 portions",
+            3 => "4 portions",
+            4 => "5+ portions",
+            _ => "Unknown"
+        };
+    }
+
+    private string GetSweetSnacksOption(int score)
+    {
+        return score switch
+        {
+            0 => "6+ times a week",
+            1 => "3-5 times a week",
+            2 => "1-2 times a week",
+            3 => "Less than 1 a week",
+            4 => "Never",
+            _ => "Unknown"
+        };
+    }
+
+    private string GetFattyFoodsOption(int score)
+    {
+        return score switch
+        {
+            0 => "6+ times a week",
+            1 => "3-5 times a week",
+            2 => "1-2 times a week",
+            3 => "Less than 1 a week",
+            4 => "Never",
+            _ => "Unknown"
+        };
+    }
+}

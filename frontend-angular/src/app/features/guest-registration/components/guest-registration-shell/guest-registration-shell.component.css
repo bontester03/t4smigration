@@ -1,0 +1,21 @@
+.shell-hero-bg {
+  background-image: url('/images/people-in-park.jpg');
+}
+
+.shell-logo {
+  width: 240px;
+  height: auto;
+}
+
+.hero-mask {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.72) 0%, rgba(5, 150, 105, 0.72) 100%) !important;
+}
+
+.shell-link-pill {
+  background: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+}

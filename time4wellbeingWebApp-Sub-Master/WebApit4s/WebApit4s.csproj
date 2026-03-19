@@ -1,0 +1,473 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GuestRegistrationSpaRoot>..\..\frontend-angular\</GuestRegistrationSpaRoot>
+    <GuestRegistrationSpaDist>$(GuestRegistrationSpaRoot)dist\frontend-angular\browser\</GuestRegistrationSpaDist>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\css\styles.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.4.1" />
+    <PackageReference Include="MailKit" Version="4.11.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.19" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.17" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="OpenAI" Version="2.2.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
+    <Folder Include="DTO\Dashboard\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\js\" />
+    <Folder Include="wwwroot\lib\bootstrap\" />
+    <Folder Include="wwwroot\lib\bootstrap\dist\css\" />
+    <Folder Include="wwwroot\lib\bootstrap\dist\js\" />
+    <Folder Include="wwwroot\lib\jquery-validation-unobtrusive\" />
+    <Folder Include="wwwroot\lib\jquery-validation\" />
+    <Folder Include="wwwroot\lib\jquery-validation\dist\" />
+    <Folder Include="wwwroot\lib\jquery\" />
+    <Folder Include="wwwroot\lib\jquery\dist\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\css\styles.css" />
+    <None Include="wwwroot\Templates\Emails\PasswordResetEmail.html" />
+    <None Include="wwwroot\Theme\.env" />
+    <None Include="wwwroot\Theme\.env-sample.env" />
+    <None Include="wwwroot\Theme\.gitignore" />
+    <None Include="wwwroot\Theme\CHANGELOG.md" />
+    <None Include="wwwroot\Theme\dist\account-billing.html" />
+    <None Include="wwwroot\Theme\dist\account-notifications.html" />
+    <None Include="wwwroot\Theme\dist\account-profile.html" />
+    <None Include="wwwroot\Theme\dist\account-security.html" />
+    <None Include="wwwroot\Theme\dist\alerts.html" />
+    <None Include="wwwroot\Theme\dist\animations.html" />
+    <None Include="wwwroot\Theme\dist\assets\demo\chart-area-demo.js" />
+    <None Include="wwwroot\Theme\dist\assets\demo\chart-bar-demo.js" />
+    <None Include="wwwroot\Theme\dist\assets\demo\chart-pie-demo.js" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-Black.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-BlackItalic.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-Bold.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-BoldItalic.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-ExtraBold.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-ExtraBoldItalic.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-ExtraLight.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-ExtraLightItalic.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-Light.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-LightItalic.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-Medium.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-MediumItalic.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-Regular.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-RegularItalic.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-SemiBold.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-SemiBoldItalic.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-Thin.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\Metropolis-ThinItalic.otf" />
+    <None Include="wwwroot\Theme\dist\assets\fonts\metropolis\SIL Open Font License.txt" />
+    <None Include="wwwroot\Theme\dist\assets\img\backgrounds\bg-angles.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\backgrounds\bg-pattern-shapes.png" />
+    <None Include="wwwroot\Theme\dist\assets\img\backgrounds\bg-waves.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\demo\cards\card-img-bottom.jpg" />
+    <None Include="wwwroot\Theme\dist\assets\img\demo\cards\card-img-left.jpg" />
+    <None Include="wwwroot\Theme\dist\assets\img\demo\cards\card-img-overlay.jpg" />
+    <None Include="wwwroot\Theme\dist\assets\img\demo\cards\card-img-right.jpg" />
+    <None Include="wwwroot\Theme\dist\assets\img\demo\cards\card-img-top.jpg" />
+    <None Include="wwwroot\Theme\dist\assets\img\demo\demo-logo.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\demo\demo-ocean-lg.jpg" />
+    <None Include="wwwroot\Theme\dist\assets\img\demo\demo-ocean-sm.jpg" />
+    <None Include="wwwroot\Theme\dist\assets\img\demo\pug.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\demo\user-placeholder.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\favicon.png" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\400-error-bad-request.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\401-error-unauthorized.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\403-error-forbidden.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\404-error-with-a-cute-animal.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\404-error.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\500-internal-server-error.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\503-error-service-unavailable.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\504-error-gateway-timeout.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\at-work.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\browser-stats.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\CREDITS.md" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\data-report.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\problem-solving.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\processing.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\profiles\profile-1.png" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\profiles\profile-2.png" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\profiles\profile-3.png" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\profiles\profile-4.png" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\profiles\profile-5.png" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\profiles\profile-6.png" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\statistics.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\team-spirit.svg" />
+    <None Include="wwwroot\Theme\dist\assets\img\illustrations\windows.svg" />
+    <None Include="wwwroot\Theme\dist\auth-login-basic.html" />
+    <None Include="wwwroot\Theme\dist\auth-login-social.html" />
+    <None Include="wwwroot\Theme\dist\auth-password-basic.html" />
+    <None Include="wwwroot\Theme\dist\auth-password-social.html" />
+    <None Include="wwwroot\Theme\dist\auth-redirect.html" />
+    <None Include="wwwroot\Theme\dist\auth-register-basic.html" />
+    <None Include="wwwroot\Theme\dist\auth-register-social.html" />
+    <None Include="wwwroot\Theme\dist\avatars.html" />
+    <None Include="wwwroot\Theme\dist\background.html" />
+    <None Include="wwwroot\Theme\dist\badges.html" />
+    <None Include="wwwroot\Theme\dist\blog-management-create-post.html" />
+    <None Include="wwwroot\Theme\dist\blog-management-edit-post.html" />
+    <None Include="wwwroot\Theme\dist\blog-management-posts-admin.html" />
+    <None Include="wwwroot\Theme\dist\blog-management-posts-list.html" />
+    <None Include="wwwroot\Theme\dist\borders.html" />
+    <None Include="wwwroot\Theme\dist\buttons.html" />
+    <None Include="wwwroot\Theme\dist\cards.html" />
+    <None Include="wwwroot\Theme\dist\charts.html" />
+    <None Include="wwwroot\Theme\dist\dashboard-1.html" />
+    <None Include="wwwroot\Theme\dist\dashboard-2.html" />
+    <None Include="wwwroot\Theme\dist\dashboard-3.html" />
+    <None Include="wwwroot\Theme\dist\dropdowns.html" />
+    <None Include="wwwroot\Theme\dist\error-400.html" />
+    <None Include="wwwroot\Theme\dist\error-401.html" />
+    <None Include="wwwroot\Theme\dist\error-403.html" />
+    <None Include="wwwroot\Theme\dist\error-404-1.html" />
+    <None Include="wwwroot\Theme\dist\error-404-2.html" />
+    <None Include="wwwroot\Theme\dist\error-500.html" />
+    <None Include="wwwroot\Theme\dist\error-503.html" />
+    <None Include="wwwroot\Theme\dist\error-504.html" />
+    <None Include="wwwroot\Theme\dist\forms.html" />
+    <None Include="wwwroot\Theme\dist\header-breadcrumbs.html" />
+    <None Include="wwwroot\Theme\dist\header-compact.html" />
+    <None Include="wwwroot\Theme\dist\header-light.html" />
+    <None Include="wwwroot\Theme\dist\header-overlap.html" />
+    <None Include="wwwroot\Theme\dist\header-simplified.html" />
+    <None Include="wwwroot\Theme\dist\index.html" />
+    <None Include="wwwroot\Theme\dist\invoice.html" />
+    <None Include="wwwroot\Theme\dist\js\datatables\datatables-simple-demo.js" />
+    <None Include="wwwroot\Theme\dist\js\litepicker.js" />
+    <None Include="wwwroot\Theme\dist\js\markdown.js" />
+    <None Include="wwwroot\Theme\dist\js\toasts.js" />
+    <None Include="wwwroot\Theme\dist\knowledge-base-article.html" />
+    <None Include="wwwroot\Theme\dist\knowledge-base-category.html" />
+    <None Include="wwwroot\Theme\dist\knowledge-base-home-1.html" />
+    <None Include="wwwroot\Theme\dist\knowledge-base-home-2.html" />
+    <None Include="wwwroot\Theme\dist\layout-boxed.html" />
+    <None Include="wwwroot\Theme\dist\layout-dark.html" />
+    <None Include="wwwroot\Theme\dist\layout-fluid.html" />
+    <None Include="wwwroot\Theme\dist\layout-rtl.html" />
+    <None Include="wwwroot\Theme\dist\layout-static.html" />
+    <None Include="wwwroot\Theme\dist\lift.html" />
+    <None Include="wwwroot\Theme\dist\modals.html" />
+    <None Include="wwwroot\Theme\dist\multi-tenant-add-users.html" />
+    <None Include="wwwroot\Theme\dist\multi-tenant-create.html" />
+    <None Include="wwwroot\Theme\dist\multi-tenant-join.html" />
+    <None Include="wwwroot\Theme\dist\multi-tenant-select.html" />
+    <None Include="wwwroot\Theme\dist\navigation.html" />
+    <None Include="wwwroot\Theme\dist\pricing.html" />
+    <None Include="wwwroot\Theme\dist\progress.html" />
+    <None Include="wwwroot\Theme\dist\shadows.html" />
+    <None Include="wwwroot\Theme\dist\starter-default.html" />
+    <None Include="wwwroot\Theme\dist\starter-minimal.html" />
+    <None Include="wwwroot\Theme\dist\step.html" />
+    <None Include="wwwroot\Theme\dist\tables.html" />
+    <None Include="wwwroot\Theme\dist\timeline.html" />
+    <None Include="wwwroot\Theme\dist\toasts.html" />
+    <None Include="wwwroot\Theme\dist\tooltips.html" />
+    <None Include="wwwroot\Theme\dist\typography.html" />
+    <None Include="wwwroot\Theme\dist\user-management-add-user.html" />
+    <None Include="wwwroot\Theme\dist\user-management-edit-user.html" />
+    <None Include="wwwroot\Theme\dist\user-management-groups-list.html" />
+    <None Include="wwwroot\Theme\dist\user-management-list.html" />
+    <None Include="wwwroot\Theme\dist\user-management-org-details.html" />
+    <None Include="wwwroot\Theme\dist\wizard.html" />
+    <None Include="wwwroot\Theme\LICENSE.md" />
+    <None Include="wwwroot\Theme\MIGRATION_GUIDE.md" />
+    <None Include="wwwroot\Theme\README.md" />
+    <None Include="wwwroot\Theme\scripts\build-assets.js" />
+    <None Include="wwwroot\Theme\scripts\build-pug.js" />
+    <None Include="wwwroot\Theme\scripts\build-scripts.js" />
+    <None Include="wwwroot\Theme\scripts\build-scss.js" />
+    <None Include="wwwroot\Theme\scripts\clean.js" />
+    <None Include="wwwroot\Theme\scripts\render-assets.js" />
+    <None Include="wwwroot\Theme\scripts\render-pug.js" />
+    <None Include="wwwroot\Theme\scripts\render-scripts.js" />
+    <None Include="wwwroot\Theme\scripts\render-scss.js" />
+    <None Include="wwwroot\Theme\scripts\sb-watch.js" />
+    <None Include="wwwroot\Theme\scripts\start-debug.js" />
+    <None Include="wwwroot\Theme\scripts\start.js" />
+    <None Include="wwwroot\Theme\src\assets\demo\chart-area-demo.js" />
+    <None Include="wwwroot\Theme\src\assets\demo\chart-bar-demo.js" />
+    <None Include="wwwroot\Theme\src\assets\demo\chart-pie-demo.js" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-Black.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-BlackItalic.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-Bold.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-BoldItalic.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-ExtraBold.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-ExtraBoldItalic.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-ExtraLight.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-ExtraLightItalic.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-Light.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-LightItalic.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-Medium.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-MediumItalic.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-Regular.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-RegularItalic.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-SemiBold.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-SemiBoldItalic.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-Thin.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\Metropolis-ThinItalic.otf" />
+    <None Include="wwwroot\Theme\src\assets\fonts\metropolis\SIL Open Font License.txt" />
+    <None Include="wwwroot\Theme\src\assets\img\backgrounds\bg-angles.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\backgrounds\bg-pattern-shapes.png" />
+    <None Include="wwwroot\Theme\src\assets\img\backgrounds\bg-waves.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\demo\cards\card-img-bottom.jpg" />
+    <None Include="wwwroot\Theme\src\assets\img\demo\cards\card-img-left.jpg" />
+    <None Include="wwwroot\Theme\src\assets\img\demo\cards\card-img-overlay.jpg" />
+    <None Include="wwwroot\Theme\src\assets\img\demo\cards\card-img-right.jpg" />
+    <None Include="wwwroot\Theme\src\assets\img\demo\cards\card-img-top.jpg" />
+    <None Include="wwwroot\Theme\src\assets\img\demo\demo-logo.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\demo\demo-ocean-lg.jpg" />
+    <None Include="wwwroot\Theme\src\assets\img\demo\demo-ocean-sm.jpg" />
+    <None Include="wwwroot\Theme\src\assets\img\demo\pug.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\demo\user-placeholder.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\favicon.png" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\400-error-bad-request.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\401-error-unauthorized.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\403-error-forbidden.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\404-error-with-a-cute-animal.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\404-error.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\500-internal-server-error.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\503-error-service-unavailable.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\504-error-gateway-timeout.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\at-work.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\browser-stats.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\CREDITS.md" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\data-report.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\problem-solving.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\processing.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\profiles\profile-1.png" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\profiles\profile-2.png" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\profiles\profile-3.png" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\profiles\profile-4.png" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\profiles\profile-5.png" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\profiles\profile-6.png" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\statistics.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\team-spirit.svg" />
+    <None Include="wwwroot\Theme\src\assets\img\illustrations\windows.svg" />
+    <None Include="wwwroot\Theme\src\js\datatables\datatables-simple-demo.js" />
+    <None Include="wwwroot\Theme\src\js\litepicker.js" />
+    <None Include="wwwroot\Theme\src\js\markdown.js" />
+    <None Include="wwwroot\Theme\src\js\scripts.js" />
+    <None Include="wwwroot\Theme\src\js\toasts.js" />
+    <None Include="wwwroot\Theme\src\pug\layouts\authentication.pug" />
+    <None Include="wwwroot\Theme\src\pug\layouts\dashboard-rtl.pug" />
+    <None Include="wwwroot\Theme\src\pug\layouts\dashboard.pug" />
+    <None Include="wwwroot\Theme\src\pug\layouts\error.pug" />
+    <None Include="wwwroot\Theme\src\pug\layouts\includes\head\css.pug" />
+    <None Include="wwwroot\Theme\src\pug\layouts\includes\head\icons.pug" />
+    <None Include="wwwroot\Theme\src\pug\layouts\includes\head\meta.pug" />
+    <None Include="wwwroot\Theme\src\pug\layouts\includes\head\title.pug" />
+    <None Include="wwwroot\Theme\src\pug\layouts\includes\scripts.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\account-billing.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\account-notifications.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\account-profile.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\account-security.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\alerts.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\animations.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\auth-login-basic.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\auth-login-social.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\auth-password-basic.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\auth-password-social.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\auth-redirect.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\auth-register-basic.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\auth-register-social.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\avatars.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\background.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\badges.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\blog-management-create-post.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\blog-management-edit-post.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\blog-management-posts-admin.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\blog-management-posts-list.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\borders.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\buttons.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\cards.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\charts.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\dashboard-1.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\dashboard-2.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\dashboard-3.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\dropdowns.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\error-400.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\error-401.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\error-403.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\error-404-1.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\error-404-2.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\error-500.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\error-503.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\error-504.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\forms.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\header-breadcrumbs.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\header-compact.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\header-light.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\header-overlap.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\header-simplified.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\includes\datatable-activity-example.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\includes\datatable-example.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\includes\datatable-groups-table.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\includes\datatable-posts-admin.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\includes\datatable-posts-list.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\includes\datatable-users-table-groups.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\includes\datatable-users-table.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\index.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\invoice.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\knowledge-base-article.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\knowledge-base-category.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\knowledge-base-home-1.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\knowledge-base-home-2.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\layout-boxed.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\layout-dark.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\layout-fluid.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\layout-rtl.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\layout-static.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\lift.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\mixins\footer.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\mixins\headers\header-compact.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\mixins\headers\header-default.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\mixins\sidenav.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\mixins\topnav.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\modals.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\multi-tenant-add-users.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\multi-tenant-create.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\multi-tenant-join.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\multi-tenant-select.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\navigation.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\pricing.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\progress.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\shadows.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\starter-default.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\starter-minimal.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\step.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\tables.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\timeline.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\toasts.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\tooltips.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\typography.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\user-management-add-user.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\user-management-edit-user.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\user-management-groups-list.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\user-management-list.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\user-management-org-details.pug" />
+    <None Include="wwwroot\Theme\src\pug\pages\wizard.pug" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\navigation\sidenav\_sidenav-dark.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\navigation\sidenav\_sidenav-light.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\navigation\sidenav\_sidenav.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\navigation\_nav-borders.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\navigation\_nav-sticky.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\navigation\_nav.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\navigation\_navbar.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\navigation\_topnav.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\page-header\_page-header-compact.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\page-header\_page-header-dark.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\page-header\_page-header-light.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\page-header\_page-header.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\_dropdowns.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\components\_footer.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\demo\_style-reference.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\layout\_dashboard-default.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\layout\_dashboard-fixed.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\layout\_dashboard-rtl.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\pages\_account.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\pages\_auth-organizations.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\pages\_invoice.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\pages\_pricing.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\pages\_wizard.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\plugins\_chartjs.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\plugins\_litepicker.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\plugins\_simple-datatables.scss" />
+    <None Include="wwwroot\Theme\src\scss\admin\styles.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\components\_alerts.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\components\_avatars.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\components\_badges.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\components\_buttons.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\components\_cards.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\components\_dropdowns.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\components\_icons.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\components\_step.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\components\_timeline.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\forms\_checkboxes.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\forms\_form-control.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\forms\_input-group.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\layout\_authentication.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\layout\_error.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\mixins\_scrollbar.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\styles.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\utilities\_animation.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\utilities\_background.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\utilities\_border.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\utilities\_dropdown.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\utilities\_general.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\utilities\_lift.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\utilities\_overflow.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\utilities\_shadow.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\utilities\_skew.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\utilities\_text.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\utilities\_zindex.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_accordion.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_alerts.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_badges.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_body.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_buttons-forms.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_cards.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_code.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_color-map.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_colors.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_components.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_dropdowns.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_error.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_grid.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_navigation.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_options.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_spacing.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_step.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_tables.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_timeline.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\variables\_typography.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\_global.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\_mixins.scss" />
+    <None Include="wwwroot\Theme\src\scss\core\_variables.scss" />
+    <None Include="wwwroot\Theme\src\scss\styles.scss" />
+    <None Include="wwwroot\Theme\src\scss\_project.scss" />
+    <None Include="wwwroot\Theme\src\scss\_variables-colors-overrides.scss" />
+    <None Include="wwwroot\Theme\src\scss\_variables-overrides.scss" />
+  </ItemGroup>
+
+  <Target Name="BuildGuestRegistrationSpa" BeforeTargets="Build" Condition="Exists('$(GuestRegistrationSpaRoot)package.json')">
+    <Exec WorkingDirectory="$(GuestRegistrationSpaRoot)" Command="npm install" Condition="!Exists('$(GuestRegistrationSpaRoot)node_modules')" />
+    <Exec WorkingDirectory="$(GuestRegistrationSpaRoot)" Command="npm run build" />
+  </Target>
+
+  <Target Name="CopyGuestRegistrationSpa" AfterTargets="Build" Condition="Exists('$(GuestRegistrationSpaDist)index.html')">
+    <RemoveDir Directories="wwwroot\guest-registration" />
+    <MakeDir Directories="wwwroot\guest-registration" />
+    <ItemGroup>
+      <GuestRegistrationSpaFiles Include="$(GuestRegistrationSpaDist)**\*" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(GuestRegistrationSpaFiles)"
+      DestinationFiles="@(GuestRegistrationSpaFiles->'wwwroot\guest-registration\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

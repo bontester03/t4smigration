@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no">
+
+    <link rel="icon" href="@Url.Content("~/images/time4sport-logo.png")" />
+    <title>Time4Wellbeing - Free health and wellbeing support for families</title>
+    <meta name="description" content="Time4Wellbeing — free health and wellbeing support for families with children aged 2–18 in Staffordshire." />
+    <meta name="author" content="Time4Wellbeing">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="~/outerskin/vendor/bootstrap/css/bootstrap.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/outerskin/vendor/font-awesome/css/all.min.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/outerskin/css/stylesheet.css" asp-append-version="true" />
+
+    <style>
+        /* Green Theme for Layout */
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .hero-mask {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.7) 0%, rgba(5, 150, 105, 0.7) 100%) !important;
+        }
+
+        .preloader {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+        }
+    </style>
+
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader" aria-hidden="true">
+        <div class="lds-ellipsis">
+            <div></div><div></div><div></div><div></div>
+        </div>
+    </div>
+
+    <div id="main-wrapper" class="oxyy-login-register">
+        <div class="hero-wrap d-flex align-items-center">
+            <div class="hero-mask opacity-4 bg-dark"></div>
+            <div class="hero-bg hero-bg-scroll" style="background-image:url('@Url.Content("~/images/people-in-park.jpg")');"></div>
+
+            <div class="hero-content w-100">
+                <div class="container">
+                    <div class="row g-0 min-vh-100">
+                        <!-- Left welcome column -->
+                        <div class="col-md-6 d-flex flex-column">
+                            <div class="row g-0 my-auto">
+                                <div class="col-11 col-sm-10 col-lg-9 mx-auto text-center">
+                                    <div class="logo mt-5 mb-3">
+                                        <a href="#" title="Time4Wellbeing">
+                                            <img src="@Url.Content("~/images/Time4wellbeing_logo_AW[2024].png")"
+                                                 alt="Time4Wellbeing logo" style="width:240px;height:auto;">
+                                        </a>
+                                    </div>
+
+                                    <h1 class="text-5 fw-400 text-white mb-5">Looks like you're new here!</h1>
+                                    <h2 class="text-white line-height-3 mb-5">
+                                        Join our group in a few minutes! Sign up with your details to get started.
+                                    </h2>
+                                    <a href="#" class="text-light mx-lg-5">
+                                        <u>Time4Wellbeing is a free health and wellbeing service for families with children aged 2–18*, who live in Staffordshire.</u>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts (placed at end for performance) -->
+    <script src="~/outerskin/vendor/jquery/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/outerskin/vendor/bootstrap/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    <script src="~/outerskin/js/theme.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
