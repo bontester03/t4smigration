@@ -3,6 +3,7 @@
 # Root caches and artifacts
 .dotnet/
 artifacts/
+.codex-cleanrun/
 
 # Dependency caches
 **/node_modules/
